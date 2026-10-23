@@ -35,9 +35,14 @@ export interface PermissionNode {
   ancestors: TablePermission[];
   /** Parent scope only: set when the chain stops before a non-parent permission. */
   chainBreak?: ChainBreak;
+  /**
+   * Whether the permission grants anything: it has a role and, for parent scope, a whole chain
+   * whose permissions all have a role. Only effective permissions produce grants.
+   */
+  effective: boolean;
 }
 
-/** One permission giving one role privileges on one table. */
+/** One effective permission giving one role privileges on one table. */
 export interface Grant {
   role: WebRole;
   table: string;
@@ -79,6 +84,7 @@ export function buildAccessGraph(site: Site): AccessGraph {
       roles,
       unknownRoleIds: permission.roleIds.filter((id) => !rolesById.has(id)),
       ancestors: [],
+      effective: false,
     };
     if (permission.scope === 'parent') {
       const chain = followChain(permission, permissionsById);
@@ -88,17 +94,25 @@ export function buildAccessGraph(site: Site): AccessGraph {
     return node;
   });
   const nodesById = new Map(nodes.map((node) => [node.permission.id, node]));
+  for (const node of nodes) {
+    node.effective =
+      node.roles.length > 0 &&
+      !node.chainBreak &&
+      node.ancestors.every((parent) => (nodesById.get(parent.id)?.roles.length ?? 0) > 0);
+  }
 
-  const allGrants = nodes.flatMap((node) =>
-    node.roles.map((role): Grant => ({
-      role,
-      table: node.permission.table,
-      scope: node.permission.scope,
-      privileges: node.permission.privileges,
-      permission: node.permission,
-      ancestors: node.ancestors,
-    })),
-  );
+  const allGrants = nodes
+    .filter((node) => node.effective)
+    .flatMap((node) =>
+      node.roles.map((role): Grant => ({
+        role,
+        table: node.permission.table,
+        scope: node.permission.scope,
+        privileges: node.permission.privileges,
+        permission: node.permission,
+        ancestors: node.ancestors,
+      })),
+    );
   const byPermissionName = (a: Grant, b: Grant) => compare(a.permission.name, b.permission.name);
 
   return {

@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
@@ -20,11 +20,27 @@ describe('cli', () => {
   it('returns the usage exit code for an unknown command', async () => {
     expect((await cli('nope')).code).toBe(ExitCode.Usage);
   });
+});
 
-  it('reports docs as not implemented yet', async () => {
-    const result = await cli('docs', 'test/fixtures/ecoflux', '--out', 'out');
+describe('cli docs', () => {
+  it('writes the pages and says where', async () => {
+    const temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
+    try {
+      const result = await cli('docs', 'test/fixtures/ecoflux', '--out', join(temp, 'site'));
+      expect(result.code).toBe(ExitCode.Ok);
+      expect(result.out).toMatch(
+        /^Wrote 3 pages to .*: index\.md, access-matrix\.md, webapi\.md\n$/,
+      );
+      expect(await readFile(join(temp, 'site', 'index.md'), 'utf8')).toMatch(/^# EcoFlux\n/);
+    } finally {
+      await rm(temp, { recursive: true, force: true });
+    }
+  });
+
+  it('requires --out', async () => {
+    const result = await cli('docs', 'test/fixtures/ecoflux');
     expect(result.code).toBe(ExitCode.Usage);
-    expect(result.err).toBe('error: docs is not implemented yet\n');
+    expect(result.err).toMatch(/required option '--out <dir>'/);
   });
 });
 

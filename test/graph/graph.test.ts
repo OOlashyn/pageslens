@@ -90,6 +90,18 @@ describe('access graph: parent chains', () => {
     expect(node('Incident - No Role').roles).toEqual([]);
   });
 
+  it('marks only permissions that grant something as effective, and only those produce grants', () => {
+    expect(
+      graph.permissions
+        .filter((n) => !n.effective)
+        .map((n) => n.permission.name)
+        .sort(),
+    ).toEqual(['Comment - Missing Parent', 'Incident - No Role', 'Note - Parent Without Role']);
+    const caseManager = graph.grants(roleId(broken, 'Case Manager')).map((g) => g.permission.name);
+    expect(caseManager).not.toContain('Comment - Missing Parent');
+    expect(caseManager).not.toContain('Note - Parent Without Role');
+  });
+
   it('carries the chain onto grants', () => {
     const grant = graph
       .grants(roleId(broken, 'Case Manager'))

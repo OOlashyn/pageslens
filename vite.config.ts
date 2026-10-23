@@ -11,7 +11,13 @@ export default defineConfig({
   fmt: {
     singleQuote: true,
     printWidth: 100,
-    ignorePatterns: ['dist/**', 'coverage/**', 'test/fixtures/**', 'package-lock.json'],
+    ignorePatterns: [
+      'dist/**',
+      'coverage/**',
+      'test/fixtures/**',
+      'test/**/__snapshots__/**',
+      'package-lock.json',
+    ],
   },
   test: {
     include: ['test/**/*.test.ts'],

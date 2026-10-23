@@ -1,7 +1,8 @@
-import { relative } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { Command, CommanderError, Option } from 'commander';
 import pkg from '../package.json' with { type: 'json' };
 import { loadSiteFolder, SiteLoadError } from './adapters/site-folder.js';
+import { writeSiteDocs } from './docs/write.js';
 import { ConfigError, loadConfig } from './lint/config.js';
 import { lint } from './lint/engine.js';
 import { formatJson } from './lint/format/json.js';
@@ -65,12 +66,11 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     .description('Write Markdown docs for a .powerpages-site folder')
     .argument('[path]', 'site folder, or a folder that contains .powerpages-site', '.')
     .requiredOption('--out <dir>', 'output folder')
-    .action(() => {
-      throw new CommanderError(
-        ExitCode.Usage,
-        'pageslens.notImplemented',
-        'docs is not implemented yet',
-      );
+    .action(async (path: string, options: { out: string }) => {
+      const site = await loadSiteFolder(path);
+      const files = await writeSiteDocs(site, options.out);
+      const outPath = toPosixPath(relative(process.cwd(), resolve(options.out))) || '.';
+      io.out(`Wrote ${files.length} pages to ${outPath}: ${files.join(', ')}\n`);
     });
 
   return program;
@@ -84,9 +84,7 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
   } catch (error) {
     if (error instanceof CommanderError) {
       // --help and --version exit through here with code 0; commander has already printed them
-      if (error.exitCode === 0) return ExitCode.Ok;
-      if (error.code === 'pageslens.notImplemented') io.err(`error: ${error.message}\n`);
-      return ExitCode.Usage;
+      return error.exitCode === 0 ? ExitCode.Ok : ExitCode.Usage;
     }
     if (error instanceof SiteLoadError) {
       const problems = error.problems.map((p) => `  ${p.file ? `${p.file}: ` : ''}${p.message}\n`);
