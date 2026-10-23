@@ -1,0 +1,15 @@
+# clean: parent chain to "Incident - Case Manager Contact", same role
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: adx_portalcomment
+entityname: Incident Comment - Case Manager Parent
+id: 00000000-0000-0000-0002-000000000007
+parententitypermission: 00000000-0000-0000-0002-000000000003
+parentrelationship: incident_adx_portalcomments
+read: true
+scope: 756150003
+write: false

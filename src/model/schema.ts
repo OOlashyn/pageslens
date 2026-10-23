@@ -1,0 +1,160 @@
+import { z } from 'zod';
+import { scopeFromValue } from './kinds.js';
+
+// The adapter parses YAML with the failsafe schema, so every scalar arrives as a string
+// (site setting values stay verbatim) and these schemas do the typing. An empty value
+// (`parentpageid: `) arrives as '' and is treated as absent.
+
+const optionalText = z
+  .string()
+  .nullish()
+  .transform((value) => (value ? value : undefined));
+
+const guid = z
+  .string()
+  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, 'expected a GUID')
+  .transform((value) => value.toLowerCase());
+
+const optionalGuid = z.union([z.literal('').transform(() => undefined), guid]).optional();
+
+const guidList = z
+  .array(guid)
+  .nullish()
+  .transform((value) => value ?? []);
+
+const flag = z.stringbool().optional().default(false);
+
+const integer = z
+  .string()
+  .regex(/^-?\d+$/, 'expected a whole number')
+  .transform(Number);
+
+export const websiteSchema = z.object({
+  id: guid,
+  name: z.string().min(1),
+});
+
+export const webRoleSchema = z
+  .object({
+    id: guid,
+    name: z.string().min(1),
+    anonymoususersrole: flag,
+    authenticatedusersrole: flag,
+  })
+  .transform((r) => ({
+    id: r.id,
+    name: r.name,
+    anonymous: r.anonymoususersrole,
+    authenticated: r.authenticatedusersrole,
+  }));
+
+export const tablePermissionSchema = z
+  .object({
+    id: guid,
+    entityname: z.string().min(1),
+    entitylogicalname: z.string().min(1),
+    scope: integer,
+    read: flag,
+    write: flag,
+    create: flag,
+    delete: flag,
+    append: flag,
+    appendto: flag,
+    adx_entitypermission_webrole: guidList,
+    contactrelationship: optionalText,
+    accountrelationship: optionalText,
+    parententitypermission: optionalGuid,
+    parentrelationship: optionalText,
+  })
+  .transform((p) => ({
+    id: p.id,
+    name: p.entityname,
+    table: p.entitylogicalname,
+    scope: scopeFromValue(p.scope),
+    scopeValue: p.scope,
+    privileges: {
+      read: p.read,
+      write: p.write,
+      create: p.create,
+      delete: p.delete,
+      append: p.append,
+      appendto: p.appendto,
+    },
+    roleIds: p.adx_entitypermission_webrole,
+    contactRelationship: p.contactrelationship,
+    accountRelationship: p.accountrelationship,
+    parentPermissionId: p.parententitypermission,
+    parentRelationship: p.parentrelationship,
+  }));
+
+export const siteSettingSchema = z.object({
+  id: guid,
+  name: z.string().min(1),
+  value: optionalText,
+});
+
+export const webPageRuleSchema = z
+  .object({
+    id: guid,
+    name: z.string().min(1),
+    right: integer.optional(),
+    webpageid: optionalGuid,
+    adx_webpageaccesscontrolrule_webrole: guidList,
+  })
+  .transform((r) => ({
+    id: r.id,
+    name: r.name,
+    right: r.right,
+    webPageId: r.webpageid,
+    roleIds: r.adx_webpageaccesscontrolrule_webrole,
+  }));
+
+export const websiteAccessSchema = z
+  .object({
+    id: guid,
+    name: z.string().min(1),
+    adx_websiteaccess_webrole: guidList,
+  })
+  .transform((a) => ({ id: a.id, name: a.name, roleIds: a.adx_websiteaccess_webrole }));
+
+/** Where a record came from: a path relative to the `.powerpages-site` folder, with forward slashes. */
+export interface SourceRef {
+  file: string;
+}
+
+type Sourced<T extends z.ZodType> = z.output<T> & { source: SourceRef };
+
+export type Website = Sourced<typeof websiteSchema>;
+export type WebRole = Sourced<typeof webRoleSchema>;
+export type TablePermission = Sourced<typeof tablePermissionSchema>;
+export type SiteSetting = Sourced<typeof siteSettingSchema>;
+export type WebPageRule = Sourced<typeof webPageRuleSchema>;
+export type WebsiteAccess = Sourced<typeof websiteAccessSchema>;
+
+/** Any record in the folder, typed or not, with its YAML fields as parsed. */
+export interface SiteRecord {
+  kind: string;
+  id: string | undefined;
+  name: string | undefined;
+  fields: Record<string, unknown>;
+  /** Side files (`Home.webpage.copy.html` → `copy`), newlines normalised. */
+  text: Record<string, string>;
+  /** Web files only: the file's content, not read. */
+  contentFile?: string;
+  source: SourceRef;
+}
+
+export interface Site {
+  /** Absolute path of the `.powerpages-site` folder. */
+  root: string;
+  website: Website;
+  /** Every record, sorted by source file. */
+  records: SiteRecord[];
+  webRoles: WebRole[];
+  tablePermissions: TablePermission[];
+  siteSettings: SiteSetting[];
+  webPageRules: WebPageRule[];
+  websiteAccess: WebsiteAccess[];
+  /** Files that are neither a record, a side file nor web file content. */
+  unrecognizedFiles: string[];
+}
