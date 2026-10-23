@@ -3,7 +3,7 @@ import { basename, dirname, join, posix, relative, resolve } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import type { z } from 'zod';
 import { WEBSITE_KIND } from '../model/kinds.js';
-import { normalizeNewlines, toPosixPath } from '../model/normalize.js';
+import { compareText as compare, normalizeNewlines, toPosixPath } from '../model/normalize.js';
 import {
   siteSettingSchema,
   tablePermissionSchema,
@@ -189,13 +189,6 @@ function typed<T extends NamedSchema>(
     });
   }
   return [];
-}
-
-/** Locale-independent ordering, so output is the same on every machine. */
-function compare(a: string | undefined, b: string | undefined): number {
-  const left = a ?? '';
-  const right = b ?? '';
-  return left < right ? -1 : left > right ? 1 : 0;
 }
 
 async function isDirectory(path: string): Promise<boolean> {
