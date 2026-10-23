@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Latest release of each supported line; minimums are the October 2026 security releases
+        include:
+          - node: '22'
+            min: '22.23.4'
+          - node: '24'
+            min: '24.22.1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          node-version: ${{ matrix.node }}
+          cache: true
+      - name: Require a patched Node.js
+        run: |
+          node -e '
+            const [a, b] = [process.versions.node, process.argv[1]].map((v) => v.split(".").map(Number));
+            const ok = a[0] === b[0] && (a[1] > b[1] || (a[1] === b[1] && a[2] >= b[2]));
+            console.log(`node ${process.versions.node}, minimum ${process.argv[1]}`);
+            process.exit(ok ? 0 : 1);
+          ' '${{ matrix.min }}'
+      - run: vp check
+      - run: vp test
+      - run: vp pack
+      - run: node dist/bin.mjs --version

@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 8d3ee430-c7bb-4f7f-a78d-0dfa33902898
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_chainofcustody
+entityname: Chain of Custody - Authenticated Users Read
+id: dc52286b-05a5-46b6-86ce-f8ed0ee0982a
+read: true
+scope: 756150000
+write: false

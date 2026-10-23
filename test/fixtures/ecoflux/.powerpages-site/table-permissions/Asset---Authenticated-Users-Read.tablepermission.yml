@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 8d3ee430-c7bb-4f7f-a78d-0dfa33902898
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_asset
+entityname: Asset - Authenticated Users Read
+id: 280ad493-a945-4100-8997-5aaf2096b66e
+read: true
+scope: 756150000
+write: false

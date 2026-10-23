@@ -1,0 +1,15 @@
+# parent-chain-broken: parententitypermission points at a permission that doesn't exist
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: adx_portalcomment
+entityname: Comment - Missing Parent
+id: 00000000-0000-0000-0002-000000000004
+parententitypermission: 00000000-0000-0000-0002-0000000000ff
+parentrelationship: incident_adx_portalcomments
+read: true
+scope: 756150003
+write: false

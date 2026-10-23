@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 323f94e6-c646-4832-bd7f-daa1572b20fe
+append: true
+appendto: false
+create: true
+delete: true
+entitylogicalname: dwcrm_conditionlog
+entityname: Condition Log - Asset Manager CRUD
+id: b9233b46-34a6-4a94-a6c5-eadc270fd679
+read: true
+scope: 756150002
+write: true

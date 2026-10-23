@@ -1,0 +1,4 @@
+description: Allowed fields for dwcrm_asset Web API access
+id: 5b4e6633-c366-45a4-aba8-f59b792de951
+name: Webapi/dwcrm_asset/fields
+value: dwcrm_assetid,dwcrm_assetname,dwcrm_assetstatus,dwcrm_description,dwcrm_location,dwcrm_materialtypecode,dwcrm_quantityunit,dwcrm_quantityvalue

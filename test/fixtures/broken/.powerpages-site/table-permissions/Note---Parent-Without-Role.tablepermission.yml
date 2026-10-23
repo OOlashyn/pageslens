@@ -1,0 +1,15 @@
+# parent-chain-broken: parent is "Incident - No Role", which has no web role
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: annotation
+entityname: Note - Parent Without Role
+id: 00000000-0000-0000-0002-000000000005
+parententitypermission: 00000000-0000-0000-0002-000000000002
+parentrelationship: Incident_Annotation
+read: true
+scope: 756150003
+write: false

@@ -1,0 +1,20 @@
+# Internal working notes, not part of the repo
+claude-research/
+docs/
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tgz
+
+# Logs and local env
+*.log
+.env
+.env.*
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

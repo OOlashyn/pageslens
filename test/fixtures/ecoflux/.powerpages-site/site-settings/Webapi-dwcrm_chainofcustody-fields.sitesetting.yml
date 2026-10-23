@@ -1,0 +1,4 @@
+description: Allowed fields for dwcrm_chainofcustody Web API access
+id: 5f8149aa-c49c-4da7-8f7d-7017d177f7c6
+name: Webapi/dwcrm_chainofcustody/fields
+value: _dwcrm_assetid_value,_dwcrm_frompartnerid_value,_dwcrm_topartnerid_value,dwcrm_assetid,dwcrm_carrierinfo,dwcrm_chainofcustodyid,dwcrm_expecteddelivery,dwcrm_frompartnerid,dwcrm_name,dwcrm_notes,dwcrm_progress,dwcrm_topartnerid,dwcrm_trackingnumber,dwcrm_transferdate,dwcrm_transferstatus

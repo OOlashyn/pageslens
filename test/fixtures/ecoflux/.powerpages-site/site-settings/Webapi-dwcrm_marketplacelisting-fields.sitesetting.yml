@@ -1,0 +1,4 @@
+description: Allowed fields for dwcrm_marketplacelisting Web API access
+id: 3b10c40a-e0df-4afb-8c26-bcd98ccc2765
+name: Webapi/dwcrm_marketplacelisting/fields
+value: _dwcrm_assetid_value,dwcrm_assetid,dwcrm_askingprice,dwcrm_buyercompany,dwcrm_currency,dwcrm_expirydate,dwcrm_listeddate,dwcrm_listingstatus,dwcrm_marketplacelistingid,dwcrm_name,dwcrm_notes

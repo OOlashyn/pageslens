@@ -1,0 +1,4 @@
+description: Enable Web API access for dwcrm_asset table
+id: 066632a6-589f-4beb-ac4d-fadc6bc41ffc
+name: Webapi/dwcrm_asset/enabled
+value: true
