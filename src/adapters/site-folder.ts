@@ -1,9 +1,10 @@
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { basename, dirname, join, posix, relative, resolve } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import type { z } from 'zod';
 import { WEBSITE_KIND } from '../model/kinds.js';
 import { compareText as compare, normalizeNewlines, toPosixPath } from '../model/normalize.js';
+import { isDirectory, isFile } from '../util/fs.js';
 import {
   siteSettingSchema,
   tablePermissionSchema,
@@ -189,12 +190,4 @@ function typed<T extends NamedSchema>(
     });
   }
   return [];
-}
-
-async function isDirectory(path: string): Promise<boolean> {
-  return (await stat(path).catch(() => undefined))?.isDirectory() ?? false;
-}
-
-async function isFile(path: string): Promise<boolean> {
-  return (await stat(path).catch(() => undefined))?.isFile() ?? false;
 }
