@@ -59,7 +59,12 @@ export function renderAccessMatrix(site: Site, graph: AccessGraph): string {
     lines.push(
       table(
         ['Table', 'Scope', 'Privileges', 'Permission'],
-        grants.map((g) => [code(g.table), scopeDetail(g), privilegeLetters(g.privileges) || '—', g.permission.name]),
+        grants.map((g) => [
+          code(g.table),
+          scopeDetail(g),
+          privilegeLetters(g.privileges) || '—',
+          g.permission.name,
+        ]),
       ),
       '',
     );

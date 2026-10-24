@@ -14,8 +14,7 @@ const PRIVILEGE_LETTERS: Record<keyof Privileges, string> = {
   appendto: 'T',
 };
 
-export const PRIVILEGE_LEGEND =
-  'R read · W write · C create · D delete · A append · T append to';
+export const PRIVILEGE_LEGEND = 'R read · W write · C create · D delete · A append · T append to';
 
 /** `RWC` for read, write and create. Empty string for none. */
 export function privilegeLetters(privileges: Privileges): string {

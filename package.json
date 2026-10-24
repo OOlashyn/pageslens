@@ -10,8 +10,16 @@
     "power-platform",
     "table-permissions"
   ],
+  "homepage": "https://github.com/OOlashyn/pageslens#readme",
+  "bugs": {
+    "url": "https://github.com/OOlashyn/pageslens/issues"
+  },
   "license": "MIT",
   "author": "Oleksandr Olashyn (dancingwithcrm)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OOlashyn/pageslens.git"
+  },
   "bin": {
     "pageslens": "dist/bin.mjs"
   },
