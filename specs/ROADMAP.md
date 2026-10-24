@@ -11,14 +11,13 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Try the action on a real repository** at `v0.5.0`: a pull request that widens access (comment created, then edited), one that narrows it back (comment edited to say so), the SARIF upload with alerts on the GUID lines, and a fork pull request (summary only). This repository's CI already runs it on every pull request: the commands, the comment lookup with `pull-requests: write` and the failing `finish` step work on GitHub.
+1. **Show the pull request's head commit in the diff header.** On `pull_request`, `actions/checkout` checks out GitHub's merge commit, so the comment's `HEAD (abc1234)` names a commit that isn't in the pull request. The action could compare with `github.event.pull_request.head.sha` instead (the same merge base, and what GitHub's own diff shows).
 2. Then the candidates below.
 
 ## Verification still owed
 
-- Upload SARIF to a real repository's code scanning and check that alerts land on the GUID lines.
-- Run `diff` on macOS, and on a real pull request that changes access (it runs on Linux in the action job, with no access changes).
-- The action on GitHub: comment created and edited, a comment near the size cap, fork pull requests, missing permissions, installing from npm at a release tag.
+- Run `diff` on macOS.
+- The action on GitHub: a comment near the size cap, a fork pull request (needs a second account), a token without `pull-requests: write`.
 
 ## Open questions (need a Dataverse environment)
 
