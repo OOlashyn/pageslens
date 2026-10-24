@@ -133,6 +133,14 @@ npm run build
 
 `test/fixtures/` holds two sites: `ecoflux` (a demo code site) and `broken` (one deliberate mistake per rule). `test/fixtures/README.md` lists the findings each should produce.
 
+### Releasing
+
+1. Bump the version on a branch with `npm version <x.y.z> --no-git-tag-version -m "Release %s"` and merge it into `main` through a pull request.
+2. Create a GitHub release with the tag `v<x.y.z>` on `main`. The [release workflow](.github/workflows/release.yml) checks that the tag matches `package.json`, runs the checks and tests, and stages the package on npm through trusted publishing (no npm token in the repo).
+3. Approve the staged version with 2FA, on npmjs.com or with `npm stage list pageslens` and `npm stage approve <stage-id>`. It's installable only after approval.
+
+Pre-release versions (`x.y.z-beta.n`) are staged under the `next` dist-tag instead of `latest`.
+
 ## License
 
 [MIT](LICENSE)
