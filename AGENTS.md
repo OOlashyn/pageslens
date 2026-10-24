@@ -39,7 +39,7 @@ A rule touches all of these. The tests check that every rule has a page listed i
 
 - Docs output and findings are deterministic: sorted, no timestamps, so regenerated docs give quiet diffs.
 - Messages and docs are plain English in short sentences.
-- `docs/` and `claude-research/` are internal notes and git-ignored. Don't link to them from tracked files.
+- `claude-research/` holds internal notes (spec, plan, spike findings) and is git-ignored. Don't link to it from tracked files.
 
 ## Git
 
