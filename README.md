@@ -124,23 +124,35 @@ jobs:
 
 ## Development
 
-The project uses [Vite+](https://viteplus.dev) for formatting, linting, type checking, tests and the build.
+The project uses [Vite+](https://viteplus.dev) (`vp`) for formatting, linting, type checking, tests and the build, instead of ESLint, Prettier, Vitest and tsc. All config is in `vite.config.ts`.
 
 ```bash
 npm install
 ```
 
+Format, lint and type check (`vp check --fix` applies the fixes):
+
 ```bash
-npm run check
+vp check
+```
+
+Run the tests (`vp test -u` updates snapshots and `pageslens.config.schema.json` after an intended change):
+
+```bash
+vp test
+```
+
+Build `dist/bin.mjs`, then try it on a site:
+
+```bash
+vp pack
 ```
 
 ```bash
-npm test
+node dist/bin.mjs lint test/fixtures/broken
 ```
 
-```bash
-npm run build
-```
+Without Vite+ installed globally, `npx vp …` runs the project's own copy. The `npm run check`, `npm test` and `npm run build` scripts call the same commands.
 
 `test/fixtures/` holds three sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule) and `classic` (a trimmed classic download). `test/fixtures/README.md` lists the findings each should produce.
 
