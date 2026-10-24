@@ -6,13 +6,16 @@ import { writeSiteDocs } from './docs/write.js';
 import { ConfigError, loadConfig } from './lint/config.js';
 import { lint } from './lint/engine.js';
 import { formatJson } from './lint/format/json.js';
+import { formatSarif } from './lint/format/sarif.js';
 import { formatText } from './lint/format/text.js';
 import { RULES } from './lint/rules/index.js';
 import { toPosixPath } from './model/normalize.js';
 import { evaluatePolicy } from './policy/evaluate.js';
 import { formatJson as formatTestJson } from './policy/format/json.js';
+import { formatSarif as formatTestSarif } from './policy/format/sarif.js';
 import { formatText as formatTestText } from './policy/format/text.js';
 import { loadPolicy, PolicyError, POLICY_FILE } from './policy/parse.js';
+import { recordLines } from './sarif.js';
 
 export const ExitCode = {
   Ok: 0,
@@ -30,13 +33,17 @@ const processIo: Io = {
   err: (text) => process.stderr.write(text),
 };
 
+type Format = 'text' | 'json' | 'sarif';
+
+const FORMATS: Format[] = ['text', 'json', 'sarif'];
+
 interface LintOptions {
-  format: 'text' | 'json';
+  format: Format;
   config?: string;
 }
 
 interface TestOptions {
-  format: 'text' | 'json';
+  format: Format;
   policy?: string;
 }
 
@@ -56,9 +63,7 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       '.powerpages-site folder, a folder that contains one, or a classic site folder',
       '.',
     )
-    .addOption(
-      new Option('--format <format>', 'output format').choices(['text', 'json']).default('text'),
-    )
+    .addOption(new Option('--format <format>', 'output format').choices(FORMATS).default('text'))
     .option('--config <file>', `path to pageslens.config.yaml (default: nearest one found)`)
     .action(async (path: string, options: LintOptions) => {
       const config = await loadConfig(
@@ -69,8 +74,16 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       const site = await loadSiteFolder(path);
       const result = lint(site, config);
       const sitePath = toPosixPath(relative(process.cwd(), site.root)) || '.';
-      const format = options.format === 'json' ? formatJson : formatText;
-      io.out(format(result, site, sitePath));
+      if (options.format === 'sarif') {
+        const lineOf = await recordLines(
+          site.root,
+          result.findings.map((f) => f.source.file),
+        );
+        io.out(formatSarif(result, sitePath, RULES, lineOf));
+      } else {
+        const format = options.format === 'json' ? formatJson : formatText;
+        io.out(format(result, site, sitePath));
+      }
       setExitCode(result.counts.error > 0 ? ExitCode.Findings : ExitCode.Ok);
     });
 
@@ -82,9 +95,7 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       '.powerpages-site folder, a folder that contains one, or a classic site folder',
       '.',
     )
-    .addOption(
-      new Option('--format <format>', 'output format').choices(['text', 'json']).default('text'),
-    )
+    .addOption(new Option('--format <format>', 'output format').choices(FORMATS).default('text'))
     .option('--policy <file>', `path to ${POLICY_FILE} (default: nearest one found)`)
     .action(async (path: string, options: TestOptions) => {
       const policy = await loadPolicy(path, options.policy);
@@ -92,8 +103,17 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       const result = evaluatePolicy(policy, site);
       const sitePath = toPosixPath(relative(process.cwd(), site.root)) || '.';
       const policyPath = toPosixPath(relative(process.cwd(), policy.path));
-      const format = options.format === 'json' ? formatTestJson : formatTestText;
-      io.out(format(result, site, sitePath, policyPath));
+      if (options.format === 'sarif') {
+        const evidence = result.results.flatMap((r) => r.evidence);
+        const lineOf = await recordLines(
+          site.root,
+          evidence.flatMap((e) => (e.file ? [e.file] : [])),
+        );
+        io.out(formatTestSarif(result, sitePath, policyPath, lineOf));
+      } else {
+        const format = options.format === 'json' ? formatTestJson : formatTestText;
+        io.out(format(result, site, sitePath, policyPath));
+      }
       setExitCode(result.counts.failed > 0 ? ExitCode.Findings : ExitCode.Ok);
     });
 
