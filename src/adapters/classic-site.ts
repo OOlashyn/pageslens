@@ -11,6 +11,7 @@ import {
   type FieldMapping,
   type Problem,
 } from './common.js';
+import type { FileSource } from './files.js';
 
 // `pac pages download` writes the site folder itself (no `.powerpages-site`), with every key
 // `adx_`-prefixed and each record's id under `adx_<entity>id`. Records of some kinds are one
@@ -65,18 +66,18 @@ export function isClassicWebsite(website: unknown): boolean {
 }
 
 /** Reads a classic site folder: root lists (`webrole.yml`) plus record files in folders. */
-export async function readClassicSite(root: string): Promise<Site> {
+export async function readClassicSite(source: FileSource): Promise<Site> {
   const problems: Problem[] = [];
-  const files = await listFiles(root);
+  const files = await listFiles(source);
   const claimed = new Set<string>();
-  const records = await readRecordFiles(root, files, CLASSIC_FIELDS, problems, claimed);
-  records.push(...(await readRootLists(root, files, problems, claimed)));
-  return buildSite(root, files, records, claimed, CLASSIC_FIELDS, problems);
+  const records = await readRecordFiles(source, files, CLASSIC_FIELDS, problems, claimed);
+  records.push(...(await readRootLists(source, files, problems, claimed)));
+  return buildSite(source, files, records, claimed, CLASSIC_FIELDS, problems);
 }
 
 /** `webrole.yml` at the root is a list of web roles: kind `webrole`, one record per item. */
 async function readRootLists(
-  root: string,
+  source: FileSource,
   files: string[],
   problems: Problem[],
   claimed: Set<string>,
@@ -87,7 +88,7 @@ async function readRootLists(
     if (posix.extname(file) !== '.yml') continue;
     const kind = posix.basename(file, '.yml');
 
-    const value = await readYaml(root, file, problems);
+    const value = await readYaml(source, file, problems);
     claimed.add(file);
     if (value !== undefined)
       records.push(...listRecords(kind, value, file, CLASSIC_FIELDS, problems));

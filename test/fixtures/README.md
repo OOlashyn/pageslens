@@ -48,3 +48,19 @@ Expected lint findings:
 | `global-write-authenticated` | Feedback (global create, includes Authenticated Users) |
 
 Access to the Accounts Assets (account scope with `adx_accountrelationship`, role Manager) and its child Access to Assets Condition Logs (parent scope, no web role of its own, so it takes Manager from its parent) are clean, and every role is used.
+
+## `diff/`
+
+Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `<case>/head`. Records match by GUID, so the pairs share GUIDs and the files that differ start with a `#` comment naming the class and kind they cause (or `clean:` for a difference that must cause nothing). Expected output is in `test/diff/diff.test.ts`, with text and Markdown snapshots in `test/diff/__snapshots__/`.
+
+| case | layout | changes |
+|---|---|---|
+| `grants` | code | 8 wider, 4 narrower, 7 neutral: a new permission, scope changes (contact → global, contact → account, global → account), a contact relationship change, a parent chain fixed, a role added to a permission and inherited by its child, a removed permission, a privilege turned off, a removed role, a permission replaced by another with the same access, a grant global scope already covers, a role renamed, added, removed and recreated with a new id, a permission renamed. `contact` has the Web API enabled on both sides |
+| `webapi` | code | 3 wider, 3 narrower: enabled on `account`, disabled on `incident`, a field added and one removed on `contact`, `*` on `dwcrm_invoice`, `*` replaced on `dwcrm_order`; a field change on `task`, which has the Web API off, must cause nothing |
+| `roles` | code | 1 wider, 1 narrower: the Authenticated Users flag moves from Authenticated Users to Members |
+| `settings` | code | 4 wider, 2 narrower: `Authentication/Registration/Enabled` removed on head (`false` → default `true`), `OpenRegistrationEnabled` added as `false`, `RequiresInvitation` turned off, `Webapi/error/innererror` turned on, an origin added to and one removed from `HTTP/Access-Control-Allow-Origin`; `Search/Enabled` must cause nothing |
+| `neutral` | code | 4 neutral, nothing else: a role renamed and its file moved, a permission renamed and moved, a permission file renamed, a second permission with the same access, a grant global scope already covers |
+| `layouts` | classic base, code head | 1 wider (write added to Assets - Manager); every other record is the same in the other layout and must cause nothing |
+| `classic` | classic | 1 wider, 1 narrower, 1 neutral: the Web API enabled in `sitesetting.yml`, Anonymous Users taken off Feedback, a role renamed in `webrole.yml` |
+
+`test/diff/git.test.ts` commits the `grants` and `classic` pairs to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.

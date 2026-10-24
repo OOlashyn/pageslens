@@ -1,0 +1,4 @@
+# narrower webapi-fields-narrower: * replaced by a list
+id: 00000000-0000-0000-0003-000000000009
+name: Webapi/dwcrm_order/fields
+value: dwcrm_name

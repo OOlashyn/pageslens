@@ -1,0 +1,4 @@
+# wider webapi-enabled: callers are listed
+id: 00000000-0000-0000-0003-000000000001
+name: Webapi/account/enabled
+value: true

@@ -1,0 +1,14 @@
+# neutral grant-gained: already has read on incident at global scope
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+contactrelationship: incident_customer_contacts
+create: false
+delete: false
+entitylogicalname: incident
+entityname: Incident - Case Workers Contact
+id: 00000000-0000-0000-0002-000000000004
+read: true
+scope: 756150001
+write: false

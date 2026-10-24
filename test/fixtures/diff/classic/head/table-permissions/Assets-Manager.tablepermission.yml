@@ -1,0 +1,12 @@
+adx_append: false
+adx_appendto: false
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: msdyn_customerasset
+adx_entityname: Assets - Manager
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+adx_entitypermissionid: 00000000-0000-0000-0002-000000000002
+adx_read: true
+adx_scope: 756150000
+adx_write: false

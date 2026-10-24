@@ -12,10 +12,11 @@ import {
   type FieldMapping,
   type Problem,
 } from './common.js';
+import { folderSource, type FileSource } from './files.js';
 
 export { SiteLoadError, type Problem } from './common.js';
 
-const SITE_FOLDER = '.powerpages-site';
+export const SITE_FOLDER = '.powerpages-site';
 
 /**
  * `code`: the `.powerpages-site` folder `pac pages download-code-site` writes, with unprefixed keys.
@@ -49,21 +50,31 @@ export async function resolveSiteRoot(path: string): Promise<{ root: string; lay
         : `No ${SITE_FOLDER} folder or ${WEBSITE_FILE} found at ${absolute}`,
     );
   }
-  const website = await readYaml(root, WEBSITE_FILE, []);
-  return { root, layout: isClassicWebsite(website) ? 'classic' : 'code' };
+  return { root, layout: await siteLayout(folderSource(root)) };
 }
 
 /** Reads a downloaded site, in either layout, into a site model. */
 export async function loadSiteFolder(path: string): Promise<Site> {
-  const { root, layout } = await resolveSiteRoot(path);
-  return layout === 'classic' ? readClassicSite(root) : readCodeSite(root);
+  const { root } = await resolveSiteRoot(path);
+  return (await loadSite(folderSource(root))).site;
+}
+
+async function siteLayout(source: FileSource): Promise<SiteLayout> {
+  return isClassicWebsite(await readYaml(source, WEBSITE_FILE, [])) ? 'classic' : 'code';
+}
+
+/** Reads a site folder that has a `website.yml`, on disk or in a commit, in either layout. */
+export async function loadSite(source: FileSource): Promise<{ site: Site; layout: SiteLayout }> {
+  const layout = await siteLayout(source);
+  const site = layout === 'classic' ? await readClassicSite(source) : await readCodeSite(source);
+  return { site, layout };
 }
 
 /** Reads a `.powerpages-site` folder: one `<name>.<kind>.yml` file per record. */
-async function readCodeSite(root: string): Promise<Site> {
+async function readCodeSite(source: FileSource): Promise<Site> {
   const problems: Problem[] = [];
-  const files = await listFiles(root);
+  const files = await listFiles(source);
   const claimed = new Set<string>();
-  const records = await readRecordFiles(root, files, CODE_FIELDS, problems, claimed);
-  return buildSite(root, files, records, claimed, CODE_FIELDS, problems);
+  const records = await readRecordFiles(source, files, CODE_FIELDS, problems, claimed);
+  return buildSite(source, files, records, claimed, CODE_FIELDS, problems);
 }

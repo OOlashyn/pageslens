@@ -1,0 +1,14 @@
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000001
+- 00000000-0000-0000-0001-000000000002
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: feedback
+entityname: Feedback
+id: 00000000-0000-0000-0002-000000000001
+read: false
+scope: 756150000
+write: false

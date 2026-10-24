@@ -1,0 +1,13 @@
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+contactrelationship: contact_customer_contacts
+create: false
+delete: false
+entitylogicalname: contact
+entityname: Contact - Customers
+id: 00000000-0000-0000-0002-000000000006
+read: true
+scope: 756150001
+write: false

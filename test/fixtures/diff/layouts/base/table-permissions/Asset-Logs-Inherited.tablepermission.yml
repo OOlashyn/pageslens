@@ -1,0 +1,12 @@
+adx_append: false
+adx_appendto: false
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: msdyn_customerassetlog
+adx_entityname: Asset Logs - Inherited
+adx_entitypermissionid: 00000000-0000-0000-0002-000000000003
+adx_parententitypermission: 00000000-0000-0000-0002-000000000002
+adx_parentrelationship: msdyn_customerasset_logs
+adx_read: true
+adx_scope: 756150003
+adx_write: false

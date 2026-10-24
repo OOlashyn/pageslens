@@ -1,0 +1,11 @@
+# narrower grant-lost: its role was removed
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: feedback
+entityname: Feedback - Old Role
+id: 00000000-0000-0000-0002-000000000015
+read: false
+scope: 756150000
+write: false

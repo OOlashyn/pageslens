@@ -1,0 +1,14 @@
+# wider grant-gained: write added; everything else is the same records in the other layout
+accountrelationship: msdyn_account_msdyn_customerasset_Account
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: msdyn_customerasset
+entityname: Assets - Manager
+id: 00000000-0000-0000-0002-000000000002
+read: true
+scope: 756150002
+write: true

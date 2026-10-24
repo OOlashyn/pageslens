@@ -1,0 +1,13 @@
+# neutral grant-source-changed: renamed, same access
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: contact
+entityname: Contact - Own record
+id: 00000000-0000-0000-0002-000000000009
+read: false
+scope: 756150004
+write: true

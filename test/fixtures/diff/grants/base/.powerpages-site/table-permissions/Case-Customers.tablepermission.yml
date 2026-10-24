@@ -1,0 +1,13 @@
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+contactrelationship: dwcrm_case_contact
+create: false
+delete: false
+entitylogicalname: dwcrm_case
+entityname: Case - Customers
+id: 00000000-0000-0000-0002-000000000013
+read: true
+scope: 756150001
+write: false
