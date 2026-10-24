@@ -4,16 +4,17 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                         |                                                                                                                                                 |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                     |
-| On `main`, not released | the action compares with the pull request's head commit, not GitHub's merge commit. Release notes ready: [releases/0.5.1.md](releases/0.5.1.md) |
-| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                    |
+|                         |                                                                                                                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                      |
+| On `main`, not released | the action compares with the pull request's head commit, not GitHub's merge commit. Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
+| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                     |
 
 ## Next
 
-1. **Release `0.5.1`.** Notes in [releases/0.5.1.md](releases/0.5.1.md).
-2. Then the candidates below.
+1. **Page access rules, classic sites first** (spec `0005` to write first). pageslens already reads them (`webpagerule`, with their roles) but only `role-unused` uses them. To decide: what a rule means offline (Restrict Read and Grant Change, inheritance down the page tree), which lint rules (`page-access-gap` and others), whether `docs`, `test` and `diff` cover them in the same release (`diff` has the rule-level classification waiting in [0003](0003-diff.md)), and what code sites download for pages.
+2. **Release `0.6.0`** with the page access work and the action fix already on `main`.
+3. Then the candidates below.
 
 ## Verification still owed
 
@@ -36,5 +37,5 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 - Solution adapter (unpacked `powerpagecomponents/<guid>` and `.zip`), then `align` ([alm-story.md](research/alm-story.md)).
 - Agent skills on `--format json`: `site-review`, `pr-access-review`, `site-docs`.
-- Classic site-structure rules and page access rules (also for `diff`), site map docs.
+- Classic site-structure rules and site map docs (page access rules moved to Next).
 - Server Logic and cloud flows in docs.
