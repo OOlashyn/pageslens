@@ -4,16 +4,15 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                         |                                                                                                                                                |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.3.0`: `lint`, `test`, `docs`, code-site and classic layouts, config ignores and JSON Schema                                                 |
-| On `main`, not released | `--format sarif` ([0002](0002-sarif.md)), `pageslens diff` ([0003](0003-diff.md)). Release notes ready: [releases/0.4.0.md](releases/0.4.0.md) |
-| Milestones              | M1 (MVP) done. M2: policies, SARIF and diff done; the GitHub Action left. `align` waits for the solution adapter                               |
+|                     |                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Released (`latest`) | `0.4.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, code-site and classic layouts, config ignores and JSON Schema |
+| In design           | GitHub Action ([0004](0004-github-action.md)): decided, to build                                                         |
+| Milestones          | M1 (MVP) done. M2: policies, SARIF and diff done; the GitHub Action left. `align` waits for the solution adapter         |
 
 ## Next
 
-1. **Release `0.4.0`.** Notes in [releases/0.4.0.md](releases/0.4.0.md); same steps as `0.3.0` (README, "Releasing").
-2. **GitHub Action** (last M2 piece; spec `0004` to write first). Runs `lint` and `test`, uploads SARIF, and posts `diff --format markdown --merge-base` as one sticky PR comment, found by the hidden marker, with `--fail-on` as an input. To decide: this repo or a separate `pageslens-action` repo, composite or JavaScript action, how it pins the pageslens version, permissions (`pull-requests: write`, `security-events: write`), and fork PRs (no write token). It's also the first real test of the SARIF upload and of a diff comment near the size cap.
+1. **GitHub Action** (last M2 piece). Spec [0004](0004-github-action.md) is decided: a composite action in this repository that runs `lint` and `test` with SARIF upload and posts `diff --merge-base --format markdown` as one sticky comment. Next: build it. It's also the first real test of the SARIF upload and of a diff comment near the size cap.
 
 ## Verification still owed
 

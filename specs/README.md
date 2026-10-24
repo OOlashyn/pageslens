@@ -10,11 +10,12 @@ Design notes for pageslens: why it works the way it does. User docs are the [REA
 | [releases/](releases/)   | Release notes, pasted into GitHub releases                                                                            |
 | [archive/](archive/)     | Finished plans, kept as history                                                                                       |
 
-| Spec                                                 | Status              |
-| ---------------------------------------------------- | ------------------- |
-| [0001: Policies, `pageslens test`](0001-policies.md) | shipped in 0.3.0    |
-| [0002: SARIF output](0002-sarif.md)                  | on `main`, in 0.4.0 |
-| [0003: Access diffs, `pageslens diff`](0003-diff.md) | on `main`, in 0.4.0 |
+| Spec                                                 | Status            |
+| ---------------------------------------------------- | ----------------- |
+| [0001: Policies, `pageslens test`](0001-policies.md) | shipped in 0.3.0  |
+| [0002: SARIF output](0002-sarif.md)                  | shipped in 0.4.0  |
+| [0003: Access diffs, `pageslens diff`](0003-diff.md) | shipped in 0.4.0  |
+| [0004: GitHub Action](0004-github-action.md)         | decided, to build |
 
 ## Writing a spec
 
