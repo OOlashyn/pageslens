@@ -12,9 +12,10 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Page access rules, classic sites first.** Spec [0005](0005-page-access-rules.md) is drafted: effective page access down the page tree, seven lint rules, a pages section in `docs`, then `test` and `diff`. Next: the maintainer answers its open questions, and a real classic download with pages becomes the fixture source.
-2. **Release `0.6.0`** with the page access work and the action fix already on `main`.
-3. Then the candidates below.
+1. **Skip inactive records.** Records with `statecode: 1` (inactive) are in downloads, and pageslens reads them as active. On a real classic site, an inactive table permission made `global-write-anonymous` fire and put its grants in the access matrix. Fix in the model, for every kind, before the page work ([0005](0005-page-access-rules.md), open question 10).
+2. **Page access rules, classic sites first.** Spec [0005](0005-page-access-rules.md), draft 2, checked against a real classic download: effective page access down the page tree, eight lint rules, a pages section in `docs`, then `test` and `diff`. Next: the maintainer answers its open questions.
+3. **Release `0.6.0`** with the page access work and the action fix already on `main`.
+4. Then the candidates below.
 
 ## Verification still owed
 
