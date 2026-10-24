@@ -314,6 +314,13 @@ describe('diff output', () => {
     const markdown = formatMarkdown({ ...result, changes: [change], summary: summarize([change]) });
     expect(markdown).toContain('- **A\\*B\\_\\<i\\>** x');
   });
+
+  it('keeps names from mentioning anyone', async () => {
+    const result = await diffCase('roles');
+    const change = { ...result.changes[0]!, message: [{ strong: '@org/team' }, ' x'] };
+    const markdown = formatMarkdown({ ...result, changes: [change], summary: summarize([change]) });
+    expect(markdown).toContain('- **@&#8203;org/team** x');
+  });
 });
 
 describe('cli diff', () => {

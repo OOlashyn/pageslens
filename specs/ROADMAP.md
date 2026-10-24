@@ -4,20 +4,23 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                     |                                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Released (`latest`) | `0.4.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, code-site and classic layouts, config ignores and JSON Schema |
-| In design           | GitHub Action ([0004](0004-github-action.md)): decided, to build                                                         |
-| Milestones          | M1 (MVP) done. M2: policies, SARIF and diff done; the GitHub Action left. `align` waits for the solution adapter         |
+|                         |                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Released (`latest`)     | `0.4.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, code-site and classic layouts, config ignores and JSON Schema |
+| On `main`, not released | the GitHub Action ([0004](0004-github-action.md)). Release notes ready: [releases/0.5.0.md](releases/0.5.0.md)           |
+| Milestones              | M1 (MVP) done. M2 done with the action, once released. `align` waits for the solution adapter                            |
 
 ## Next
 
-1. **GitHub Action** (last M2 piece). Spec [0004](0004-github-action.md) is decided: a composite action in this repository that runs `lint` and `test` with SARIF upload and posts `diff --merge-base --format markdown` as one sticky comment. Next: build it. It's also the first real test of the SARIF upload and of a diff comment near the size cap.
+1. **Release `0.5.0`.** Notes in [releases/0.5.0.md](releases/0.5.0.md); same steps as `0.4.0` (README, "Releasing"). The action at `v0.5.0` installs `pageslens@0.5.0`, so it works once that version is approved on npm.
+2. **Try the action on a real repository** at `v0.5.0`: a pull request that widens access (comment created, then edited), one with no access changes, the SARIF upload, and a fork pull request (summary only).
+3. Then the candidates below.
 
 ## Verification still owed
 
 - Upload SARIF to a real repository's code scanning and check that alerts land on the GUID lines.
 - Run `diff` on Linux or macOS, with a newer git, and on a real pull request.
+- The action on GitHub: comment created and edited, a comment near the size cap, fork pull requests, missing permissions.
 
 ## Open questions (need a Dataverse environment)
 

@@ -57,6 +57,15 @@ A rule touches all of these. The tests check that every rule has a page listed i
 
 Grant sentences are shared with `test` in `src/graph/describe.ts`, so both say the same thing. Git runs with argument arrays and `--end-of-options` (`src/util/git.ts`): refs come from pull requests.
 
+## The GitHub Action
+
+`action.yml` (composite) runs `action/main.ts` in three steps: `run` (lint, test and diff; never fails, writes what failed to a file), `comment` and `finish` (fails the job). Spec: [specs/0004-github-action.md](specs/0004-github-action.md).
+
+- Node.js runs `action/main.ts` directly, without a build: erasable TypeScript only (no enums, no parameter properties), Node built-ins only, no imports from `src/`.
+- It installs exactly the `package.json` version from npm, so the tag `v<x.y.z>` runs `pageslens@<x.y.z>`. Don't add a version input.
+- CI runs it with `uses: ./` and `PAGESLENS_ACTION_CLI=dist/bin.mjs`, so it tests this commit's build. The helpers are unit-tested in `test/action/`; posting a comment and fork pull requests can only be checked on GitHub.
+- Inputs reach the script through `env`, never `${{ }}` inside `run:`.
+
 ## Conventions
 
 - Docs output and findings are deterministic: sorted, no timestamps, so regenerated docs give quiet diffs.
