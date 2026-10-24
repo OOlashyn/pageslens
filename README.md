@@ -33,7 +33,7 @@ npx pageslens docs path/to/site --out docs/site
 ## `pageslens lint`
 
 ```
-pageslens lint [path] [--format text|json] [--config <file>]
+pageslens lint [path] [--format text|json|sarif] [--config <file>]
 ```
 
 Example output:
@@ -54,6 +54,8 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | 2         | The site or config couldn't be read, or the command was used wrong |
 
 `--format json` prints a versioned object (`version`, `site`, `summary`, `ignored`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
+
+`--format sarif` prints [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) for GitHub code scanning and other tools that read it. See [In CI](#in-ci).
 
 ### Rules
 
@@ -97,7 +99,7 @@ The `$schema` comment gives completion and validation in editors with the YAML l
 ## `pageslens test`
 
 ```
-pageslens test [path] [--policy <file>] [--format text|json]
+pageslens test [path] [--policy <file>] [--format text|json|sarif]
 ```
 
 Checks the site against the requirements in `pageslens.policy.yaml` (in the site folder or any folder above it, or `--policy <file>`). Each requirement is one sentence in a fixed form:
@@ -114,7 +116,7 @@ settings:
   - registration is invite only
 ```
 
-Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy file, an unreadable statement or an unknown role. A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`).
+Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy file, an unreadable statement or an unknown role. A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`), and `--format sarif` gives SARIF for code scanning.
 
 The full grammar, what each statement means and how to write a good policy: [docs/policy.md](docs/policy.md).
 
@@ -151,6 +153,43 @@ jobs:
       - run: npx pageslens@0 lint site
       - run: npx pageslens@0 test site
 ```
+
+To see findings and failed policy statements as annotations on the pull request and in the repository's **Security** tab, write SARIF and upload it with GitHub's `upload-sarif` action (code scanning needs to be available for the repository):
+
+```yaml
+# .github/workflows/pages.yml
+name: Power Pages checks
+on: pull_request
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  pageslens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: mkdir -p sarif
+      - run: npx pageslens@0 lint site --format sarif > sarif/lint.sarif
+      - run: npx pageslens@0 test site --format sarif > sarif/test.sarif
+        if: ${{ !cancelled() }}
+      - uses: github/codeql-action/upload-sarif@v4
+        if: ${{ !cancelled() }}
+        with:
+          sarif_file: sarif
+```
+
+The exit codes stay the same with `--format sarif`, so the job still fails on lint errors and failed statements. The `if` lines make the later steps run anyway, so the results reach code scanning.
+
+What the SARIF contains:
+
+- **Two runs, kept apart.** `lint` and `test` each get their own category (`pageslens/lint/`, `pageslens/test/`), so uploading both doesn't replace one with the other.
+- **Rules.** Every lint rule, with its page as help. For `test`, one rule per statement, named `policy/<id>`, or a slug of the statement's text when it has no `id`. Give statements an `id` if you want their alerts to survive a rewording.
+- **Locations.** A finding points at its record's file and the line of the record's GUID, so findings in shared files like `webrole.yml` land on the right record. A failed statement points at each table permission or setting that breaks it, with the statement's line in the policy as a related location. A failure with nothing in the site to point at, such as a missing setting or a privilege a role lacks, points at the statement itself.
+- **Levels.** `error`, `warning` and `info` become `error`, `warning` and `note`, with GitHub security severities high, medium and low. Every failed statement is an `error`.
+- **Paths** are relative to the folder pageslens runs in, so run it from the repository root.
 
 ## Development
 

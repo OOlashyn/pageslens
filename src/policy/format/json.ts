@@ -27,6 +27,7 @@ export function formatJson(
         message: e.message,
         ...(e.file && { file: e.file }),
         ...(e.recordId && { recordId: e.recordId }),
+        ...(e.context && { context: true }),
       })),
       warnings,
     })),

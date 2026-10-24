@@ -10,6 +10,8 @@ export interface Evidence {
   /** Site file, relative to the site folder; absent for a setting that isn't there. */
   file?: string;
   recordId?: string;
+  /** Background, not a cause: what a role does have, when a `can` statement fails. */
+  context?: boolean;
 }
 
 export interface StatementResult {
@@ -221,7 +223,7 @@ class Context {
     ];
     for (const grant of this.matching(roles, { ...check, privileges: [...has] })) {
       const found = grantEvidence(grant, [...has]);
-      evidence.push({ ...found, message: `has: ${found.message}` });
+      evidence.push({ ...found, message: `has: ${found.message}`, context: true });
     }
     return evidence;
   }
