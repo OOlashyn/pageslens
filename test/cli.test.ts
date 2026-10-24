@@ -80,7 +80,7 @@ describe('cli lint', () => {
   it('exits 2 with the problems when the site can not be read', async () => {
     const result = await cli('lint', 'test/fixtures');
     expect(result.code).toBe(ExitCode.Usage);
-    expect(result.err).toMatch(/^error: No \.powerpages-site folder found/);
+    expect(result.err).toMatch(/^error: No \.powerpages-site folder or website\.yml found/);
   });
 
   it('exits 2 on a bad config', async () => {

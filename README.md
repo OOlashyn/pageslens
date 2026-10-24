@@ -2,14 +2,14 @@
 
 Offline lint and docs for Power Pages site configuration in source control.
 
-pageslens reads the `.powerpages-site` folder that `pac pages download` and `pac pages download-code-site` write, and:
+pageslens reads a site downloaded with the Power Platform CLI, either the `.powerpages-site` folder that `pac pages download-code-site` writes or the site folder that `pac pages download` writes, and:
 
 - **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
 - **documents** it: an access matrix (which role can do what on which table), the Web API surface, and a Mermaid diagram, as plain Markdown.
 
 It needs no Dataverse connection and no agent: the same folder gives the same output every run.
 
-> **Status: early.** pageslens supports **enhanced data model** sites and has been verified on a **code site**. Classic sites use the same folder layout and should work, but haven't been verified yet. Unpacked solutions, solution `.zip` files and the standard data model are planned.
+> **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`). `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet. Unpacked solutions and solution `.zip` files are planned.
 
 ## Quick start
 
@@ -23,7 +23,7 @@ npx pageslens lint path/to/site
 npx pageslens docs path/to/site --out docs/site
 ```
 
-`path/to/site` is either the `.powerpages-site` folder or the folder that contains it.
+`path/to/site` is the `.powerpages-site` folder, the folder that contains it, or a classic site folder (the one with `website.yml` and `webrole.yml`). pageslens tells the two layouts apart by the keys in `website.yml`.
 
 ## `pageslens lint`
 
@@ -48,7 +48,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | 1         | At least one error                                                 |
 | 2         | The site or config couldn't be read, or the command was used wrong |
 
-`--format json` prints a versioned object (`version`, `site`, `summary`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to `.powerpages-site`), `recordId` and a `docs` link.
+`--format json` prints a versioned object (`version`, `site`, `summary`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
 
 ### Rules
 
@@ -131,7 +131,7 @@ npm test
 npm run build
 ```
 
-`test/fixtures/` holds two sites: `ecoflux` (a demo code site) and `broken` (one deliberate mistake per rule). `test/fixtures/README.md` lists the findings each should produce.
+`test/fixtures/` holds three sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule) and `classic` (a trimmed classic download). `test/fixtures/README.md` lists the findings each should produce.
 
 ### Releasing
 

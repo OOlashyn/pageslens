@@ -1,0 +1,16 @@
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Administrators
+  adx_webroleid: 19289dc7-0368-498f-95b3-4db734ba24a3
+- adx_anonymoususersrole: true
+  adx_authenticatedusersrole: false
+  adx_name: Anonymous Users
+  adx_webroleid: 1fb27c8a-bb7f-4351-9582-a17f2f5126b7
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Manager
+  adx_webroleid: 67095ecd-50cf-f111-a05a-70a8a52c89ad
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: true
+  adx_name: Authenticated Users
+  adx_webroleid: a299e8b6-2046-4d10-87dc-bcb2206ff0fb

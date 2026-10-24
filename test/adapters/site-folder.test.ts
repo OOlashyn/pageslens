@@ -135,9 +135,16 @@ describe('loadSiteFolder: broken', async () => {
 
 describe('resolveSiteRoot', () => {
   it('accepts the .powerpages-site folder or the folder that contains it', async () => {
-    const root = await resolveSiteRoot(ECOFLUX);
+    const { root, layout } = await resolveSiteRoot(ECOFLUX);
     expect(root.replaceAll('\\', '/')).toMatch(/test\/fixtures\/ecoflux\/\.powerpages-site$/);
-    expect(await resolveSiteRoot(root)).toBe(root);
+    expect(layout).toBe('code');
+    expect(await resolveSiteRoot(root)).toEqual({ root, layout });
+  });
+
+  it('tells a classic site folder by the adx_ keys in website.yml', async () => {
+    const { root, layout } = await resolveSiteRoot('test/fixtures/classic');
+    expect(root.replaceAll('\\', '/')).toMatch(/test\/fixtures\/classic$/);
+    expect(layout).toBe('classic');
   });
 });
 
@@ -168,12 +175,16 @@ describe('loadSiteFolder: errors', () => {
 
   it('fails when there is no site folder', async () => {
     temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    expect((await problems(temp)).message).toMatch(/No \.powerpages-site folder found/);
+    expect((await problems(temp)).message).toMatch(
+      /No \.powerpages-site folder or website\.yml found/,
+    );
   });
 
-  it('rejects a standard data model download', async () => {
+  it('reads a website.yml with adx_ keys as a classic site', async () => {
     const path = await site({ 'website.yml': 'adx_name: Test\nadx_websiteid: x\n' });
-    expect((await problems(path)).message).toMatch(/standard data model/);
+    expect((await problems(path)).problems).toEqual([
+      { file: 'website.yml', message: 'adx_websiteid: expected a GUID' },
+    ]);
   });
 
   it('reports invalid YAML with the file path', async () => {

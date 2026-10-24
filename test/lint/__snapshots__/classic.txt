@@ -1,0 +1,10 @@
+PageLensPermissionTestEDM - site-43a00 (site)
+
+table-permissions/Access-to-Assets-Condition-Logs.tablepermission.yml
+  warning  Table permission "Access to Assets Condition Logs" grants nothing: it has no web role.  permission-no-role
+
+table-permissions/Feedback.tablepermission.yml
+  warning  Table permission "Feedback" gives Anonymous Users create on every feedback record (global scope).  global-write-anonymous
+  warning  Table permission "Feedback" gives Authenticated Users create on every feedback record (global scope).  global-write-authenticated
+
+0 errors, 3 warnings, 0 info

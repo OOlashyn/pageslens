@@ -1,0 +1,16 @@
+adx_accountrelationship: dwcrm_asset_OwningAccount_account
+adx_append: false
+adx_appendto: false
+adx_contactrelationship: 
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: dwcrm_asset
+adx_entityname: Access to the Accounts Assets
+adx_entitypermission_webrole:
+- 67095ecd-50cf-f111-a05a-70a8a52c89ad
+adx_entitypermissionid: 9b85ab16-81c6-4b85-a0c9-67aad477a306
+adx_parententitypermission: 
+adx_parentrelationship: 
+adx_read: true
+adx_scope: 756150002
+adx_write: false
