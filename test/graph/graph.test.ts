@@ -76,6 +76,53 @@ describe('access graph: parent chains', () => {
     expect(child.chainBreak).toBeUndefined();
   });
 
+  it('gives a child permission with no role of its own the roles of its parent', () => {
+    const child = node('Incident Task - Inherited Roles');
+    expect(child.rolesInherited).toBe(true);
+    expect(names(child.roles)).toEqual(['Case Manager']);
+    expect(child.effective).toBe(true);
+    expect(
+      graph.grants(roleId(broken, 'Case Manager')).map((g) => [g.table, g.permission.name]),
+    ).toContainEqual(['task', 'Incident Task - Inherited Roles']);
+    expect(node('Incident Comment - Case Manager Parent').rolesInherited).toBe(false);
+  });
+
+  it('inherits through a chain of children and grants nothing when the root has no role', () => {
+    const base = broken.tablePermissions[0]!;
+    const permission = (
+      id: string,
+      roleIds: string[],
+      parentPermissionId?: string,
+    ): TablePermission => ({
+      ...base,
+      id,
+      name: id,
+      roleIds,
+      ...(parentPermissionId
+        ? { scope: 'parent', scopeValue: 756150003, parentPermissionId }
+        : { scope: 'global', scopeValue: 756150000, parentPermissionId: undefined }),
+    });
+    const caseManager = roleId(broken, 'Case Manager');
+    const site: Site = {
+      ...broken,
+      tablePermissions: [
+        permission('root', [caseManager]),
+        permission('child', [], 'root'),
+        permission('grandchild', [], 'child'),
+        permission('bare-root', []),
+        permission('bare-child', [], 'bare-root'),
+      ],
+    };
+    const chained = buildAccessGraph(site);
+    expect(names(chained.permission('grandchild')!.roles)).toEqual(['Case Manager']);
+    expect(chained.permission('grandchild')!.effective).toBe(true);
+    expect(chained.permission('bare-child')).toMatchObject({
+      roles: [],
+      rolesInherited: true,
+      effective: false,
+    });
+  });
+
   it('reports a parent that does not exist', () => {
     expect(node('Comment - Missing Parent').chainBreak).toMatchObject({
       reason: 'missing-parent',

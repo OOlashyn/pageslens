@@ -35,9 +35,11 @@ export function renderAccessDiagram(graph: AccessGraph): string {
   for (const t of tables) lines.push(`    ${tableId.get(t)}[("${label(t)}")]`);
   lines.push('  end');
 
-  for (const { permission, roles: permissionRoles } of nodes) {
+  for (const { permission, roles: permissionRoles, rolesInherited } of nodes) {
     const p = permissionId.get(permission.id);
-    for (const role of [...permissionRoles].sort((a, b) => compare(a.name, b.name))) {
+    // Inherited roles reach the permission through its parent edge, so they get no edge of their own.
+    const ownRoles = rolesInherited ? [] : permissionRoles;
+    for (const role of [...ownRoles].sort((a, b) => compare(a.name, b.name))) {
       lines.push(`  ${roleId.get(role.id)} --> ${p}`);
     }
     lines.push(`  ${p} --> ${tableId.get(permission.table)}`);

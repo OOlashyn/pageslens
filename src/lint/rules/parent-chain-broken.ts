@@ -16,7 +16,9 @@ export const parentChainBroken: Rule = {
       });
       const findings = chainBreak ? [finding(describeBreak(chainBreak, permission.id))] : [];
       for (const ancestor of ancestors) {
-        if (graph.permission(ancestor.id)?.roles.length === 0) {
+        // An ancestor that inherits its roles is reported through the one it inherits from.
+        const node = graph.permission(ancestor.id);
+        if (node && node.roles.length === 0 && !node.rolesInherited) {
           findings.push(finding(`its parent "${ancestor.name}" has no web role`));
         }
       }
