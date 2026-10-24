@@ -16,6 +16,7 @@ export default defineConfig({
       'coverage/**',
       'test/fixtures/**',
       'test/**/__snapshots__/**',
+      'pageslens.config.schema.json',
       'package-lock.json',
     ],
   },

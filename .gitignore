@@ -1,6 +1,5 @@
 # Internal working notes, not part of the repo
 /claude-research/
-/docs/
 
 # Dependencies and build output
 node_modules/

@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder } from '../../src/adapters/site-folder.js';
 import { ConfigError, loadConfig } from '../../src/lint/config.js';
+import { configJsonSchema } from '../../src/lint/config-schema.js';
 import { lint } from '../../src/lint/engine.js';
 import { formatJson } from '../../src/lint/format/json.js';
 import { formatText } from '../../src/lint/format/text.js';
@@ -128,6 +129,56 @@ describe('severity config', () => {
   });
 });
 
+describe('ignore config', () => {
+  const feedback = '3453215b-d450-4073-a12c-88aa8a248b81';
+
+  it('leaves out findings on matching files and counts them', () => {
+    const result = lint(broken, {
+      rules: {},
+      ignore: [{ files: ['web-roles/*.webrole.yml'] }, { files: ['**/Incident---No-Role.*'] }],
+    });
+    const files = result.findings.map((f) => f.source.file);
+    expect(files.some((f) => f.startsWith('web-roles/'))).toBe(false);
+    expect(files).not.toContain('table-permissions/Incident---No-Role.tablepermission.yml');
+    expect(result.ignored).toBe(4);
+    expect(result.counts).toEqual({ error: 4, warning: 3, info: 0 });
+  });
+
+  it('leaves out findings on a record, from the listed rules only', () => {
+    const result = lint(classic, {
+      rules: {},
+      ignore: [{ rules: ['global-write-anonymous'], records: [feedback], reason: 'Contact form' }],
+    });
+    expect(result.findings.map((f) => f.ruleId)).toEqual(['global-write-authenticated']);
+    expect(result.ignored).toBe(1);
+  });
+
+  it('shows the ignored count in both formats', () => {
+    const result = lint(classic, { rules: {}, ignore: [{ records: [feedback] }] });
+    expect(formatText(result, classic, 'site').endsWith('No findings (2 ignored).\n')).toBe(true);
+    expect(JSON.parse(formatJson(result, classic, 'site')).ignored).toBe(2);
+    const partly = lint(classic, {
+      rules: {},
+      ignore: [{ rules: ['global-write-anonymous'], records: [feedback] }],
+    });
+    expect(formatText(partly, classic, 'site')).toContain('0 errors, 1 warning, 0 info, 1 ignored');
+  });
+});
+
+describe('config JSON Schema', () => {
+  it('matches pageslens.config.schema.json', async () => {
+    const text = `${JSON.stringify(configJsonSchema(RULES), null, 2)}\n`;
+    await expect(text).toMatchFileSnapshot('../../pageslens.config.schema.json');
+  });
+
+  it('lists every rule', () => {
+    const schema = configJsonSchema(RULES) as {
+      properties: { rules: { properties: Record<string, unknown> } };
+    };
+    expect(Object.keys(schema.properties.rules.properties)).toEqual(ruleIds);
+  });
+});
+
 describe('loadConfig', () => {
   let temp: string | undefined;
   afterEach(async () => {
@@ -142,7 +193,7 @@ describe('loadConfig', () => {
   }
 
   it('uses defaults when there is no config file', async () => {
-    expect(await loadConfig(await folder(), ruleIds)).toEqual({ rules: {} });
+    expect(await loadConfig(await folder(), ruleIds)).toEqual({ rules: {}, ignore: [] });
   });
 
   it('finds the nearest config in a folder above', async () => {
@@ -173,6 +224,39 @@ describe('loadConfig', () => {
     await expect(
       loadConfig(await folder('rules:\n  role-unused: fatal\n'), ruleIds),
     ).rejects.toThrow(/rules\.role-unused/);
+  });
+
+  it('reads ignore entries, with file paths and GUIDs normalised', async () => {
+    const config = await loadConfig(
+      await folder(
+        'ignore:\n' +
+          "  - files: ['.\\web-roles\\Legacy.webrole.yml']\n" +
+          '    records: [3453215B-D450-4073-A12C-88AA8A248B81]\n' +
+          '    rules: [role-unused]\n' +
+          '    reason: Kept for the old portal\n',
+      ),
+      ruleIds,
+    );
+    expect(config.ignore).toEqual([
+      {
+        files: ['web-roles/Legacy.webrole.yml'],
+        records: ['3453215b-d450-4073-a12c-88aa8a248b81'],
+        rules: ['role-unused'],
+        reason: 'Kept for the old portal',
+      },
+    ]);
+  });
+
+  it('rejects ignore entries with unknown rules or nothing to match', async () => {
+    await expect(
+      loadConfig(await folder('ignore:\n  - rules: [nope]\n    files: [a.yml]\n'), ruleIds),
+    ).rejects.toThrow(/unknown rule\(s\): nope/);
+    await expect(
+      loadConfig(await folder('ignore:\n  - rules: [role-unused]\n'), ruleIds),
+    ).rejects.toThrow(/ignore\.0: needs files or records/);
+    await expect(loadConfig(await folder('ignore:\n  - files: []\n'), ruleIds)).rejects.toThrow(
+      /ignore\.0\.files/,
+    );
   });
 
   it('rejects invalid YAML and a missing explicit file', async () => {

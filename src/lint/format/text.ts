@@ -16,10 +16,15 @@ export function formatText(result: LintResult, site: Site, sitePath: string): st
   }
 
   const { error, warning, info } = result.counts;
+  const ignored = result.ignored > 0 ? `${result.ignored} ignored` : '';
   lines.push(
     result.findings.length === 0
-      ? 'No findings.'
-      : `${plural(error, 'error')}, ${plural(warning, 'warning')}, ${info} info`,
+      ? ignored
+        ? `No findings (${ignored}).`
+        : 'No findings.'
+      : [`${plural(error, 'error')}, ${plural(warning, 'warning')}, ${info} info`, ignored]
+          .filter(Boolean)
+          .join(', '),
   );
   return `${lines.join('\n')}\n`;
 }

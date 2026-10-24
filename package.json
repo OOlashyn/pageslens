@@ -24,7 +24,8 @@
     "pageslens": "dist/bin.mjs"
   },
   "files": [
-    "dist"
+    "dist",
+    "pageslens.config.schema.json"
   ],
   "type": "module",
   "scripts": {
