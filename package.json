@@ -1,6 +1,6 @@
 {
   "name": "pageslens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Offline lint and docs for Power Pages site configuration in source control",
   "keywords": [
     "cli",
