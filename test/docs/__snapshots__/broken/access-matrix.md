@@ -6,13 +6,13 @@ Which web role can do what on which table, from the table permissions in the sit
 
 Privileges: R read · W write · C create · D delete · A append · T append to.
 
-| Role | `adx_portalcomment` | `contact` | `dwcrm_contract` | `dwcrm_feedback` | `incident` |
-| --- | --- | --- | --- | --- | --- |
-| Anonymous Users (every visitor) |  |  |  | C Global |  |
-| Authenticated Users (every signed-in user) |  | RW Global |  |  |  |
-| Case Manager | RC Parent |  | R Account |  | RT Contact |
-| Signed-in Users (every signed-in user) |  |  |  |  |  |
-| Unused Role |  |  |  |  |  |
+| Role | `adx_portalcomment` | `contact` | `dwcrm_contract` | `dwcrm_feedback` | `incident` | `task` |
+| --- | --- | --- | --- | --- | --- | --- |
+| Anonymous Users (every visitor) |  |  |  | C Global |  |  |
+| Authenticated Users (every signed-in user) |  | RW Global |  |  |  |  |
+| Case Manager | RC Parent |  | R Account |  | RT Contact | R Parent |
+| Signed-in Users (every signed-in user) |  |  |  |  |  |  |
+| Unused Role |  |  |  |  |  |  |
 
 ## Grants by role
 
@@ -35,6 +35,7 @@ Privileges: R read · W write · C create · D delete · A append · T append to
 | `adx_portalcomment` | Parent, via "Incident - Case Manager Contact" | RC | Incident Comment - Case Manager Parent |
 | `dwcrm_contract` | Account | R | Contract - Case Manager Account |
 | `incident` | Contact | RT | Incident - Case Manager Contact |
+| `task` | Parent, via "Incident - Case Manager Contact" | R | Incident Task - Inherited Roles |
 
 ### Signed-in Users (every signed-in user)
 

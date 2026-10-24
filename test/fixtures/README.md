@@ -32,4 +32,4 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `webapi-no-permission` | `Webapi/dwcrm_invoice/enabled` |
 | `role-unused` | Unused Role |
 
-`Incident - Case Manager Contact`, its child `Incident Comment - Case Manager Parent` (a working parent chain), and the `incident` Web API settings are clean and must produce no findings.
+`Incident - Case Manager Contact`, its children `Incident Comment - Case Manager Parent` (a working parent chain with the parent's role) and `Incident Task - Inherited Roles` (no web role of its own, as the design studio makes child permissions, so it takes the parent's), and the `incident` Web API settings are clean and must produce no findings.
