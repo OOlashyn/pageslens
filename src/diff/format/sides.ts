@@ -22,9 +22,13 @@ export function comparison(result: DiffResult, code: Code): string {
   return `${code(sitePath(result))}, ${sideLabel(base, code)} → ${sideLabel(head, code)}`;
 }
 
+/** A ref that is the commit's own id is shown once, short: `a1b2c3d`, not `a1b2c3d…` (a1b2c3d). */
 function sideLabel(side: DiffSide, code: Code): string {
   if (!side.ref) return 'the working tree';
   const commit = side.commit!.slice(0, 7);
+  const isCommitId =
+    /^[0-9a-f]{7,}$/i.test(side.ref) && side.commit!.startsWith(side.ref.toLowerCase());
+  if (isCommitId && !side.mergeBase) return code(commit);
   return `${code(side.ref)} (${side.mergeBase ? `merge base ${commit}` : commit})`;
 }
 

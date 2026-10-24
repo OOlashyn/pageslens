@@ -4,14 +4,15 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                     |                                                                                                                             |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`) | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores |
-| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                |
+|                         |                                                                                                                                                 |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                     |
+| On `main`, not released | the action compares with the pull request's head commit, not GitHub's merge commit. Release notes ready: [releases/0.5.1.md](releases/0.5.1.md) |
+| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                    |
 
 ## Next
 
-1. **Show the pull request's head commit in the diff header.** On `pull_request`, `actions/checkout` checks out GitHub's merge commit, so the comment's `HEAD (abc1234)` names a commit that isn't in the pull request. The action could compare with `github.event.pull_request.head.sha` instead (the same merge base, and what GitHub's own diff shows).
+1. **Release `0.5.1`.** Notes in [releases/0.5.1.md](releases/0.5.1.md).
 2. Then the candidates below.
 
 ## Verification still owed

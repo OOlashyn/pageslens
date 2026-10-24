@@ -21,7 +21,7 @@ const POLICY_FILE = 'pageslens.policy.yaml';
 export interface PullRequest {
   number: number;
   base: { ref: string };
-  head: { repo?: { full_name: string } | null };
+  head: { sha?: string; repo?: { full_name: string } | null };
 }
 
 export interface IssueComment {
@@ -53,6 +53,16 @@ export function baseRef(
 ): string {
   const base = input || pr.base.ref;
   return !base.startsWith('origin/') && hasRemoteBranch(base) ? `origin/${base}` : base;
+}
+
+/**
+ * The pull request's head commit. On `pull_request`, `actions/checkout` checks out a merge commit
+ * GitHub makes, which isn't in the pull request; its head commit is, and is what GitHub's own diff
+ * shows. `HEAD` when the event has no head commit or it isn't in the checkout.
+ */
+export function headRef(pr: PullRequest, hasCommit: (sha: string) => boolean): string {
+  const sha = pr.head.sha;
+  return sha && /^[0-9a-f]{40}$/.test(sha) && hasCommit(sha) ? sha : 'HEAD';
 }
 
 /** The nearest policy file in `start` or a folder above it, as `pageslens test` finds it. */
@@ -251,7 +261,8 @@ function run(): void {
         git('rev-parse', '--verify', '--quiet', '--end-of-options', `refs/remotes/origin/${branch}`)
           .status === 0,
     );
-    const args = ['diff', '--merge-base', base, 'HEAD', path];
+    const head = headRef(pr, (sha) => git('cat-file', '-e', `${sha}^{commit}`).status === 0);
+    const args = ['diff', '--merge-base', base, head, path];
     const failOn = input('fail-on');
     const markdown = join(dir, 'diff.md');
     const failArgs = failOn ? ['--fail-on', failOn] : [];
