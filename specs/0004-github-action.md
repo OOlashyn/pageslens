@@ -1,6 +1,6 @@
 # 0004: GitHub Action
 
-**Status:** decided (draft 1, all 9 questions answered); not built yet.
+**Status:** built, on `main` for 0.5.0. User reference: the README's "GitHub Action" section.
 
 The last M2 piece. [0002-sarif.md](0002-sarif.md) and [0003-diff.md](0003-diff.md) built the outputs; this spec is the packaging that puts them on a pull request with one `uses:` line instead of the three workflows in the README's "In CI" section. It answers: where the action lives, what kind of action it is, how it pins pageslens, what it posts and with which permissions, and what happens on pull requests from forks.
 
@@ -170,3 +170,21 @@ Every recommendation below is adopted:
 - Immutable releases: https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases ; GA changelog (2025-10-28): https://github.blog/changelog/2025-10-28-immutable-releases-are-now-generally-available/
 
 Not verified this pass: the job summary size limit (only secondary sources give 1 MiB); whether current Marketplace docs forbid workflow files in the repository (one search result said so, the page fetched didn't); the Node.js patch level bundled with the runner for `node24` actions.
+
+## As built
+
+Design: this document (draft 1, all 9 questions answered with the recommendations). User reference: the README's "GitHub Action" section.
+
+- `action.yml` at the repository root, composite: `actions/setup-node` (pinned by SHA, no cache), then `action/main.ts` in three steps around `github/codeql-action/upload-sarif` (pinned by SHA): `run`, `comment`, `finish`.
+- `run` installs exactly the `package.json` version (`npm install --ignore-scripts` into `RUNNER_TEMP`), runs `lint` and `test` twice each (text for the log and the exit code, SARIF for the upload and the counts) and `diff` twice (Markdown with `--fail-on`, JSON for the counts). It never fails; what failed goes to a file that `finish` reports, so every step runs first.
+- The comment is found by the marker line and `user.type == Bot`, so a person's comment that starts with the marker is never edited. 403 and 404 from the API are a notice, not a failure.
+- Markdown output now writes `@` as `@&#8203;` (a zero-width space after it), so names can't mention users or teams; the same trick Renovate uses.
+- Interpretations made while building:
+  - `action/main.ts` is TypeScript that Node.js runs directly (type stripping, no build); it's type-checked with the rest. A JavaScript action wasn't needed for this.
+  - A `token` input (default `github.token`) for the comment, which the spec's input table left out.
+  - `PAGESLENS_ACTION_CLI` (an environment variable, not an input) runs a local build instead of the npm version. It's for this repository's CI, which runs the action with `uses: ./` on EcoFlux.
+  - Exit code 2 from a command doesn't stop the `run` step at once: it's reported, the other commands still run, and `finish` fails the job. A shallow checkout gets its own error message pointing at `fetch-depth: 0`.
+  - The job summary lists the lint and test counts before the diff.
+  - SARIF from a command that couldn't run (exit 2) is deleted, so the upload doesn't fail on an empty file.
+- Tested: helpers in `test/action/main.test.ts`; `run` and `finish` on a temporary repository (pull request, push, fork, failing lint and policy, a base that doesn't exist); `comment` against a local mock of the API (create, nothing to post, update, 403).
+- **Not verified:** a real run on GitHub (the CI job does that on the first pull request), the comment on a real pull request, a fork pull request, the SARIF upload, and the action at a release tag installing from npm.

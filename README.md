@@ -168,6 +168,58 @@ The output has no timestamps and a fixed order, so regenerating it for an unchan
 
 ## In CI
 
+### GitHub Action
+
+The pageslens action does it all in one step: it runs `lint` and `test`, uploads the results to code scanning, and posts what a pull request does to access as one comment, which it edits on each run.
+
+```yaml
+# .github/workflows/pageslens.yml
+name: pageslens
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  security-events: write # upload results to code scanning
+  pull-requests: write # the access-changes comment
+jobs:
+  pageslens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the merge base needs the history of both branches
+      - uses: OOlashyn/pageslens@v0.5.0
+        with:
+          path: site
+```
+
+- **On a pull request** it runs `lint`, `test` (when it finds a `pageslens.policy.yaml`) and `diff --merge-base` against the base branch. The access changes go to the run's summary page and to the comment. With no access changes it doesn't add a comment; it edits an earlier one to say so.
+- **On a push** to `main` it runs `lint` and `test` only. Code scanning compares a pull request's alerts with the last analysis of `main`, so run the action on both.
+- **The job fails** when lint finds errors, a policy statement fails, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
+- **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
+- **Permissions:** without `security-events: write`, or with code scanning not available for the repository, the upload is skipped with a notice. Without `pull-requests: write`, the comment is.
+- **Version:** `v0.5.0` runs exactly pageslens 0.5.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
+
+| Input          | Default                 | What                                                                                                    |
+| -------------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| `path`         | `.`                     | The site folder. For several sites, use the action once per site; each gets its own comment.            |
+| `policy`       | nearest one             | The policy file. With none, `test` is skipped with a notice.                                            |
+| `lint`         | `true`                  | Run `lint`.                                                                                             |
+| `test`         | `true`                  | Run `test`.                                                                                             |
+| `diff`         | `true`                  | Run `diff` on pull requests.                                                                            |
+| `sarif`        | `true`                  | Upload the results to code scanning.                                                                    |
+| `comment`      | `true`                  | Post the access changes as a comment.                                                                   |
+| `fail-on`      |                         | `wider` or `any`: fail when the diff has wider changes, or any change. By default the diff never fails. |
+| `base`         | the pull request's base | The ref to compare with. `origin/` is added to a branch name.                                           |
+| `node-version` | `24`                    | Node.js for pageslens.                                                                                  |
+| `token`        | `github.token`          | The token for the comment.                                                                              |
+
+Outputs: `wider`, `narrower`, `neutral`, `lint-errors`, `policy-failures` and `comment-url`, for example to add a label when anything is wider.
+
+### Without the action
+
 ```yaml
 # .github/workflows/pages.yml
 name: Power Pages checks
@@ -294,6 +346,8 @@ Without Vite+ installed globally, `npx vp …` runs the project's own copy. The 
 
 2. Create a GitHub release with the tag `v<x.y.z>` on `main`. The [release workflow](.github/workflows/release.yml) checks that the tag matches `package.json`, runs the checks and tests, and stages the package on npm through trusted publishing (no npm token in the repo).
 3. Approve the staged version with 2FA, on npmjs.com or with `npm stage list pageslens` and `npm stage approve <stage-id>`. It's installable only after approval.
+
+The same tag is the GitHub Action's version: `OOlashyn/pageslens@v<x.y.z>` installs `pageslens@<x.y.z>` from npm, so the action at that tag works once the version is approved.
 
 Pre-release versions (`x.y.z-beta.n`) are staged under the `next` dist-tag instead of `latest`.
 
