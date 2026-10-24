@@ -10,6 +10,7 @@ export function formatJson(result: LintResult, site: Site, sitePath: string): st
     version: JSON_FORMAT_VERSION,
     site: { id: site.website.id, name: site.website.name, path: sitePath },
     summary: result.counts,
+    ignored: result.ignored,
     findings: result.findings.map((f) => ({
       ruleId: f.ruleId,
       severity: f.severity,

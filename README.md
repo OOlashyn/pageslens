@@ -48,7 +48,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | 1         | At least one error                                                 |
 | 2         | The site or config couldn't be read, or the command was used wrong |
 
-`--format json` prints a versioned object (`version`, `site`, `summary`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
+`--format json` prints a versioned object (`version`, `site`, `summary`, `ignored`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
 
 ### Rules
 
@@ -68,15 +68,26 @@ Each rule's page says why it matters and how to fix it.
 
 ### Configuration
 
-Put a `pageslens.config.yaml` in the site folder or any folder above it (or pass `--config <file>`) to change severities or turn rules off:
+Put a `pageslens.config.yaml` in the site folder or any folder above it (or pass `--config <file>`) to change severities, turn rules off, or ignore findings you've accepted:
 
 ```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OOlashyn/pageslens/main/pageslens.config.schema.json
 rules:
   global-write-anonymous: error # never allow it on this site
   role-unused: off
+
+ignore:
+  - rules: [global-write-anonymous, global-write-authenticated]
+    records: [3453215b-d450-4073-a12c-88aa8a248b81]
+    reason: Public contact form creates feedback records
+  - files: ['web-roles/Legacy-*.webrole.yml']
 ```
 
 Severities are `error`, `warning`, `info` and `off`. An unknown rule id is an error, so typos don't silently do nothing.
+
+An `ignore` entry leaves out findings on any of its `files` or `records`, from the listed `rules` only (every rule when `rules` is left out); `reason` is for reviewers. `files` are globs over the paths lint prints, relative to the site folder (`*` within a folder, `**` across folders). `records` are the GUIDs in the JSON output's `recordId`. Prefer `records` on a classic site, where many records share one file, and anywhere a file name may change: pac derives file names from record names. Ignored findings are counted in the summary (`ignored` in JSON) so they don't disappear unnoticed.
+
+The `$schema` comment gives completion and validation in editors with the YAML language server (VS Code's YAML extension, JetBrains IDEs). The schema also ships in the package, at `node_modules/pageslens/pageslens.config.schema.json`.
 
 ## `pageslens docs`
 

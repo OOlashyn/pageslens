@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/OOlashyn/pageslens/main/pageslens.config.schema.json",
+  "title": "pageslens config",
+  "description": "Configuration for `pageslens lint`: rule severities and ignored findings.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rules": {
+      "description": "Severity per rule id; `off` turns the rule off.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "webapi-wildcard-fields": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "Web API is enabled on a table with `*` as the fields list. Default: error."
+        },
+        "webapi-no-permission": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "Web API is enabled on a table that no table permission with a web role covers. Default: warning."
+        },
+        "permission-no-role": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A table permission has no web role, so it grants nothing. Default: warning."
+        },
+        "global-write-anonymous": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "Global scope create, write or delete for the Anonymous Users role. Default: warning."
+        },
+        "global-write-authenticated": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "Global scope create, write or delete for the Authenticated Users role. Default: warning."
+        },
+        "parent-chain-broken": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A parent-scope table permission whose parent is missing, has no web role, or loops back. Default: error."
+        },
+        "scope-relationship-missing": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A Contact, Account or Parent scope table permission without the relationship that scope needs. Default: error."
+        },
+        "multiple-authenticated-roles": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "More than one web role is flagged as the Authenticated Users role. Default: error."
+        },
+        "role-unused": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A web role that no table permission, page access rule or website access uses (built-in roles are skipped). Default: info."
+        }
+      }
+    },
+    "ignore": {
+      "description": "Findings to leave out. An entry matches a finding on any of its files or records, from the listed rules only when `rules` is given.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "files"
+            ]
+          },
+          {
+            "required": [
+              "records"
+            ]
+          }
+        ],
+        "properties": {
+          "rules": {
+            "description": "Rule ids this entry applies to; every rule when left out.",
+            "type": "array",
+            "items": {
+              "enum": [
+                "webapi-wildcard-fields",
+                "webapi-no-permission",
+                "permission-no-role",
+                "global-write-anonymous",
+                "global-write-authenticated",
+                "parent-chain-broken",
+                "scope-relationship-missing",
+                "multiple-authenticated-roles",
+                "role-unused"
+              ]
+            },
+            "minItems": 1
+          },
+          "files": {
+            "description": "Globs over the file paths lint prints, relative to the site folder: `*` within a folder, `**` across folders, `?` one character.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "records": {
+            "description": "Record GUIDs, as lint prints them in JSON output (`recordId`).",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "reason": {
+            "description": "Why these findings are ignored, for reviewers.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

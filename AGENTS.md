@@ -14,8 +14,11 @@ The `npm run` scripts call the same commands. Node `^22.23.4 || ^24.22.1 || >=26
 
 ## Input formats
 
-- `pac pages download-code-site` writes a `.powerpages-site/` folder with unprefixed keys (`id`, `name`, `entitylogicalname`) and one file per record. This is the format the MVP reads.
-- Classic sites from `pac pages download` use `adx_`-prefixed keys and root-level list files (`webrole.yml`, `sitesetting.yml`, ...), with `--modelVersion 1` and `2` alike. `adx_` keys don't mean a standard data model site.
+pageslens reads two download layouts into the same model (`src/model/schema.ts`); `src/adapters/site-folder.ts` tells them apart by the keys in `website.yml`.
+
+- `pac pages download-code-site` writes a `.powerpages-site/` folder with unprefixed keys (`id`, `name`, `entitylogicalname`) and one file per record. Read by `src/adapters/site-folder.ts`.
+- Classic sites from `pac pages download` use `adx_`-prefixed keys and root-level list files (`webrole.yml`, `sitesetting.yml`, ...), with `--modelVersion 1` and `2` alike. `adx_` keys don't mean a standard data model site. Read by `src/adapters/classic-site.ts`.
+- Code shared by both adapters is in `src/adapters/common.ts`. The classic adapter strips `adx_` generically; a new kind whose id key isn't `adx_<kind>id` goes in `ID_KEYS`, and a new relationship list in `RELATIONSHIP_KEYS`.
 - Record GUIDs are the identity; file names come from record names and aren't stable.
 - A child (Parent scope) table permission with no web role takes its parent's roles, as the design studio creates it.
 
@@ -28,6 +31,7 @@ A rule touches all of these. The tests check that every rule has a page listed i
 - a case in `test/fixtures/broken/` whose file starts with a `#` comment naming the rule (or `# clean:` for a record that must not fire)
 - the expected findings in `test/fixtures/README.md` and `test/lint/lint.test.ts`
 - docs snapshots in `test/docs/__snapshots__/` if the output changes
+- `pageslens.config.schema.json`, generated from the rules: `vp test -u` rewrites it, and a test fails while it's out of date
 
 `test/fixtures/ecoflux/` is a copy of a real demo site: don't edit it to make a test pass. Fixture files are kept byte-exact (`.gitattributes`) and are excluded from formatting.
 

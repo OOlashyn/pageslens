@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import { z } from 'zod';
+import { toPosixPath } from '../model/normalize.js';
 import { isDirectory, isFile } from '../util/fs.js';
 import type { RuleSetting } from './types.js';
 
@@ -11,6 +12,7 @@ export interface LintConfig {
   /** Absolute path of the file the config came from; absent when none was found. */
   path?: string;
   rules: Record<string, RuleSetting>;
+  ignore: IgnoreEntry[];
 }
 
 export class ConfigError extends Error {
@@ -20,8 +22,26 @@ export class ConfigError extends Error {
   }
 }
 
+const nonEmptyList = z.array(z.string().min(1)).min(1);
+
+const ignoreSchema = z
+  .strictObject({
+    rules: nonEmptyList.optional(),
+    files: nonEmptyList.optional(),
+    records: nonEmptyList.optional(),
+    reason: z.string().optional(),
+  })
+  .refine((entry) => entry.files || entry.records, 'needs files or records (or both)');
+
+/**
+ * Findings to leave out: those on any of `files` (globs over the paths lint prints, relative to
+ * the site folder) or `records` (GUIDs, lower-cased), from `rules` only when it's given.
+ */
+export type IgnoreEntry = z.output<typeof ignoreSchema>;
+
 const configSchema = z.strictObject({
   rules: z.record(z.string(), z.enum(['off', 'info', 'warning', 'error'])).default({}),
+  ignore: z.array(ignoreSchema).default([]),
 });
 
 /**
@@ -34,7 +54,7 @@ export async function loadConfig(
   explicitPath?: string,
 ): Promise<LintConfig> {
   const path = explicitPath ? resolve(explicitPath) : await findConfig(resolve(startDir));
-  if (!path) return { rules: {} };
+  if (!path) return { rules: {}, ignore: [] };
 
   let text: string;
   try {
@@ -60,11 +80,21 @@ export async function loadConfig(
     throw new ConfigError(`${path}: ${issues.join('; ')}`);
   }
 
-  const unknown = Object.keys(result.data.rules).filter((id) => !knownRuleIds.includes(id));
+  const { rules, ignore } = result.data;
+  const named = [...Object.keys(rules), ...ignore.flatMap((entry) => entry.rules ?? [])];
+  const unknown = [...new Set(named.filter((id) => !knownRuleIds.includes(id)))];
   if (unknown.length > 0) {
     throw new ConfigError(`${path}: unknown rule(s): ${unknown.join(', ')}`);
   }
-  return { path, rules: result.data.rules };
+  return {
+    path,
+    rules,
+    ignore: ignore.map((entry) => ({
+      ...entry,
+      ...(entry.files && { files: entry.files.map((f) => toPosixPath(f).replace(/^\.\//, '')) }),
+      ...(entry.records && { records: entry.records.map((id) => id.toLowerCase()) }),
+    })),
+  };
 }
 
 async function findConfig(startDir: string): Promise<string | undefined> {
