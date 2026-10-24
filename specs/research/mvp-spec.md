@@ -4,7 +4,6 @@ Drafted 2026-10-23, revised the same day. Background: the idea came from compari
 
 ## Decisions so far (Oleksandr, 2026-10-23)
 
-- Side project first, blog posts only if it works.
 - **No traffic or load simulation.** Power Pages capacity scales with purchased licences in a way Microsoft doesn't document, so any traffic check would be a rough guess. The tool focuses on validation, documentation generation, a CLI and agent skills.
 
 ## What it is
@@ -120,13 +119,6 @@ TypeScript, Node 20+, published to npm (`npx pageslens ...`). `yaml` for parsing
 3. **M2**: `test` (policy file), `diff`, `align`, the GitHub Action, SARIF.
 4. **M3**: the agent skills, the classic site structure rules, the site map docs.
 5. **Later**: cloud flows and Server Logic in the docs, the standard data model, a Proschi export of the diagram.
-
-## Blog posts if it works
-
-1. "Testing Power Pages permissions in CI" (M1 and M2).
-2. "Reviewing Power Pages access changes in pull requests" (diff + Action).
-3. "Documenting a Power Pages site from source control" (docs + skill).
-4. A broad-audience angle: "Lint rules for low-code configuration", crediting Proschi and ESLint as the inspiration.
 
 ## Open questions for Oleksandr
 
