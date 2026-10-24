@@ -146,7 +146,20 @@ npm run build
 
 ### Releasing
 
-1. Bump the version on a branch with `npm version <x.y.z> --no-git-tag-version -m "Release %s"` and merge it into `main` through a pull request.
+1. Bump the version on a branch and merge it into `main` through a pull request. `npm version` with `--no-git-tag-version` only updates `package.json` and `package-lock.json`: it doesn't create the branch, commit or tag.
+
+   ```bash
+   git switch -c release/<x.y.z>
+   ```
+
+   ```bash
+   npm version <x.y.z> --no-git-tag-version
+   ```
+
+   ```bash
+   git commit -am "Release <x.y.z>"
+   ```
+
 2. Create a GitHub release with the tag `v<x.y.z>` on `main`. The [release workflow](.github/workflows/release.yml) checks that the tag matches `package.json`, runs the checks and tests, and stages the package on npm through trusted publishing (no npm token in the repo).
 3. Approve the staged version with 2FA, on npmjs.com or with `npm stage list pageslens` and `npm stage approve <stage-id>`. It's installable only after approval.
 
