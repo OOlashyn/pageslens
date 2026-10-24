@@ -6,12 +6,12 @@ Which web role can do what on which table, from the table permissions in the sit
 
 Privileges: R read · W write · C create · D delete · A append · T append to.
 
-| Role | `dwcrm_asset` | `feedback` |
-| --- | --- | --- |
-| Administrators |  | C Global |
-| Anonymous Users (every visitor) |  | C Global |
-| Authenticated Users (every signed-in user) |  | C Global |
-| Manager | R Account |  |
+| Role | `dwcrm_asset` | `dwcrm_conditionlog` | `feedback` |
+| --- | --- | --- | --- |
+| Administrators |  |  | C Global |
+| Anonymous Users (every visitor) |  |  | C Global |
+| Authenticated Users (every signed-in user) |  |  | C Global |
+| Manager | R Account | R Parent |  |
 
 ## Grants by role
 
@@ -38,9 +38,4 @@ Privileges: R read · W write · C create · D delete · A append · T append to
 | Table | Scope | Privileges | Permission |
 | --- | --- | --- | --- |
 | `dwcrm_asset` | Account | R | Access to the Accounts Assets |
-
-## Permissions that grant nothing
-
-These have no web role, or a parent chain that is broken or reaches a permission with no web role, so they are left out above. Run `pageslens lint` for details.
-
-- Access to Assets Condition Logs (`dwcrm_conditionlog`)
+| `dwcrm_conditionlog` | Parent, via "Access to the Accounts Assets" | R | Access to Assets Condition Logs |

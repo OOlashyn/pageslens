@@ -28,7 +28,13 @@ export type ChainBreak =
 
 export interface PermissionNode {
   permission: TablePermission;
+  /** The permission's own roles or, when it inherits them, those of the parent it inherits from. */
   roles: WebRole[];
+  /**
+   * Parent scope only: the permission has no role of its own and takes the roles of its nearest
+   * ancestor that has some, as a child permission made in the design studio does.
+   */
+  rolesInherited: boolean;
   /** Role GUIDs on the permission that match no web role in the site. */
   unknownRoleIds: string[];
   /** Parent scope only: the parent permissions, nearest first. Empty for other scopes. */
@@ -36,8 +42,9 @@ export interface PermissionNode {
   /** Parent scope only: set when the chain stops before a non-parent permission. */
   chainBreak?: ChainBreak;
   /**
-   * Whether the permission grants anything: it has a role and, for parent scope, a whole chain
-   * whose permissions all have a role. Only effective permissions produce grants.
+   * Whether the permission grants anything: it has a role (its own or inherited) and, for parent
+   * scope, a whole chain whose permissions all have a role. Only effective permissions produce
+   * grants.
    */
   effective: boolean;
 }
@@ -77,11 +84,13 @@ export function buildAccessGraph(site: Site): AccessGraph {
   const rolesById = new Map(site.webRoles.map((role) => [role.id, role]));
   const permissionsById = new Map(site.tablePermissions.map((p) => [p.id, p]));
 
+  const resolveRoles = (ids: string[]) => ids.flatMap((id) => rolesById.get(id) ?? []);
+
   const nodes = site.tablePermissions.map((permission): PermissionNode => {
-    const roles = permission.roleIds.flatMap((id) => rolesById.get(id) ?? []);
     const node: PermissionNode = {
       permission,
-      roles,
+      roles: resolveRoles(permission.roleIds),
+      rolesInherited: false,
       unknownRoleIds: permission.roleIds.filter((id) => !rolesById.has(id)),
       ancestors: [],
       effective: false,
@@ -90,6 +99,11 @@ export function buildAccessGraph(site: Site): AccessGraph {
       const chain = followChain(permission, permissionsById);
       node.ancestors = chain.ancestors;
       if (chain.chainBreak) node.chainBreak = chain.chainBreak;
+      if (permission.roleIds.length === 0) {
+        const source = chain.ancestors.find((ancestor) => ancestor.roleIds.length > 0);
+        node.roles = source ? resolveRoles(source.roleIds) : [];
+        node.rolesInherited = true;
+      }
     }
     return node;
   });

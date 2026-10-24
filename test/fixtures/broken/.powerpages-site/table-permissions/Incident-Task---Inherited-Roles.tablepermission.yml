@@ -1,0 +1,13 @@
+# clean: child of "Incident - Case Manager Contact" with no web role of its own, as the design studio makes it; takes the parent's roles
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: task
+entityname: Incident Task - Inherited Roles
+id: 00000000-0000-0000-0002-000000000009
+parententitypermission: 00000000-0000-0000-0002-000000000003
+parentrelationship: Incident_Tasks
+read: true
+scope: 756150003
+write: false

@@ -74,11 +74,6 @@ describe('rules on the fixtures', () => {
 
   it('finds the same cases in the classic fixture as in its records', () => {
     expect(summary(lint(classic))).toEqual([
-      [
-        'permission-no-role',
-        'warning',
-        'table-permissions/Access-to-Assets-Condition-Logs.tablepermission.yml',
-      ],
       ['global-write-anonymous', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
       ['global-write-authenticated', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
     ]);

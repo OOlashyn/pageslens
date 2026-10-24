@@ -32,7 +32,7 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `webapi-no-permission` | `Webapi/dwcrm_invoice/enabled` |
 | `role-unused` | Unused Role |
 
-`Incident - Case Manager Contact`, its child `Incident Comment - Case Manager Parent` (a working parent chain), and the `incident` Web API settings are clean and must produce no findings.
+`Incident - Case Manager Contact`, its children `Incident Comment - Case Manager Parent` (a working parent chain with the parent's role) and `Incident Task - Inherited Roles` (no web role of its own, as the design studio makes child permissions, so it takes the parent's), and the `incident` Web API settings are clean and must produce no findings.
 
 ## `classic/`
 
@@ -44,8 +44,7 @@ Expected lint findings:
 
 | rule | record |
 |---|---|
-| `permission-no-role` | Access to Assets Condition Logs (parent scope under Access to the Accounts Assets, no web role of its own) |
 | `global-write-anonymous` | Feedback (global create, includes Anonymous Users) |
 | `global-write-authenticated` | Feedback (global create, includes Authenticated Users) |
 
-Access to the Accounts Assets (account scope with `adx_accountrelationship`, role Manager) is clean, and every role is used.
+Access to the Accounts Assets (account scope with `adx_accountrelationship`, role Manager) and its child Access to Assets Condition Logs (parent scope, no web role of its own, so it takes Manager from its parent) are clean, and every role is used.
