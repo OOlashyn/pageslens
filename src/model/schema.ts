@@ -3,7 +3,8 @@ import { scopeFromValue } from './kinds.js';
 
 // The adapter parses YAML with the failsafe schema, so every scalar arrives as a string
 // (site setting values stay verbatim) and these schemas do the typing. An empty value
-// (`parentpageid: `) arrives as '' and is treated as absent.
+// (`parentpageid: `) arrives as '' and is treated as absent. The adapters hand these schemas the
+// model's keys (`id`, `name`, `entityname`); a classic download's `adx_` keys are mapped first.
 
 const optionalText = z
   .string()
@@ -18,7 +19,7 @@ const guid = z
 const optionalGuid = z.union([z.literal('').transform(() => undefined), guid]).optional();
 
 const guidList = z
-  .array(guid)
+  .union([z.literal('').transform(() => undefined), z.array(guid)])
   .nullish()
   .transform((value) => value ?? []);
 
@@ -117,7 +118,7 @@ export const websiteAccessSchema = z
   })
   .transform((a) => ({ id: a.id, name: a.name, roleIds: a.adx_websiteaccess_webrole }));
 
-/** Where a record came from: a path relative to the `.powerpages-site` folder, with forward slashes. */
+/** Where a record came from: a path relative to the site folder, with forward slashes. */
 export interface SourceRef {
   file: string;
 }
@@ -131,7 +132,7 @@ export type SiteSetting = Sourced<typeof siteSettingSchema>;
 export type WebPageRule = Sourced<typeof webPageRuleSchema>;
 export type WebsiteAccess = Sourced<typeof websiteAccessSchema>;
 
-/** Any record in the folder, typed or not, with its YAML fields as parsed. */
+/** Any record in the folder, typed or not, with its YAML fields as parsed (keys as downloaded). */
 export interface SiteRecord {
   kind: string;
   id: string | undefined;
@@ -145,7 +146,7 @@ export interface SiteRecord {
 }
 
 export interface Site {
-  /** Absolute path of the `.powerpages-site` folder. */
+  /** Absolute path of the site folder: the `.powerpages-site` folder, or a classic site's folder. */
   root: string;
   website: Website;
   /** Every record, sorted by source file. */

@@ -41,8 +41,12 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
 
   program
     .command('lint')
-    .description('Run the built-in rules against a .powerpages-site folder')
-    .argument('[path]', 'site folder, or a folder that contains .powerpages-site', '.')
+    .description('Run the built-in rules against a downloaded site')
+    .argument(
+      '[path]',
+      '.powerpages-site folder, a folder that contains one, or a classic site folder',
+      '.',
+    )
     .addOption(
       new Option('--format <format>', 'output format').choices(['text', 'json']).default('text'),
     )
@@ -63,8 +67,12 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
 
   program
     .command('docs')
-    .description('Write Markdown docs for a .powerpages-site folder')
-    .argument('[path]', 'site folder, or a folder that contains .powerpages-site', '.')
+    .description('Write Markdown docs for a downloaded site')
+    .argument(
+      '[path]',
+      '.powerpages-site folder, a folder that contains one, or a classic site folder',
+      '.',
+    )
     .requiredOption('--out <dir>', 'output folder')
     .action(async (path: string, options: { out: string }) => {
       const site = await loadSiteFolder(path);

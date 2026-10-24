@@ -8,12 +8,14 @@ import { renderSiteDocs, writeSiteDocs } from '../../src/docs/write.js';
 
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
+const classic = await loadSiteFolder('test/fixtures/classic');
 
 describe('docs snapshots', () => {
   // Reviewable in PRs: test/docs/__snapshots__/<fixture>/<page>
   for (const [name, site] of [
     ['ecoflux', ecoflux],
     ['broken', broken],
+    ['classic', classic],
   ] as const) {
     for (const [file, content] of renderSiteDocs(site)) {
       it(`${name}/${file}`, async () => {

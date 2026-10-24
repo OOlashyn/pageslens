@@ -1,6 +1,6 @@
 # Test fixtures
 
-Each fixture is a `.powerpages-site/` folder in the enhanced data model layout.
+`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/` is a classic site folder (`pac pages download`, `adx_` keys).
 
 ## `ecoflux/`
 
@@ -33,3 +33,18 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `role-unused` | Unused Role |
 
 `Incident - Case Manager Contact`, its children `Incident Comment - Case Manager Parent` (a working parent chain with the parent's role) and `Incident Task - Inherited Roles` (no web role of its own, as the design studio makes child permissions, so it takes the parent's), and the `incident` Web API settings are clean and must produce no findings.
+
+## `classic/`
+
+A trimmed copy of the PageLensPermissionTestEDM test site (an enhanced data model site), downloaded with `pac pages download` (pac 1.43.6, 2026-10-23). The folder itself is the site root. Kept: `website.yml`, the root lists `webrole.yml`, `sitesetting.yml`, `webpagerule.yml` and `websiteaccess.yml`, the 3 files in `table-permissions/`, and `.portalconfig/manifest.yml` and `portallanguage.yml` (to check `.portalconfig` is skipped). Removed: `.portalconfig/<org>-manifest.yml` (host name and sync checksums), web pages, templates, snippets, forms, web files, link sets, page templates and the other root lists. File bytes are as pac wrote them, CRLF included.
+
+It's the `--modelVersion 1` shape (`adx_enhancedauthorization` in `website.yml`); blank relationship keys (`adx_contactrelationship: `) and omitted ones (Feedback, global scope) both appear. The `--modelVersion 2` keys (`adx_childTablePermissions`, `adx_permissionfetchxml`, blank role lists) are covered by inline cases in `test/adapters/classic-site.test.ts`.
+
+Expected lint findings:
+
+| rule | record |
+|---|---|
+| `global-write-anonymous` | Feedback (global create, includes Anonymous Users) |
+| `global-write-authenticated` | Feedback (global create, includes Authenticated Users) |
+
+Access to the Accounts Assets (account scope with `adx_accountrelationship`, role Manager) and its child Access to Assets Condition Logs (parent scope, no web role of its own, so it takes Manager from its parent) are clean, and every role is used.

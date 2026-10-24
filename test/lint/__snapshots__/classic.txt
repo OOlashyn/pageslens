@@ -1,0 +1,7 @@
+PageLensPermissionTestEDM - site-43a00 (site)
+
+table-permissions/Feedback.tablepermission.yml
+  warning  Table permission "Feedback" gives Anonymous Users create on every feedback record (global scope).  global-write-anonymous
+  warning  Table permission "Feedback" gives Authenticated Users create on every feedback record (global scope).  global-write-authenticated
+
+0 errors, 2 warnings, 0 info

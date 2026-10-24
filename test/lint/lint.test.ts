@@ -12,6 +12,7 @@ import { RULES } from '../../src/lint/rules/index.js';
 
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
+const classic = await loadSiteFolder('test/fixtures/classic');
 const ruleIds = RULES.map((rule) => rule.id);
 
 const summary = (result: ReturnType<typeof lint>) =>
@@ -69,6 +70,19 @@ describe('rules on the fixtures', () => {
       Array(4).fill('scope-relationship-missing'),
     );
     expect(result.counts).toEqual({ error: 4, warning: 0, info: 0 });
+  });
+
+  it('finds the same cases in the classic fixture as in its records', () => {
+    expect(summary(lint(classic))).toEqual([
+      ['global-write-anonymous', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
+      ['global-write-authenticated', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
+    ]);
+  });
+
+  it('matches the classic text output snapshot', async () => {
+    await expect(formatText(lint(classic), classic, 'site')).toMatchFileSnapshot(
+      '__snapshots__/classic.txt',
+    );
   });
 
   it('writes readable messages', () => {

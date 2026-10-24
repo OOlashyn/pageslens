@@ -1,0 +1,15 @@
+adx_accountrelationship: 
+adx_append: false
+adx_appendto: false
+adx_contactrelationship: 
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: dwcrm_conditionlog
+adx_entityname: Access to Assets Condition Logs
+adx_entitypermission_webrole: []
+adx_entitypermissionid: 8b983e54-9dfd-490b-ac3e-e8cec601dd0f
+adx_parententitypermission: 9b85ab16-81c6-4b85-a0c9-67aad477a306
+adx_parentrelationship: dwcrm_asset_conditionlog
+adx_read: true
+adx_scope: 756150003
+adx_write: false
