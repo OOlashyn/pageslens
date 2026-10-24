@@ -1,0 +1,248 @@
+import { describe, expect, it } from 'vite-plus/test';
+import { loadSiteFolder } from '../../src/adapters/site-folder.js';
+import { evaluatePolicy } from '../../src/policy/evaluate.js';
+import { formatJson } from '../../src/policy/format/json.js';
+import { formatText } from '../../src/policy/format/text.js';
+import { loadPolicy, parsePolicy, PolicyError } from '../../src/policy/parse.js';
+
+const broken = await loadSiteFolder('test/fixtures/broken');
+const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
+const brokenPolicy = await loadPolicy('.', 'test/fixtures/policies/broken.policy.yaml');
+const ecofluxPolicy = await loadPolicy('.', 'test/fixtures/policies/ecoflux.policy.yaml');
+
+const checkOf = (section: 'access' | 'webapi' | 'settings', text: string) =>
+  parsePolicy(`${section}:\n  - ${text}\n`, 'p.yaml').statements[0]!.check;
+
+/** The problems a policy text is rejected with. */
+function problems(text: string): string[] {
+  try {
+    parsePolicy(text, 'p.yaml');
+  } catch (error) {
+    if (error instanceof PolicyError) return error.problems;
+    throw error;
+  }
+  return [];
+}
+
+describe('parsePolicy', () => {
+  it('reads every access statement shape', () => {
+    expect(checkOf('access', 'anonymous cannot create, write any table')).toEqual({
+      kind: 'cannot',
+      who: { kind: 'anonymous' },
+      privileges: ['create', 'write'],
+      table: { kind: 'any' },
+    });
+    expect(checkOf('access', 'role "Case Manager" can read Incident at contact scope')).toEqual({
+      kind: 'can',
+      who: { kind: 'role', name: 'Case Manager' },
+      privileges: ['read'],
+      table: { kind: 'table', name: 'incident' },
+      scope: 'contact',
+    });
+    expect(checkOf('access', 'only "A", authenticated can delete account')).toEqual({
+      kind: 'only',
+      who: [{ kind: 'role', name: 'A' }, { kind: 'authenticated' }],
+      privileges: ['delete'],
+      table: { kind: 'table', name: 'account' },
+    });
+    expect(checkOf('access', 'nobody can appendto contact')).toMatchObject({ kind: 'nobody' });
+  });
+
+  it('reads Web API and settings statements', () => {
+    expect(checkOf('webapi', 'fields are explicit')).toEqual({ kind: 'fields-explicit' });
+    expect(checkOf('webapi', 'only contact, incident are enabled')).toEqual({
+      kind: 'only-enabled',
+      tables: ['contact', 'incident'],
+    });
+    expect(checkOf('webapi', 'any table is not enabled')).toEqual({
+      kind: 'not-enabled',
+      table: { kind: 'any' },
+    });
+    expect(checkOf('webapi', 'authenticated cannot call contact')).toEqual({
+      kind: 'call',
+      negated: true,
+      who: { kind: 'authenticated' },
+      table: { kind: 'table', name: 'contact' },
+    });
+    expect(checkOf('settings', 'registration is invite only')).toEqual({
+      kind: 'registration-invite-only',
+    });
+    expect(checkOf('settings', 'setting "A/B" is not "x y"')).toEqual({
+      kind: 'setting',
+      name: 'A/B',
+      op: 'is-not',
+      value: 'x y',
+    });
+    expect(checkOf('settings', 'setting "A/B" is not set')).toMatchObject({ op: 'is-not-set' });
+  });
+
+  it('keeps the line, id and reason of each statement', () => {
+    const [first, second] = parsePolicy(
+      'access:\n  - anonymous cannot read contact\n  - id: x\n    check: nobody can delete contact\n    because: audit\n',
+      'p.yaml',
+    ).statements;
+    expect(first).toMatchObject({ line: 2, text: 'anonymous cannot read contact' });
+    expect(second).toMatchObject({ line: 3, id: 'x', because: 'audit' });
+  });
+
+  it('says where and what was expected', () => {
+    expect(problems('access:\n  - anonymous may read contact\n')).toEqual([
+      'p.yaml:2: expected "can" or "cannot", found "may": anonymous may read contact',
+    ]);
+    expect(problems('access:\n  - Manager can read contact\n')[0]).toMatch(
+      /found "Manager" \(write role "Manager"\)/,
+    );
+    expect(problems('access:\n  - anonymous cannot read contact at team scope\n')[0]).toMatch(
+      /expected "global", "contact", "account", "parent" or "self", found "team"/,
+    );
+    expect(problems('access:\n  - anonymous cannot read contact extra\n')[0]).toMatch(
+      /unexpected "extra" at the end/,
+    );
+  });
+
+  it('collects every problem, including sections, keys and duplicate ids', () => {
+    expect(
+      problems(
+        'acess:\n  - x\nwebapi:\n  - fields are hidden\n  - id: a\n    check: fields are explicit\n  - id: a\n    check: fields are explicit\n  - { check: fields are explicit, why: x }\n',
+      ),
+    ).toEqual([
+      'p.yaml:1: unknown section "acess" (expected access, webapi, settings)',
+      'p.yaml:4: expected "explicit", found "hidden": fields are hidden',
+      'p.yaml:9: unknown key "why" (expected check, id, because)',
+      'p.yaml:7: id "a" is already used on line 5',
+    ]);
+  });
+
+  it('explains a statement that starts with a quoted role name', () => {
+    expect(problems('access:\n  - "Case Manager" can read incident\n')[0]).toMatch(
+      /^p\.yaml:2: invalid YAML: .*needs "role" in front/,
+    );
+  });
+
+  it('refuses a policy without statements, and a missing file', async () => {
+    expect(problems('access: []\n')).toEqual(['p.yaml: the policy has no statements']);
+    expect(problems('')).toEqual(['p.yaml: the policy has no statements']);
+    await expect(loadPolicy('.', 'does-not-exist.yaml')).rejects.toThrow(/Can't read/);
+    await expect(loadPolicy('test/fixtures/broken')).rejects.toThrow(
+      /No pageslens\.policy\.yaml found/,
+    );
+  });
+});
+
+describe('evaluatePolicy', () => {
+  it('passes and fails the broken fixture statements as their comments say', () => {
+    const result = evaluatePolicy(brokenPolicy, broken);
+    expect(result.results.map((r) => [r.statement.line, r.passed ? 'pass' : 'fail'])).toEqual([
+      [4, 'fail'],
+      [5, 'fail'],
+      [6, 'pass'],
+      [7, 'pass'],
+      [8, 'fail'],
+      [9, 'pass'],
+      [10, 'fail'],
+      [11, 'pass'],
+      [12, 'fail'],
+      [13, 'pass'],
+      [14, 'pass'],
+      [15, 'fail'],
+      [16, 'pass'],
+      [20, 'fail'],
+      [21, 'fail'],
+      [22, 'pass'],
+      [23, 'fail'],
+      [24, 'pass'],
+      [25, 'fail'],
+      [26, 'pass'],
+      [28, 'fail'],
+      [29, 'fail'],
+      [30, 'pass'],
+      [31, 'pass'],
+    ]);
+    expect(result.counts).toEqual({ passed: 12, failed: 12 });
+  });
+
+  it('passes every ecoflux statement', () => {
+    const result = evaluatePolicy(ecofluxPolicy, ecoflux);
+    expect(result.results.filter((r) => !r.passed).map((r) => r.statement.text)).toEqual([]);
+    expect(result.results.flatMap((r) => r.warnings)).toEqual([]);
+  });
+
+  it('names the grant that breaks a statement, with its file', () => {
+    const result = evaluatePolicy(brokenPolicy, broken);
+    expect(result.results.find((r) => r.statement.line === 5)!.evidence).toEqual([
+      {
+        message:
+          'Authenticated Users has write on contact (global scope) from "Contact - Authenticated Users Global Write"',
+        file: 'table-permissions/Contact---Authenticated-Users-Global-Write.tablepermission.yml',
+        recordId: '00000000-0000-0000-0002-000000000001',
+      },
+    ]);
+  });
+
+  it('counts every role but Anonymous Users as authenticated in cannot', () => {
+    const policy = parsePolicy(
+      'access:\n  - authenticated cannot create adx_portalcomment\n',
+      'p.yaml',
+    );
+    const [result] = evaluatePolicy(policy, broken).results;
+    expect(result!.passed).toBe(false);
+    expect(result!.evidence[0]!.message).toMatch(/^Case Manager has create on adx_portalcomment/);
+  });
+
+  it('warns about tables the site never mentions', () => {
+    const result = evaluatePolicy(brokenPolicy, broken);
+    expect(result.results.find((r) => r.statement.line === 14)!.warnings).toEqual([
+      "account isn't used by any table permission or Web API setting in the site",
+    ]);
+  });
+
+  it('rejects unknown role names, with a suggestion', () => {
+    const policy = parsePolicy('access:\n  - role "Case Managers" can read incident\n', 'p.yaml');
+    expect(() => evaluatePolicy(policy, broken)).toThrow(
+      'p.yaml:2: unknown role "Case Managers" (did you mean "Case Manager"?)',
+    );
+  });
+
+  it('reports open registration from its defaults and from its settings', () => {
+    const policy = parsePolicy('settings:\n  - registration is invite only\n', 'p.yaml');
+    expect(evaluatePolicy(policy, broken).results[0]!.passed).toBe(false);
+    const [eco] = evaluatePolicy(policy, ecoflux).results;
+    expect(eco!.passed).toBe(false);
+    expect(eco!.evidence[1]).toMatchObject({
+      message: 'Authentication/Registration/OpenRegistrationEnabled is "true"',
+    });
+  });
+});
+
+describe('policy output', () => {
+  it('matches the broken text output snapshot', async () => {
+    const text = formatText(
+      evaluatePolicy(brokenPolicy, broken),
+      broken,
+      'site',
+      'broken.policy.yaml',
+    );
+    await expect(text).toMatchFileSnapshot('__snapshots__/broken.txt');
+  });
+
+  it('writes versioned JSON with one entry per statement', () => {
+    const output = JSON.parse(
+      formatJson(evaluatePolicy(brokenPolicy, broken), broken, 'site', 'p.yaml'),
+    );
+    expect(output).toMatchObject({
+      version: 1,
+      policy: 'p.yaml',
+      summary: { passed: 12, failed: 12 },
+    });
+    expect(output.results[12]).toEqual({
+      id: 'comments-case-managers',
+      section: 'access',
+      statement: 'role "Case Manager" can create adx_portalcomment',
+      line: 16,
+      because: 'Case managers reply to customers',
+      status: 'pass',
+      evidence: [],
+      warnings: [],
+    });
+  });
+});

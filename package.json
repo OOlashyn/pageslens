@@ -1,7 +1,7 @@
 {
   "name": "pageslens",
   "version": "0.2.0",
-  "description": "Offline lint and docs for Power Pages site configuration in source control",
+  "description": "Offline lint, policy tests and docs for Power Pages site configuration in source control",
   "keywords": [
     "cli",
     "dataverse",

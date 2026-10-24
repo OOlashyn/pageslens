@@ -1,0 +1,31 @@
+# Policy for test/fixtures/broken: every statement shape, passing and failing.
+# Each statement's expected result is in the comment after it.
+access:
+  - anonymous cannot create, write, delete any table # fail: Feedback - Anonymous Users Global Create
+  - authenticated cannot write contact at global scope # fail: Contact - Authenticated Users Global Write
+  - authenticated cannot delete incident # pass
+  - role "Case Manager" can read incident # pass
+  - role "Case Manager" can read, write incident at contact scope # fail: no write
+  - role "Case Manager" can write contact # pass: Case Managers are signed in, so they have Authenticated Users' grants
+  - anonymous can read any table # fail
+  - only "Case Manager" can read incident # pass
+  - only "Case Manager" can read contact # fail: Authenticated Users
+  - only authenticated can read contact # pass
+  - nobody can delete account # pass, with a warning: account isn't in the site
+  - nobody can create dwcrm_feedback # fail
+  - id: comments-case-managers
+    check: role "Case Manager" can create adx_portalcomment
+    because: Case managers reply to customers # pass, through the parent chain
+webapi:
+  - fields are explicit # fail: contact
+  - only incident is enabled # fail: contact, dwcrm_invoice
+  - only contact, incident, dwcrm_invoice are enabled # pass
+  - dwcrm_invoice is not enabled # fail
+  - anonymous cannot call any table # pass
+  - authenticated cannot call contact # fail
+  - role "Case Manager" can call incident # pass
+settings:
+  - registration is invite only # fail: defaults
+  - setting "Search/Enabled" is set # fail
+  - setting "Search/Enabled" is not set # pass
+  - setting "Webapi/error/innererror" is not "true" # pass: not set

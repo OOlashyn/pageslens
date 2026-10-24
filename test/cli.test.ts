@@ -89,3 +89,43 @@ describe('cli lint', () => {
     expect(result.err).toMatch(/^error: Can't read config file/);
   });
 });
+
+describe('cli test', () => {
+  const policy = (name: string) => `test/fixtures/policies/${name}.policy.yaml`;
+
+  it('exits 0 when every statement passes', async () => {
+    const result = await cli('test', 'test/fixtures/ecoflux', '--policy', policy('ecoflux'));
+    expect(result.code).toBe(ExitCode.Ok);
+    expect(result.out).toContain('12 passed, 0 failed');
+  });
+
+  it('exits 1 when a statement fails, and writes JSON with --format json', async () => {
+    const result = await cli(
+      'test',
+      'test/fixtures/broken',
+      '--policy',
+      policy('broken'),
+      '--format',
+      'json',
+    );
+    expect(result.code).toBe(ExitCode.Findings);
+    expect(JSON.parse(result.out).summary).toEqual({ passed: 12, failed: 12 });
+  });
+
+  it('exits 2 without a policy file, and on a policy error', async () => {
+    const missing = await cli('test', 'test/fixtures/broken');
+    expect(missing.code).toBe(ExitCode.Usage);
+    expect(missing.err).toMatch(/^error: the policy can't be used\n {2}No pageslens\.policy\.yaml/);
+
+    const temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
+    try {
+      const file = join(temp, 'pageslens.policy.yaml');
+      await writeFile(file, 'access:\n  - role "Nobody Here" can read contact\n');
+      const result = await cli('test', 'test/fixtures/broken', '--policy', file);
+      expect(result.code).toBe(ExitCode.Usage);
+      expect(result.err).toMatch(/unknown role "Nobody Here"/);
+    } finally {
+      await rm(temp, { recursive: true, force: true });
+    }
+  });
+});

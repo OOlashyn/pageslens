@@ -1,0 +1,50 @@
+Broken Fixture (site), policy broken.policy.yaml
+
+access
+  FAIL  anonymous cannot create, write, delete any table  (line 4)
+        Anonymous Users has create on dwcrm_feedback (global scope) from "Feedback - Anonymous Users Global Create"  table-permissions/Feedback---Anonymous-Users-Global-Create.tablepermission.yml
+  FAIL  authenticated cannot write contact at global scope  (line 5)
+        Authenticated Users has write on contact (global scope) from "Contact - Authenticated Users Global Write"  table-permissions/Contact---Authenticated-Users-Global-Write.tablepermission.yml
+  pass  authenticated cannot delete incident
+  pass  role "Case Manager" can read incident
+  FAIL  role "Case Manager" can read, write incident at contact scope  (line 8)
+        "Case Manager" doesn't have write on incident at contact scope
+        has: Case Manager has read on incident (contact scope) from "Incident - Case Manager Contact"  table-permissions/Incident---Case-Manager-Contact.tablepermission.yml
+  pass  role "Case Manager" can write contact
+  FAIL  anonymous can read any table  (line 10)
+        anonymous doesn't have read on any table
+  pass  only "Case Manager" can read incident
+  FAIL  only "Case Manager" can read contact  (line 12)
+        Authenticated Users has read on contact (global scope) from "Contact - Authenticated Users Global Write"  table-permissions/Contact---Authenticated-Users-Global-Write.tablepermission.yml
+  pass  only authenticated can read contact
+  pass  nobody can delete account
+        warning: account isn't used by any table permission or Web API setting in the site
+  FAIL  nobody can create dwcrm_feedback  (line 15)
+        Anonymous Users has create on dwcrm_feedback (global scope) from "Feedback - Anonymous Users Global Create"  table-permissions/Feedback---Anonymous-Users-Global-Create.tablepermission.yml
+  pass  role "Case Manager" can create adx_portalcomment
+
+webapi
+  FAIL  fields are explicit  (line 20)
+        Web API on contact exposes every column (fields = *)  site-settings/Webapi-contact-fields.sitesetting.yml
+  FAIL  only incident is enabled  (line 21)
+        the Web API is enabled on contact  site-settings/Webapi-contact-enabled.sitesetting.yml
+        the Web API is enabled on dwcrm_invoice  site-settings/Webapi-dwcrm_invoice-enabled.sitesetting.yml
+  pass  only contact, incident, dwcrm_invoice are enabled
+  FAIL  dwcrm_invoice is not enabled  (line 23)
+        the Web API is enabled on dwcrm_invoice  site-settings/Webapi-dwcrm_invoice-enabled.sitesetting.yml
+  pass  anonymous cannot call any table
+  FAIL  authenticated cannot call contact  (line 25)
+        Authenticated Users can call the Web API on contact (read, write)  site-settings/Webapi-contact-enabled.sitesetting.yml
+  pass  role "Case Manager" can call incident
+
+settings
+  FAIL  registration is invite only  (line 28)
+        open registration is on: any visitor can sign up without an invitation
+        Authentication/Registration/OpenRegistrationEnabled isn't set (defaults to true)
+        Authentication/Registration/RequiresInvitation isn't set (defaults to false)
+  FAIL  setting "Search/Enabled" is set  (line 29)
+        Search/Enabled isn't set
+  pass  setting "Search/Enabled" is not set
+  pass  setting "Webapi/error/innererror" is not "true"
+
+12 passed, 12 failed
