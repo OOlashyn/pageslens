@@ -12,7 +12,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Page access rules, classic sites first** (spec `0005` to write first). pageslens already reads them (`webpagerule`, with their roles) but only `role-unused` uses them. To decide: what a rule means offline (Restrict Read and Grant Change, inheritance down the page tree), which lint rules (`page-access-gap` and others), whether `docs`, `test` and `diff` cover them in the same release (`diff` has the rule-level classification waiting in [0003](0003-diff.md)), and what code sites download for pages.
+1. **Page access rules, classic sites first.** Spec [0005](0005-page-access-rules.md) is drafted: effective page access down the page tree, seven lint rules, a pages section in `docs`, then `test` and `diff`. Next: the maintainer answers its open questions, and a real classic download with pages becomes the fixture source.
 2. **Release `0.6.0`** with the page access work and the action fix already on `main`.
 3. Then the candidates below.
 
@@ -26,6 +26,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 1. Does an Account-scope permission without `accountrelationship` (as in EcoFlux) grant anything at runtime? Decides whether `scope-relationship-missing` stays an error.
 2. A child permission with a web role its parent lacks: does that role get access at runtime? Decides a `parent-roles-not-subset` rule.
 3. Does a standard data model site download in the same layout as an enhanced one, as the README expects?
+4. Page access rules ([0005](0005-page-access-rules.md), "Verification owed"): nested Restrict Read (intersection or nearest wins), the Anonymous Users role in a rule, Restrict Read on a code site's home page, and whether downloads include inactive rules and publishing-state links.
 
 ## Candidates
 
