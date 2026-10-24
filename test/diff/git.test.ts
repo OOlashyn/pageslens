@@ -116,6 +116,21 @@ describe('diff at git refs', () => {
     );
   });
 
+  it('shows a commit id given as a ref once, short', async () => {
+    const short = (name: string) => commits[name]!.slice(0, 7);
+    const result = await diff({
+      base: 'main',
+      head: commits.feature!,
+      path: 'portal',
+      mergeBase: true,
+    });
+    expect(formatText(result)).toMatch(
+      new RegExp(`, main \\(merge base ${short('base')}\\) → ${short('feature')}: `),
+    );
+    const abbreviated = await diff({ base: short('base'), head: 'feature', path: 'portal' });
+    expect(formatText(abbreviated)).toMatch(new RegExp(`, ${short('base')} → feature \\(`));
+  });
+
   it('reads a side with no site as an empty site, with a note', async () => {
     const result = await diff({ base: commits.empty!, head: 'feature', path: 'portal' });
     expect(result.base).toEqual({ ref: commits.empty, commit: commits.empty, path: 'portal' });

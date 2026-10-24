@@ -7,6 +7,7 @@ import {
   commentAction,
   findComment,
   findPolicy,
+  headRef,
   isFork,
   type IssueComment,
   type PullRequest,
@@ -33,6 +34,15 @@ describe('action', () => {
     expect(baseRef('release', pr, remote)).toBe('origin/release');
     expect(baseRef('origin/release', pr, remote)).toBe('origin/release');
     expect(baseRef('a1b2c3d', pr, remote)).toBe('a1b2c3d');
+  });
+
+  it("compares with the pull request's head commit when the checkout has it", () => {
+    const sha = 'a'.repeat(40);
+    const withHead = { ...pr, head: { ...pr.head, sha } };
+    expect(headRef(withHead, () => true)).toBe(sha);
+    expect(headRef(withHead, () => false)).toBe('HEAD');
+    expect(headRef(pr, () => true)).toBe('HEAD');
+    expect(headRef({ ...pr, head: { sha: '--output=x' } }, () => true)).toBe('HEAD');
   });
 
   it('finds the nearest policy file, as test does', async () => {

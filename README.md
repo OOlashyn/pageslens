@@ -195,7 +195,7 @@ jobs:
           path: site
 ```
 
-- **On a pull request** it runs `lint`, `test` (when it finds a `pageslens.policy.yaml`) and `diff --merge-base` against the base branch. The access changes go to the run's summary page and to the comment. With no access changes it doesn't add a comment; it edits an earlier one to say so.
+- **On a pull request** it runs `lint`, `test` (when it finds a `pageslens.policy.yaml`) and `diff --merge-base`, which compares the pull request's head commit with where it branched from the base branch, as GitHub's own diff does. The access changes go to the run's summary page and to the comment. With no access changes it doesn't add a comment; it edits an earlier one to say so.
 - **On a push** to `main` it runs `lint` and `test` only. Code scanning compares a pull request's alerts with the last analysis of `main`, so run the action on both.
 - **The job fails** when lint finds errors, a policy statement fails, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
 - **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
