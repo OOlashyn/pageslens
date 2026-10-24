@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import { z } from 'zod';
 import { toPosixPath } from '../model/normalize.js';
-import { isDirectory, isFile } from '../util/fs.js';
+import { findUp } from '../util/fs.js';
 import type { RuleSetting } from './types.js';
 
 export const CONFIG_FILE = 'pageslens.config.yaml';
@@ -53,7 +53,7 @@ export async function loadConfig(
   knownRuleIds: readonly string[],
   explicitPath?: string,
 ): Promise<LintConfig> {
-  const path = explicitPath ? resolve(explicitPath) : await findConfig(resolve(startDir));
+  const path = explicitPath ? resolve(explicitPath) : await findUp(resolve(startDir), CONFIG_FILE);
   if (!path) return { rules: {}, ignore: [] };
 
   let text: string;
@@ -95,15 +95,4 @@ export async function loadConfig(
       ...(entry.records && { records: entry.records.map((id) => id.toLowerCase()) }),
     })),
   };
-}
-
-async function findConfig(startDir: string): Promise<string | undefined> {
-  let dir = (await isDirectory(startDir)) ? startDir : dirname(startDir);
-  for (;;) {
-    const candidate = join(dir, CONFIG_FILE);
-    if (await isFile(candidate)) return candidate;
-    const parent = dirname(dir);
-    if (parent === dir) return undefined;
-    dir = parent;
-  }
 }

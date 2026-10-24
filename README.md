@@ -1,10 +1,11 @@
 # pageslens
 
-Offline lint and docs for Power Pages site configuration in source control.
+Offline lint, policy tests and docs for Power Pages site configuration in source control.
 
 pageslens reads a site downloaded with the Power Platform CLI, either the `.powerpages-site` folder that `pac pages download-code-site` writes or the site folder that `pac pages download` writes, and:
 
 - **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
+- **tests** it against your own requirements, written as short sentences in a policy file ("anonymous cannot read contact");
 - **documents** it: an access matrix (which role can do what on which table), the Web API surface, and a Mermaid diagram, as plain Markdown.
 
 It needs no Dataverse connection and no agent: the same folder gives the same output every run.
@@ -17,6 +18,10 @@ Requires Node.js 22.23.4+, 24.22.1+ or 26.12.1+.
 
 ```bash
 npx pageslens lint path/to/site
+```
+
+```bash
+npx pageslens test path/to/site
 ```
 
 ```bash
@@ -89,6 +94,30 @@ An `ignore` entry leaves out findings on any of its `files` or `records`, from t
 
 The `$schema` comment gives completion and validation in editors with the YAML language server (VS Code's YAML extension, JetBrains IDEs). The schema also ships in the package, at `node_modules/pageslens/pageslens.config.schema.json`.
 
+## `pageslens test`
+
+```
+pageslens test [path] [--policy <file>] [--format text|json]
+```
+
+Checks the site against the requirements in `pageslens.policy.yaml` (in the site folder or any folder above it, or `--policy <file>`). Each requirement is one sentence in a fixed form:
+
+```yaml
+access:
+  - anonymous cannot create, write, delete any table
+  - role "Case Manager" can read, write incident at contact scope
+  - only "Case Manager", "Administrators" can write incident
+webapi:
+  - fields are explicit
+  - only contact, incident are enabled
+settings:
+  - registration is invite only
+```
+
+Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy file, an unreadable statement or an unknown role. A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`).
+
+The full grammar, what each statement means and how to write a good policy: [docs/policy.md](docs/policy.md).
+
 ## `pageslens docs`
 
 ```
@@ -120,6 +149,7 @@ jobs:
         with:
           node-version: 24
       - run: npx pageslens@0 lint site
+      - run: npx pageslens@0 test site
 ```
 
 ## Development

@@ -35,6 +35,16 @@ A rule touches all of these. The tests check that every rule has a page listed i
 
 `test/fixtures/ecoflux/` is a copy of a real demo site: don't edit it to make a test pass. Fixture files are kept byte-exact (`.gitattributes`) and are excluded from formatting.
 
+## Changing the policy grammar
+
+`pageslens test` reads `pageslens.policy.yaml`: one sentence per requirement, from a closed set of forms. Keep it closed: no user-defined statements, patterns or expressions. A new form or a change in meaning touches:
+
+- `src/policy/types.ts` (the `Check` union), `parse.ts` (the grammar) and `evaluate.ts` (what passes)
+- `docs/policy.md`, the user reference: the grammar and the "passes when" tables
+- `test/fixtures/policies/*.policy.yaml` (a passing and a failing case; each line's comment says which) and `test/policy/policy.test.ts`, plus the text snapshot
+
+`authenticated` means every signed-in user: in `cannot` and `only` it counts every role except Anonymous Users; in `can` it needs the Authenticated Users role itself. Members of a custom role also have the Authenticated Users role's grants.
+
 ## Conventions
 
 - Docs output and findings are deterministic: sorted, no timestamps, so regenerated docs give quiet diffs.

@@ -9,6 +9,10 @@ import { formatJson } from './lint/format/json.js';
 import { formatText } from './lint/format/text.js';
 import { RULES } from './lint/rules/index.js';
 import { toPosixPath } from './model/normalize.js';
+import { evaluatePolicy } from './policy/evaluate.js';
+import { formatJson as formatTestJson } from './policy/format/json.js';
+import { formatText as formatTestText } from './policy/format/text.js';
+import { loadPolicy, PolicyError, POLICY_FILE } from './policy/parse.js';
 
 export const ExitCode = {
   Ok: 0,
@@ -29,6 +33,11 @@ const processIo: Io = {
 interface LintOptions {
   format: 'text' | 'json';
   config?: string;
+}
+
+interface TestOptions {
+  format: 'text' | 'json';
+  policy?: string;
 }
 
 export function buildProgram(io: Io, setExitCode: (code: number) => void): Command {
@@ -66,6 +75,29 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     });
 
   program
+    .command('test')
+    .description(`Check the site against your requirements in ${POLICY_FILE}`)
+    .argument(
+      '[path]',
+      '.powerpages-site folder, a folder that contains one, or a classic site folder',
+      '.',
+    )
+    .addOption(
+      new Option('--format <format>', 'output format').choices(['text', 'json']).default('text'),
+    )
+    .option('--policy <file>', `path to ${POLICY_FILE} (default: nearest one found)`)
+    .action(async (path: string, options: TestOptions) => {
+      const policy = await loadPolicy(path, options.policy);
+      const site = await loadSiteFolder(path);
+      const result = evaluatePolicy(policy, site);
+      const sitePath = toPosixPath(relative(process.cwd(), site.root)) || '.';
+      const policyPath = toPosixPath(relative(process.cwd(), policy.path));
+      const format = options.format === 'json' ? formatTestJson : formatTestText;
+      io.out(format(result, site, sitePath, policyPath));
+      setExitCode(result.counts.failed > 0 ? ExitCode.Findings : ExitCode.Ok);
+    });
+
+  program
     .command('docs')
     .description('Write Markdown docs for a downloaded site')
     .argument(
@@ -97,6 +129,11 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
     if (error instanceof SiteLoadError) {
       const problems = error.problems.map((p) => `  ${p.file ? `${p.file}: ` : ''}${p.message}\n`);
       io.err(`error: ${error.message}\n${problems.join('')}`);
+      return ExitCode.Usage;
+    }
+    if (error instanceof PolicyError) {
+      const problems = error.problems.map((p) => `  ${p}\n`);
+      io.err(`error: the policy can't be used\n${problems.join('')}`);
       return ExitCode.Usage;
     }
     if (error instanceof ConfigError) {

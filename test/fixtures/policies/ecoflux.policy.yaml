@@ -1,0 +1,16 @@
+# Policy for test/fixtures/ecoflux: every statement passes.
+access:
+  - anonymous cannot read any table
+  - authenticated can read dwcrm_asset at global scope
+  - role "Asset Manager" can read dwcrm_chainofcustody # from the Authenticated Users role
+  - role "Logistics Partner" can read, write dwcrm_chainofcustody at account scope
+  - only "Asset Manager" can delete dwcrm_asset
+  - nobody can delete dwcrm_chainofcustody
+webapi:
+  - fields are explicit
+  - only dwcrm_asset, dwcrm_chainofcustody, dwcrm_conditionlog, dwcrm_marketplacelisting are enabled
+  - anonymous cannot call any table
+  - role "Logistics Partner" can call dwcrm_chainofcustody
+settings:
+  - setting "Authentication/Registration/LocalLoginDeprecated" is "false"
+  - setting "Webapi/error/innererror" is "true"
