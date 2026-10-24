@@ -1,6 +1,6 @@
 # 0004: GitHub Action
 
-**Status:** built, on `main` for 0.5.0. User reference: the README's "GitHub Action" section.
+**Status:** shipped in 0.5.0 (PR #19). User reference: the README's "GitHub Action" section.
 
 The last M2 piece. [0002-sarif.md](0002-sarif.md) and [0003-diff.md](0003-diff.md) built the outputs; this spec is the packaging that puts them on a pull request with one `uses:` line instead of the three workflows in the README's "In CI" section. It answers: where the action lives, what kind of action it is, how it pins pageslens, what it posts and with which permissions, and what happens on pull requests from forks.
 
@@ -187,4 +187,7 @@ Design: this document (draft 1, all 9 questions answered with the recommendation
   - The job summary lists the lint and test counts before the diff.
   - SARIF from a command that couldn't run (exit 2) is deleted, so the upload doesn't fail on an empty file.
 - Tested: helpers in `test/action/main.test.ts`; `run` and `finish` on a temporary repository (pull request, push, fork, failing lint and policy, a base that doesn't exist); `comment` against a local mock of the API (create, nothing to post, update, 403).
-- **Not verified:** a real run on GitHub (the CI job does that on the first pull request), the comment on a real pull request, a fork pull request, the SARIF upload, and the action at a release tag installing from npm.
+- Verified on GitHub by this repository's `action` job (PR #19): the three commands on Linux, the comment lookup with `pull-requests: write` (nothing posted, as EcoFlux didn't change), and `finish` failing on EcoFlux's lint errors.
+- Verified at `v0.5.0` on a public test repository (`OOlashyn/pageslens-action-test`, pull requests 1 and 2): pageslens 0.5.0 installed from npm; SARIF uploaded on the push to `main` and on pull requests, with alerts on the GUID line in the right category (`pageslens/lint/`, `pageslens/test/`); the comment created on a widening pull request, edited in place by two later pushes (one comment throughout), the last edit saying "No access changes"; a narrowing-only pull request commented with a passing check; the job failing on a failed policy statement.
+- Found: the diff header names the merge commit `actions/checkout` makes for a pull request, not the pull request's head commit.
+- **Not verified:** a fork pull request, a token without `pull-requests: write`, a comment near the size cap.

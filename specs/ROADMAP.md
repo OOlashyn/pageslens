@@ -4,23 +4,20 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                         |                                                                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Released (`latest`)     | `0.4.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, code-site and classic layouts, config ignores and JSON Schema |
-| On `main`, not released | the GitHub Action ([0004](0004-github-action.md)). Release notes ready: [releases/0.5.0.md](releases/0.5.0.md)           |
-| Milestones              | M1 (MVP) done. M2 done with the action, once released. `align` waits for the solution adapter                            |
+|                     |                                                                                                                             |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`) | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores |
+| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                |
 
 ## Next
 
-1. **Release `0.5.0`.** Notes in [releases/0.5.0.md](releases/0.5.0.md); same steps as `0.4.0` (README, "Releasing"). The action at `v0.5.0` installs `pageslens@0.5.0`, so it works once that version is approved on npm.
-2. **Try the action on a real repository** at `v0.5.0`: a pull request that widens access (comment created, then edited), one with no access changes, the SARIF upload, and a fork pull request (summary only).
-3. Then the candidates below.
+1. **Show the pull request's head commit in the diff header.** On `pull_request`, `actions/checkout` checks out GitHub's merge commit, so the comment's `HEAD (abc1234)` names a commit that isn't in the pull request. The action could compare with `github.event.pull_request.head.sha` instead (the same merge base, and what GitHub's own diff shows).
+2. Then the candidates below.
 
 ## Verification still owed
 
-- Upload SARIF to a real repository's code scanning and check that alerts land on the GUID lines.
-- Run `diff` on Linux or macOS, with a newer git, and on a real pull request.
-- The action on GitHub: comment created and edited, a comment near the size cap, fork pull requests, missing permissions.
+- Run `diff` on macOS.
+- The action on GitHub: a comment near the size cap, a fork pull request (needs a second account), a token without `pull-requests: write`.
 
 ## Open questions (need a Dataverse environment)
 
