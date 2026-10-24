@@ -61,7 +61,7 @@ Grant sentences are shared with `test` in `src/graph/describe.ts`, so both say t
 
 - Docs output and findings are deterministic: sorted, no timestamps, so regenerated docs give quiet diffs.
 - Messages and docs are plain English in short sentences.
-- `claude-research/` holds internal notes (spec, plan, spike findings) and is git-ignored. Don't link to it from tracked files.
+- `specs/` holds the design notes: [specs/ROADMAP.md](specs/ROADMAP.md) (status and what's next, read it first), one spec per feature (`specs/NNNN-<feature>.md`), research, release notes and archived plans. A new feature starts as a spec with open questions for the maintainer; when it ships, add an "As built" section and update the roadmap in the same PR. Specs are public: no local paths, environment names or credentials.
 
 ## Git
 
