@@ -1,0 +1,4 @@
+description: Enable Web API access for dwcrm_conditionlog table
+id: 71070103-20fa-4731-923e-627af891de82
+name: Webapi/dwcrm_conditionlog/enabled
+value: true

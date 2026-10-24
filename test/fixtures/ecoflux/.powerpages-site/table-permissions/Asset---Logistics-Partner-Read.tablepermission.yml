@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 4ef54206-4d27-4a43-b642-ff48c5de86e8
+append: false
+appendto: true
+create: false
+delete: false
+entitylogicalname: dwcrm_asset
+entityname: Asset - Logistics Partner Read
+id: 1bf0746e-2428-499f-9301-76e128a5b208
+read: true
+scope: 756150000
+write: false

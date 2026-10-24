@@ -1,0 +1,4 @@
+description: Allowed fields for dwcrm_conditionlog Web API access
+id: 7a6c1ad9-fb3c-4468-b45b-8b6814b19054
+name: Webapi/dwcrm_conditionlog/fields
+value: _dwcrm_assetid_value,dwcrm_assetid,dwcrm_conditionlogid,dwcrm_conditionrating,dwcrm_imageurl,dwcrm_inspectedby,dwcrm_inspectiondate,dwcrm_name,dwcrm_notes

@@ -1,0 +1,13 @@
+# global-write-authenticated: Authenticated Users get write on every contact
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000002
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: contact
+entityname: Contact - Authenticated Users Global Write
+id: 00000000-0000-0000-0002-000000000001
+read: true
+scope: 756150000
+write: true

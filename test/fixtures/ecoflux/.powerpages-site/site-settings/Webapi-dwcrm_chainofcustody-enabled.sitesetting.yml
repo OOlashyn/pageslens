@@ -1,0 +1,4 @@
+description: Enable Web API access for dwcrm_chainofcustody table
+id: 15694136-792d-4ac9-b342-bd1efbdfe8d0
+name: Webapi/dwcrm_chainofcustody/enabled
+value: true

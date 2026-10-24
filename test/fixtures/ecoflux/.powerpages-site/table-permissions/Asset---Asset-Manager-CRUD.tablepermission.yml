@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 323f94e6-c646-4832-bd7f-daa1572b20fe
+append: false
+appendto: true
+create: true
+delete: true
+entitylogicalname: dwcrm_asset
+entityname: Asset - Asset Manager CRUD
+id: 08aa7eb7-f93f-40ab-b07d-1118581767d8
+read: true
+scope: 756150002
+write: true

@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Fixtures are site downloads: keep their bytes (incl. stray \r) exactly as pac wrote them
+test/fixtures/** -text

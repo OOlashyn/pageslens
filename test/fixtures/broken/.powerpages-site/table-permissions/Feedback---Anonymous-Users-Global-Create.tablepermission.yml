@@ -1,0 +1,13 @@
+# global-write-anonymous: Anonymous Users can create feedback records for everyone
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000001
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: dwcrm_feedback
+entityname: Feedback - Anonymous Users Global Create
+id: 00000000-0000-0000-0002-000000000008
+read: false
+scope: 756150000
+write: false

@@ -1,0 +1,5 @@
+# multiple-authenticated-roles: a second role flagged as the Authenticated Users role
+anonymoususersrole: false
+authenticatedusersrole: true
+id: 00000000-0000-0000-0001-000000000005
+name: Signed-in Users

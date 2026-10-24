@@ -1,0 +1,13 @@
+# scope-relationship-missing: Account scope without accountrelationship (same shape as EcoFlux)
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_contract
+entityname: Contract - Case Manager Account
+id: 00000000-0000-0000-0002-000000000006
+read: true
+scope: 756150002
+write: false

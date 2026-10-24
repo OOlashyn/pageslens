@@ -1,0 +1,12 @@
+adx_entitypermission_webrole:
+- 8d3ee430-c7bb-4f7f-a78d-0dfa33902898
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_conditionlog
+entityname: Condition Log - Authenticated Users Read
+id: 28b7aa01-09df-4f4f-8f24-b45b90414665
+read: true
+scope: 756150000
+write: false

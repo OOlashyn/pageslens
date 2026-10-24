@@ -1,0 +1,4 @@
+description: Enable Web API access for dwcrm_marketplacelisting table
+id: 46ba8a56-a168-4988-930a-ac17968c327c
+name: Webapi/dwcrm_marketplacelisting/enabled
+value: true
