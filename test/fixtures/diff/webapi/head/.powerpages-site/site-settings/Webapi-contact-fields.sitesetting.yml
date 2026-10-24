@@ -1,0 +1,4 @@
+# wider webapi-fields-wider (emailaddress1) and narrower webapi-fields-narrower (lastname)
+id: 00000000-0000-0000-0003-000000000003
+name: Webapi/contact/fields
+value: firstname,emailaddress1

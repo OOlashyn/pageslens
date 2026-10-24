@@ -1,0 +1,13 @@
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+contactrelationship: dwcrm_order_contact
+create: false
+delete: false
+entitylogicalname: dwcrm_order
+entityname: Order - Customers
+id: 00000000-0000-0000-0002-000000000005
+read: true
+scope: 756150001
+write: false

@@ -1,0 +1,4 @@
+# clean: fields of a table the Web API is off on
+id: 00000000-0000-0000-0003-000000000011
+name: Webapi/task/fields
+value: subject,description

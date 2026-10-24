@@ -1,9 +1,8 @@
-import { readdir, readFile } from 'node:fs/promises';
-import { basename, dirname, join, posix, relative } from 'node:path';
+import { posix } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import type { z } from 'zod';
 import { WEBSITE_KIND } from '../model/kinds.js';
-import { compareText as compare, normalizeNewlines, toPosixPath } from '../model/normalize.js';
+import { compareText as compare, normalizeNewlines } from '../model/normalize.js';
 import {
   siteSettingSchema,
   tablePermissionSchema,
@@ -15,6 +14,7 @@ import {
   type SiteRecord,
   type SourceRef,
 } from '../model/schema.js';
+import type { FileSource } from './files.js';
 
 // What both download layouts share: `<base>.<kind>.yml` record files with side files next to
 // them, every problem collected instead of stopping at the first, and the typed model built
@@ -57,18 +57,19 @@ export interface FieldMapping {
   lists: boolean;
 }
 
-export async function listFiles(root: string): Promise<string[]> {
-  const entries = await readdir(root, { recursive: true, withFileTypes: true });
-  return entries
-    .filter((entry) => entry.isFile())
-    .map((entry) => toPosixPath(relative(root, join(entry.parentPath, entry.name))))
+export async function listFiles(source: FileSource): Promise<string[]> {
+  return (await source.list())
     .filter((file) => !SKIPPED_FOLDERS.some((folder) => file.startsWith(`${folder}/`)))
     .sort(compare);
 }
 
 /** The parsed YAML document, or undefined (with a problem) when it doesn't parse. */
-export async function readYaml(root: string, file: string, problems: Problem[]): Promise<unknown> {
-  const text = await readFile(join(root, file), 'utf8');
+export async function readYaml(
+  source: FileSource,
+  file: string,
+  problems: Problem[],
+): Promise<unknown> {
+  const text = await source.read(file);
   try {
     return parse(text, { schema: 'failsafe' }) as unknown;
   } catch (error) {
@@ -112,7 +113,7 @@ export function listRecords(
  * to it. Files it reads, records or not, are added to `claimed`.
  */
 export async function readRecordFiles(
-  root: string,
+  source: FileSource,
   files: string[],
   mapping: FieldMapping,
   problems: Problem[],
@@ -129,7 +130,7 @@ export async function readRecordFiles(
       if (!isWebsite && !match?.groups) continue;
 
       const kind = isWebsite ? WEBSITE_KIND : match!.groups!.kind!;
-      const fields = await readYaml(root, file, problems);
+      const fields = await readYaml(source, file, problems);
       claimed.add(file);
       if (fields === undefined) continue;
       if (!isMapping(fields)) {
@@ -150,7 +151,7 @@ export async function readRecordFiles(
           const sideName = posix.basename(side);
           if (side === file || !sideName.startsWith(prefix) || sideName.endsWith('.yml')) continue;
           const field = sideName.slice(prefix.length).replace(/\.[^.]+$/, '');
-          record.text[field] = normalizeNewlines(await readFile(join(root, side), 'utf8'));
+          record.text[field] = normalizeNewlines(await source.read(side));
           claimed.add(side);
         }
       }
@@ -181,7 +182,7 @@ export async function readRecordFiles(
 
 /** Types the records into a site, or throws every problem found while reading and typing. */
 export function buildSite(
-  root: string,
+  source: FileSource,
   files: string[],
   records: SiteRecord[],
   claimed: Set<string>,
@@ -203,7 +204,7 @@ export function buildSite(
 
   const website = typed(websiteSchema, websiteRecord)[0];
   const site = {
-    root,
+    root: source.root,
     records,
     webRoles: ofKind('webrole', webRoleSchema),
     tablePermissions: ofKind('tablepermission', tablePermissionSchema),
@@ -215,10 +216,7 @@ export function buildSite(
 
   if (problems.length > 0 || !website) {
     problems.sort((a, b) => compare(a.file ?? '', b.file ?? '') || compare(a.message, b.message));
-    throw new SiteLoadError(
-      `${problems.length} problem(s) reading ${basename(root)} at ${dirname(root)}`,
-      problems,
-    );
+    throw new SiteLoadError(`${problems.length} problem(s) reading ${source.label}`, problems);
   }
   return { ...site, website };
 }

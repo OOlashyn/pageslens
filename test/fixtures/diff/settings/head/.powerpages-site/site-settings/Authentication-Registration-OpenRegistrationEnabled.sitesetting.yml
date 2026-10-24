@@ -1,0 +1,4 @@
+# narrower setting-narrower: was not set (defaults to true)
+id: 00000000-0000-0000-0003-000000000002
+name: Authentication/Registration/OpenRegistrationEnabled
+value: false

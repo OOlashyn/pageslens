@@ -1,0 +1,7 @@
+# wider webapi-enabled on msdyn_customerasset
+- adx_name: Webapi/msdyn_customerasset/enabled
+  adx_sitesettingid: 00000000-0000-0000-0003-000000000001
+  adx_value: true
+- adx_name: Webapi/msdyn_customerasset/fields
+  adx_sitesettingid: 00000000-0000-0000-0003-000000000002
+  adx_value: msdyn_name

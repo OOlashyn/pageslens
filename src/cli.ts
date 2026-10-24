@@ -2,6 +2,12 @@ import { relative, resolve } from 'node:path';
 import { Command, CommanderError, Option } from 'commander';
 import pkg from '../package.json' with { type: 'json' };
 import { loadSiteFolder, SiteLoadError } from './adapters/site-folder.js';
+import { diffSites, summarize } from './diff/compare.js';
+import { formatJson as formatDiffJson } from './diff/format/json.js';
+import { formatMarkdown as formatDiffMarkdown } from './diff/format/markdown.js';
+import { formatText as formatDiffText } from './diff/format/text.js';
+import { DiffInputError, loadSides } from './diff/inputs.js';
+import type { DiffResult } from './diff/types.js';
 import { writeSiteDocs } from './docs/write.js';
 import { ConfigError, loadConfig } from './lint/config.js';
 import { lint } from './lint/engine.js';
@@ -16,6 +22,7 @@ import { formatSarif as formatTestSarif } from './policy/format/sarif.js';
 import { formatText as formatTestText } from './policy/format/text.js';
 import { loadPolicy, PolicyError, POLICY_FILE } from './policy/parse.js';
 import { recordLines } from './sarif.js';
+import { GitError } from './util/git.js';
 
 export const ExitCode = {
   Ok: 0,
@@ -46,6 +53,20 @@ interface TestOptions {
   format: Format;
   policy?: string;
 }
+
+type DiffFormat = 'text' | 'markdown' | 'json';
+
+interface DiffOptions {
+  format: DiffFormat;
+  mergeBase?: boolean;
+  failOn?: 'wider' | 'any';
+}
+
+const DIFF_FORMATS = {
+  text: formatDiffText,
+  markdown: formatDiffMarkdown,
+  json: formatDiffJson,
+} satisfies Record<DiffFormat, (result: DiffResult) => string>;
 
 export function buildProgram(io: Io, setExitCode: (code: number) => void): Command {
   const program = new Command()
@@ -118,6 +139,52 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     });
 
   program
+    .command('diff')
+    .description('Show what a change does to access: grants, Web API, web roles and key settings')
+    .argument('<base>', 'folder or git ref to compare from')
+    .argument('<head>', 'folder or git ref to compare with base')
+    .argument(
+      '[path]',
+      'with two refs: the site folder, relative to the current folder (default: .)',
+    )
+    .option(
+      '--merge-base',
+      'compare head with the merge base of base and head, as a pull request does',
+    )
+    .addOption(
+      new Option('--format <format>', 'output format')
+        .choices(Object.keys(DIFF_FORMATS))
+        .default('text'),
+    )
+    .addOption(
+      new Option(
+        '--fail-on <class>',
+        'exit 1 when anything is wider, or when anything changed',
+      ).choices(['wider', 'any']),
+    )
+    .action(async (base: string, head: string, path: string | undefined, options: DiffOptions) => {
+      const sides = await loadSides({
+        base,
+        head,
+        ...(path !== undefined && { path }),
+        mergeBase: options.mergeBase ?? false,
+        cwd: process.cwd(),
+      });
+      const changes = diffSites(sides.base.site, sides.head.site);
+      const result: DiffResult = {
+        base: sides.base.side,
+        head: sides.head.side,
+        changes,
+        summary: summarize(changes),
+      };
+      io.out(DIFF_FORMATS[options.format](result));
+      const fail =
+        (options.failOn === 'wider' && result.summary.wider > 0) ||
+        (options.failOn === 'any' && changes.length > 0);
+      setExitCode(fail ? ExitCode.Findings : ExitCode.Ok);
+    });
+
+  program
     .command('docs')
     .description('Write Markdown docs for a downloaded site')
     .argument(
@@ -154,6 +221,11 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
     if (error instanceof PolicyError) {
       const problems = error.problems.map((p) => `  ${p}\n`);
       io.err(`error: the policy can't be used\n${problems.join('')}`);
+      return ExitCode.Usage;
+    }
+    if (error instanceof DiffInputError || error instanceof GitError) {
+      io.err(`error: ${error.message}
+`);
       return ExitCode.Usage;
     }
     if (error instanceof ConfigError) {

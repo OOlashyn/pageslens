@@ -1,0 +1,5 @@
+# neutral role-recreated: same name, new id; its grants compare as one role
+anonymoususersrole: false
+authenticatedusersrole: false
+id: 00000000-0000-0000-0001-000000000014
+name: Partner

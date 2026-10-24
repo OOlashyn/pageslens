@@ -1,4 +1,5 @@
 import { buildAccessGraph, type Grant, type Privilege } from '../graph/access.js';
+import { grantSentence, plain } from '../graph/describe.js';
 import { buildWebApiSurface, type WebApiTable } from '../graph/webapi.js';
 import type { Site, SiteSetting, WebRole } from '../model/schema.js';
 import { PolicyError } from './parse.js';
@@ -326,9 +327,8 @@ function whoLabel(who: Who): string {
 
 function grantEvidence(grant: Grant, privileges: Privilege[]): Evidence {
   const granted = privileges.filter((p) => grant.privileges[p]);
-  const via = grant.ancestors.length > 0 ? `, under "${grant.ancestors.at(-1)!.name}"` : '';
   return {
-    message: `${grant.role.name} has ${granted.join(', ')} on ${grant.table} (${grant.scope} scope) from "${grant.permission.name}"${via}`,
+    message: plain(grantSentence('has', grant, granted)),
     file: grant.permission.source.file,
     recordId: grant.permission.id,
   };

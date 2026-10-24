@@ -1,0 +1,12 @@
+- adx_anonymoususersrole: true
+  adx_authenticatedusersrole: false
+  adx_name: Anonymous Users
+  adx_webroleid: 00000000-0000-0000-0001-000000000001
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: true
+  adx_name: Authenticated Users
+  adx_webroleid: 00000000-0000-0000-0001-000000000002
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Manager
+  adx_webroleid: 00000000-0000-0000-0001-000000000003

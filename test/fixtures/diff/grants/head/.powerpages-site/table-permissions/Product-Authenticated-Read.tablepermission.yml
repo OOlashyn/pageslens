@@ -1,0 +1,13 @@
+# neutral grant-source-changed: replaces "Product - Read" with the same access
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000002
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: product
+entityname: Product - Authenticated Read
+id: 00000000-0000-0000-0002-000000000008
+read: true
+scope: 756150000
+write: false

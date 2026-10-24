@@ -1,0 +1,4 @@
+# wider setting-wider (b added) and narrower setting-narrower (c removed)
+id: 00000000-0000-0000-0003-000000000005
+name: HTTP/Access-Control-Allow-Origin
+value: https://a.example.com, https://b.example.com

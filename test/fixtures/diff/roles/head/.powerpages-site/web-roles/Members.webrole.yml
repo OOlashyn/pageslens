@@ -1,0 +1,5 @@
+# wider role-audience-changed: now the Authenticated Users role
+anonymoususersrole: false
+authenticatedusersrole: true
+id: 00000000-0000-0000-0001-000000000003
+name: Members

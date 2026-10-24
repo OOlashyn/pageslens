@@ -1,0 +1,14 @@
+# neutral grant-gained: Customers already has read on dwcrm_invoice at global scope
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+contactrelationship: dwcrm_invoice_contact
+create: false
+delete: false
+entitylogicalname: dwcrm_invoice
+entityname: Invoice - Customers Contact
+id: 00000000-0000-0000-0002-000000000011
+read: true
+scope: 756150001
+write: false

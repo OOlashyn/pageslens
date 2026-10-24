@@ -1,11 +1,12 @@
 # pageslens
 
-Offline lint, policy tests and docs for Power Pages site configuration in source control.
+Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.
 
 pageslens reads a site downloaded with the Power Platform CLI, either the `.powerpages-site` folder that `pac pages download-code-site` writes or the site folder that `pac pages download` writes, and:
 
 - **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
 - **tests** it against your own requirements, written as short sentences in a policy file ("anonymous cannot read contact");
+- **diffs** two versions of it: what a change does to who can see and change what, for a pull request comment;
 - **documents** it: an access matrix (which role can do what on which table), the Web API surface, and a Mermaid diagram, as plain Markdown.
 
 It needs no Dataverse connection and no agent: the same folder gives the same output every run.
@@ -22,6 +23,10 @@ npx pageslens lint path/to/site
 
 ```bash
 npx pageslens test path/to/site
+```
+
+```bash
+npx pageslens diff origin/main HEAD path/to/site
 ```
 
 ```bash
@@ -120,6 +125,31 @@ Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy fi
 
 The full grammar, what each statement means and how to write a good policy: [docs/policy.md](docs/policy.md).
 
+## `pageslens diff`
+
+```
+pageslens diff <base> <head> [path] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
+```
+
+Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, and a few settings such as open registration. It compares effective access, not files, and matches records by GUID, so a renamed file or a permission split in two with the same result isn't an access change.
+
+Each side is a folder or a git ref: two downloads (`diff before after`), two commits (`diff origin/main HEAD site`), or a commit and the working tree (`diff origin/main site`, to see uncommitted edits). `--merge-base` compares with the merge base, as a pull request does.
+
+```
+Access changes in site/.powerpages-site, origin/main (a1b2c3d) → HEAD (e4f5a6b): 1 wider, 1 narrower, 0 neutral
+
+Wider
+  + Customers: write on incident changed from contact scope to global scope in "Incident - Customers"
+      table-permissions/Incident-Customers.tablepermission.yml
+Narrower
+  - Anonymous Users lost read on knowledgearticle (global scope) from "Articles - Anonymous Read" (removed)
+      table-permissions/Articles-Anonymous-Read.tablepermission.yml (base)
+```
+
+Every change is **wider** (may give someone access they didn't have), **narrower** or **neutral**, and anything pageslens can't show to be narrower or neutral counts as wider. `--format markdown` writes a pull request comment (summary first, details folded, capped under GitHub's size limit) and `--format json` a versioned object. The exit code is `0` whatever changed, `1` with `--fail-on wider` when something is wider (or `--fail-on any` when anything changed), and `2` when an argument or a site can't be read.
+
+What each change means and how it's classified: [docs/diff.md](docs/diff.md).
+
 ## `pageslens docs`
 
 ```
@@ -183,6 +213,27 @@ jobs:
 
 The exit codes stay the same with `--format sarif`, so the job still fails on lint errors and failed statements. The `if` lines make the later steps run anyway, so the results reach code scanning.
 
+To show a pull request's access changes on the run's summary page, compare with the merge base, as the pull request's own diff does. That needs the history of both branches, so check out with `fetch-depth: 0`:
+
+```yaml
+# .github/workflows/access-changes.yml
+name: Access changes
+on: pull_request
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx pageslens@0 diff --merge-base --format markdown "origin/$BASE" HEAD site >> "$GITHUB_STEP_SUMMARY"
+        env:
+          BASE: ${{ github.base_ref }}
+```
+
 What the SARIF contains:
 
 - **Two runs, kept apart.** `lint` and `test` each get their own category (`pageslens/lint/`, `pageslens/test/`), so uploading both doesn't replace one with the other.
@@ -223,7 +274,7 @@ node dist/bin.mjs lint test/fixtures/broken
 
 Without Vite+ installed globally, `npx vp …` runs the project's own copy. The `npm run check`, `npm test` and `npm run build` scripts call the same commands.
 
-`test/fixtures/` holds three sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule) and `classic` (a trimmed classic download). `test/fixtures/README.md` lists the findings each should produce.
+`test/fixtures/` holds three sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule) and `classic` (a trimmed classic download), plus `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
 
 ### Releasing
 

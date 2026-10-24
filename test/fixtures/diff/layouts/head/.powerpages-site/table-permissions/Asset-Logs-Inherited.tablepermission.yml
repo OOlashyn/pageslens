@@ -1,0 +1,12 @@
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: msdyn_customerassetlog
+entityname: Asset Logs - Inherited
+id: 00000000-0000-0000-0002-000000000003
+parententitypermission: 00000000-0000-0000-0002-000000000002
+parentrelationship: msdyn_customerasset_logs
+read: true
+scope: 756150003
+write: false

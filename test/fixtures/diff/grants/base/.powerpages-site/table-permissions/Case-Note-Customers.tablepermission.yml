@@ -1,0 +1,14 @@
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: annotation
+entityname: Case Note - Customers
+id: 00000000-0000-0000-0002-000000000012
+parententitypermission: 00000000-0000-0000-0002-999999999999
+parentrelationship: dwcrm_case_annotations
+read: true
+scope: 756150003
+write: false

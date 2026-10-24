@@ -1,0 +1,13 @@
+# no role of its own: inherits Customers from "Case - Customers"
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: task
+entityname: Case Task - Inherited
+id: 00000000-0000-0000-0002-000000000014
+parententitypermission: 00000000-0000-0000-0002-000000000013
+parentrelationship: dwcrm_case_tasks
+read: true
+scope: 756150003
+write: false
