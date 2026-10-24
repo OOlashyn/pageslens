@@ -1,0 +1,63 @@
+name: Release
+
+# Publishing a GitHub release stages that version on npm through trusted publishing (OIDC).
+# The trusted publisher only allows `npm stage publish`, so nothing goes live until a
+# maintainer approves it with 2FA: `npm stage approve <stage-id>` or on npmjs.com.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    name: Stage on npm
+    runs-on: ubuntu-latest
+    # Must match the environment on the npm trusted publisher; restrict it to v* tags in GitHub
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # OIDC token for npm trusted publishing
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
+        with:
+          node-version: '24'
+          cache: false # never use a dependency cache in release builds
+      - name: Require a patched Node.js and an npm with stage publish
+        run: |
+          node -e '
+            const [a, b] = [process.versions.node, "24.22.1"].map((v) => v.split(".").map(Number));
+            const ok = a[0] === b[0] && (a[1] > b[1] || (a[1] === b[1] && a[2] >= b[2]));
+            console.log(`node ${process.versions.node}, npm ${process.argv[1]}`);
+            process.exit(ok ? 0 : 1);
+          ' "$(npm --version)"
+          npm stage --help > /dev/null
+      - name: Check the release tag matches package.json
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Release tag $TAG doesn't match package.json version $version (expected v$version)"
+            exit 1
+          fi
+          # Pre-release versions (0.2.0-beta.1) must not become `latest`
+          case "$version" in
+            *-*) echo "dist-tag=next" >> "$GITHUB_OUTPUT" ;;
+            *) echo "dist-tag=latest" >> "$GITHUB_OUTPUT" ;;
+          esac
+      # prepublishOnly runs `vp check`, `vp test` and `vp pack` first; a failure stops the publish
+      - name: Stage the package on npm
+        env:
+          DIST_TAG: ${{ steps.version.outputs.dist-tag }}
+        run: npm stage publish --tag "$DIST_TAG"
