@@ -1,6 +1,6 @@
 # 0006: Page access in `test` and `diff`
 
-**Status:** draft 1, open questions for the maintainer. Planned for 0.7.0.
+**Status:** decided, to build for 0.7.0 (see "Decisions").
 
 0.6.0 reads who can open each page of a classic site ([0005](0005-page-access-rules.md)) and shows it in `lint` and `pages.md`. This spec adds pages to the other two commands:
 
@@ -85,7 +85,7 @@ With `pages under "U"`, the statement passes when it passes for U and every acti
 
 ### Pages, URLs and errors
 
-- A URL is matched against the URLs `pages.md` shows. Case doesn't matter, and the slashes at either end are optional (`/admin-home/`, `/admin-home` and `admin-home` are the same page): open question 4.
+- A URL is matched against the URLs `pages.md` shows. Case doesn't matter, as in Power Pages, and the slashes at either end are optional (`/admin-home/`, `/admin-home` and `admin-home` are the same page).
 - A URL that matches no active page is an error (exit 2), with a suggestion when there's a close one, as an unknown role is. A URL that matches only an inactive page is an error that says it's inactive (open question 5).
 - Two active pages with the same URL is an error naming both. Power Pages shouldn't allow it, but a download can have it.
 - On a code site, any `pages` statement is an error: "Page access rules don't apply to code sites, so pageslens can't check page statements there." The `pages` section can't be skipped silently, as a check that checks nothing mustn't pass.
@@ -183,12 +183,26 @@ Page changes sort with table grants: by audience exposure first (Anonymous Users
 - Docs: `docs/policy.md` (the `pages` section and its table), `docs/diff.md` (the page tables and kinds), README.
 - Fixtures: `test/fixtures/policies/pages.policy.yaml` (passing and failing lines against `registration` and `classic-pages`); `test/fixtures/diff/pages/{base,head}` (classic): a Restrict Read removed above a branch, a role added to a rule, a Grant Change added, a new public page, a page moved, a rule renamed.
 
-## Open questions for Oleksandr
+## Decisions (Oleksandr, 2026-10-25)
+
+Every recommendation is adopted:
+
+1. A new `pages:` section.
+2. `pages under "<url>"` covers a page and every page below it.
+3. `can publish` statements (Grant Change) are in 0.7.0.
+4. URLs match without case, and the slashes at either end are optional. Confirmed in an environment: Power Pages matches page URLs without case.
+5. A statement about an inactive page is an error that says so.
+6. `authenticated cannot read` is strict, as for tables.
+7. `diff` writes one line per branch in text and Markdown, and every page in JSON.
+8. A new page that someone can read is a wider change.
+9. A rule's scope change shows in `diff`, classified as above.
+
+## Open questions for Oleksandr (answered, see Decisions)
 
 1. **Section.** A new `pages:` section, or page statements inside `access:`? Recommended: `pages:`. It keeps `access` about tables, and a code site's error can point at one section.
 2. **Branches.** Add `pages under "<url>"` (the page and every page below it), or only single pages? Recommended: add it. It's how a team says "everything under /admin/ is for admins", and it catches pages added later. It's a literal URL prefix, not a pattern.
 3. **Publish statements.** Include `can publish` (Grant Change) in 0.7.0? Recommended: yes. Grant Change also gives read access, so "only Administrators can publish pages under /" is the requirement that catches a Grant Change rule nobody looks at.
-4. **URL matching.** Ignore case and the slashes at either end? Recommended: yes. Power Pages matches partial URLs without case, as far as known; to confirm in an environment (one more check: open `/Admin-Home/`).
+4. **URL matching.** Ignore case and the slashes at either end? Recommended: yes. Power Pages matches partial URLs without case, as far as known; to confirm in an environment (one more check: open `/Admin-Home/`). Confirmed: see decision 4.
 5. **Inactive pages.** A statement about a page that's inactive: an error, or pass `cannot` and fail `can` (nobody can open it)? Recommended: an error that says it's inactive. A policy about a page that's off is probably out of date.
 6. **`authenticated cannot read`.** Strict, as for tables (fails if any signed-in user can read the page, through any role), or only when every signed-in user can? Recommended: strict, the same as tables (AGENTS.md). "Some signed-in user can read it" is what the sentence denies.
 7. **One line per branch in `diff`.** Report the topmost changed page with a count, or every page? Recommended: topmost with a count in text and Markdown, every page in JSON. Otherwise a rule removed on `/` writes one line per page of the site.
@@ -197,7 +211,6 @@ Page changes sort with table grants: by audience exposure first (Anonymous Users
 
 ## Verification owed
 
-- Whether partial URLs match without case (question 4).
 - The two unknowns carried over from 0005: several Restrict Read rules on one page, and the Anonymous Users role on a Grant Change rule. `test` and `diff` inherit pageslens's reading of both until they're checked.
 
 ## Sources
