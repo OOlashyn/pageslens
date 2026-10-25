@@ -6,7 +6,7 @@ export const parentChainBroken: Rule = {
   defaultSeverity: 'error',
   description:
     'A parent-scope table permission whose parent is missing, has no web role, or loops back.',
-  check: ({ graph }) =>
+  check: ({ site, graph }) =>
     graph.permissions.flatMap(({ permission, ancestors, chainBreak }) => {
       if (permission.scope !== 'parent') return [];
       const finding = (detail: string): RuleFinding => ({
@@ -14,7 +14,10 @@ export const parentChainBroken: Rule = {
         source: permission.source,
         recordId: permission.id,
       });
-      const findings = chainBreak ? [finding(describeBreak(chainBreak, permission.id))] : [];
+      const inactive = new Map(site.inactive.tablePermissions.map((p) => [p.id, p.name]));
+      const findings = chainBreak
+        ? [finding(describeBreak(chainBreak, permission.id, inactive))]
+        : [];
       for (const ancestor of ancestors) {
         // An ancestor that inherits its roles is reported through the one it inherits from.
         const node = graph.permission(ancestor.id);
@@ -27,12 +30,18 @@ export const parentChainBroken: Rule = {
 };
 
 /** Says "its parent" when the break is on the permission itself, else names the ancestor. */
-function describeBreak(chainBreak: ChainBreak, permissionId: string): string {
+function describeBreak(
+  chainBreak: ChainBreak,
+  permissionId: string,
+  inactive: Map<string, string>,
+): string {
   const self = chainBreak.at.id === permissionId;
   const parentOf = self ? 'its parent' : `the parent of "${chainBreak.at.name}"`;
   switch (chainBreak.reason) {
     case 'missing-parent':
-      return `${parentOf} (${chainBreak.parentId}) doesn't exist in the site`;
+      return inactive.has(chainBreak.parentId)
+        ? `${parentOf} "${inactive.get(chainBreak.parentId)}" is inactive`
+        : `${parentOf} (${chainBreak.parentId}) doesn't exist in the site`;
     case 'no-parent-reference':
       return `${parentOf} isn't set (parententitypermission is empty)`;
     case 'cycle':

@@ -13,6 +13,7 @@ import {
   type Site,
   type SiteRecord,
   type SourceRef,
+  type TypedRecords,
 } from '../model/schema.js';
 import type { FileSource } from './files.js';
 
@@ -196,21 +197,25 @@ export function buildSite(
   records.sort((a, b) => compare(a.source.file, b.source.file));
   const typed = <T extends NamedSchema>(schema: T, record: SiteRecord) =>
     typedRecord(schema, record, mapping, problems);
-  const ofKind = <T extends NamedSchema>(kind: string, schema: T) =>
+  const ofKind = <T extends NamedSchema>(kind: string, schema: T, active: boolean) =>
     records
-      .filter((r) => r.kind === kind)
+      .filter((r) => r.kind === kind && isInactive(r) !== active)
       .flatMap((r) => typed(schema, r))
       .sort((a, b) => compare(a.name, b.name) || compare(a.id, b.id));
+  const typedRecords = (active: boolean): TypedRecords => ({
+    webRoles: ofKind('webrole', webRoleSchema, active),
+    tablePermissions: ofKind('tablepermission', tablePermissionSchema, active),
+    siteSettings: ofKind('sitesetting', siteSettingSchema, active),
+    webPageRules: ofKind('webpagerule', webPageRuleSchema, active),
+    websiteAccess: ofKind('websiteaccess', websiteAccessSchema, active),
+  });
 
   const website = typed(websiteSchema, websiteRecord)[0];
   const site = {
     root: source.root,
     records,
-    webRoles: ofKind('webrole', webRoleSchema),
-    tablePermissions: ofKind('tablepermission', tablePermissionSchema),
-    siteSettings: ofKind('sitesetting', siteSettingSchema),
-    webPageRules: ofKind('webpagerule', webPageRuleSchema),
-    websiteAccess: ofKind('websiteaccess', websiteAccessSchema),
+    ...typedRecords(true),
+    inactive: typedRecords(false),
     unrecognizedFiles: files.filter((file) => !claimed.has(file)),
   };
 
@@ -219,6 +224,15 @@ export function buildSite(
     throw new SiteLoadError(`${problems.length} problem(s) reading ${source.label}`, problems);
   }
   return { ...site, website };
+}
+
+/**
+ * Dataverse writes `statecode: 1` (with `statuscode: 2`) on an inactive record and leaves the key
+ * out on an active one, in both layouts.
+ */
+function isInactive(record: SiteRecord): boolean {
+  const state = record.fields.statecode;
+  return state === 1 || state === '1';
 }
 
 function typedRecord<T extends NamedSchema>(

@@ -143,7 +143,13 @@ describe('access graph: parent chains', () => {
         .filter((n) => !n.effective)
         .map((n) => n.permission.name)
         .sort(),
-    ).toEqual(['Comment - Missing Parent', 'Incident - No Role', 'Note - Parent Without Role']);
+    ).toEqual([
+      'Comment - Missing Parent',
+      'Incident - No Role',
+      'Note - Parent Without Role',
+      'Order - Inactive Role',
+      'Survey Answer - Inactive Parent',
+    ]);
     const caseManager = graph.grants(roleId(broken, 'Case Manager')).map((g) => g.permission.name);
     expect(caseManager).not.toContain('Comment - Missing Parent');
     expect(caseManager).not.toContain('Note - Parent Without Role');

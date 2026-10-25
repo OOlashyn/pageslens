@@ -1,0 +1,15 @@
+# clean: inactive (statecode 1), so global-write-anonymous must not fire
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000001
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: dwcrm_survey
+entityname: Survey - Inactive Anonymous Create
+id: 00000000-0000-0000-0002-000000000020
+read: true
+scope: 756150000
+statecode: 1
+statuscode: 2
+write: false

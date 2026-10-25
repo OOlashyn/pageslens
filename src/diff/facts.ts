@@ -29,6 +29,8 @@ export interface SiteFacts {
   webApi: Map<string, WebApiTable>;
   /** By lower-cased name; the first of duplicate names, as `test` reads them. */
   settings: Map<string, SiteSetting>;
+  /** Ids of the records marked inactive, which take part in nothing above. */
+  inactive: Set<string>;
 }
 
 export function siteFacts(site: Site | undefined): SiteFacts {
@@ -38,11 +40,18 @@ export function siteFacts(site: Site | undefined): SiteFacts {
     grants: [],
     webApi: new Map(),
     settings: new Map(),
+    inactive: new Set(),
   };
   if (!site) return facts;
 
   const graph = buildAccessGraph(site);
   facts.roles = site.webRoles;
+  const { webRoles, tablePermissions, siteSettings, webPageRules, websiteAccess } = site.inactive;
+  facts.inactive = new Set(
+    [...webRoles, ...tablePermissions, ...siteSettings, ...webPageRules, ...websiteAccess].map(
+      (record) => record.id,
+    ),
+  );
   for (const node of graph.permissions) facts.permissions.set(node.permission.id, node);
   for (const node of graph.permissions) {
     if (!node.effective) continue;

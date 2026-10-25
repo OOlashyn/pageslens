@@ -52,3 +52,5 @@ These have no web role, or a parent chain that is broken or reaches a permission
 - Comment - Missing Parent (`adx_portalcomment`)
 - Incident - No Role (`incident`)
 - Note - Parent Without Role (`annotation`)
+- Order - Inactive Role (`dwcrm_order`)
+- Survey Answer - Inactive Parent (`dwcrm_surveyanswer`)

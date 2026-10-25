@@ -1,0 +1,7 @@
+# neutral role-removed: deactivated on head
+anonymoususersrole: false
+authenticatedusersrole: false
+id: 00000000-0000-0000-0001-000000000004
+name: Partners
+statecode: 1
+statuscode: 2

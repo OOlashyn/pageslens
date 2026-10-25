@@ -30,6 +30,7 @@ export function renderSiteDocs(site: Site): Map<string, string> {
     `- ${site.webRoles.length} web roles, ${site.tablePermissions.length} table permissions ` +
       `(${effective.length} grant access) on ${tables.size} tables`,
     `- Web API enabled on ${webApi.filter((t) => t.enabled).length} tables`,
+    ...inactiveLine(site),
     '',
     '## Pages',
     '',
@@ -46,6 +47,22 @@ export function renderSiteDocs(site: Site): Map<string, string> {
     [DOC_FILES.accessMatrix, renderAccessMatrix(site, graph)],
     [DOC_FILES.webApi, renderWebApiSurface(site, webApi)],
   ]);
+}
+
+/** Inactive records take part in nothing on these pages; say how many were left out. */
+function inactiveLine(site: Site): string[] {
+  const { webRoles, tablePermissions, siteSettings, webPageRules, websiteAccess } = site.inactive;
+  const parts = [
+    [webRoles.length, 'web role', 'web roles'],
+    [tablePermissions.length, 'table permission', 'table permissions'],
+    [siteSettings.length, 'site setting', 'site settings'],
+    [webPageRules.length, 'page access rule', 'page access rules'],
+    [websiteAccess.length, 'website access record', 'website access records'],
+  ] as const;
+  const counted = parts
+    .filter(([count]) => count > 0)
+    .map(([count, one, many]) => `${count} ${count === 1 ? one : many}`);
+  return counted.length > 0 ? [`- Left out as inactive: ${counted.join(', ')}`] : [];
 }
 
 /** Writes the pages into `outDir`, creating it. Other files in the folder are left alone. */
