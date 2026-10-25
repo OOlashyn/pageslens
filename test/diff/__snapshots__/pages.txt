@@ -1,0 +1,31 @@
+Access changes in test/fixtures/diff/pages/base → test/fixtures/diff/pages/head: 8 wider, 2 narrower, 3 neutral
+
+Wider
+  + Anyone can now read /internal/ (and 1 page below it): Restrict Read rule "Employees Only" removed
+      webpagerule.yml (base)
+  + Anyone can now read /news/: new page
+      web-pages/news/News.webpage.yml
+  + "Managers" can now publish /members/: the roles of Restrict Read rule "Members and Admins" changed; Grant Change rule "Managers Publish Members" added (also reported by lint: grant-change-overrides-read)
+      webpagerule.yml
+  + "Partners" can now read /docs/: the roles of Restrict Read rule "Docs Readers" changed (also reported by lint: grant-change-overrides-read)
+      webpagerule.yml
+  + "Partners" can now read /internal/reports/: Restrict Read rule "Employees Only" removed
+      webpagerule.yml (base)
+  + Who can read /lost/ is known again: anyone, anonymous visitors included
+      web-pages/lost/Lost.webpage.yml
+  + Who can read /lost/child/ is known again: anyone, anonymous visitors included
+      web-pages/lost-child/Lost-Child.webpage.yml
+  + Restrict Read rule "Shared A" on /shared/ no longer covers the web files directly under the page (also reported by lint: page-rules-conflict)
+      webpagerule.yml
+Narrower
+  - Every signed-in user can no longer read /members/: the roles of Restrict Read rule "Members and Admins" changed; Grant Change rule "Managers Publish Members" added
+      webpagerule.yml
+  - Page /locked/ removed
+      web-pages/locked/Locked.webpage.yml (base)
+Neutral
+  ~ Page "Account" moved from /account/ to /my-account/
+      web-pages/account/Account.webpage.yml
+  ~ Same access to /internal/team/ from other rules: Restrict Read rule "Employees Only" removed
+      webpagerule.yml (base)
+  ~ Same access to /my-account/ from other rules: Restrict Read rule "Signed-in Only" renamed to "Signed-in Users Only"
+      webpagerule.yml

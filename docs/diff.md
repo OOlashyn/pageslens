@@ -97,23 +97,45 @@ A short, fixed list, read with Power Pages defaults when a setting isn't there, 
 
 The opposite change is narrower. Setting names don't depend on case. Other settings aren't access changes to `diff`: git already shows them.
 
-Not compared yet: page access rules, Server Logic, cloud flows and website access.
+### Pages
+
+Classic sites only, when both sides are classic: page access rules decide who opens a page there. Each root page is matched by GUID, and its readers (who can read it, as `docs` shows in `pages.md`) and publishers (the roles of the Grant Change rules above it) are compared. A change says who gained or lost: anyone, every signed-in user, or a role.
+
+| Change                                                                     | Class                                                                                                                                           |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Someone can now read a page, or publish it                                 | wider                                                                                                                                           |
+| Someone can no longer read a page, or publish it                           | narrower                                                                                                                                        |
+| A new page someone can read                                                | wider (`new page`)                                                                                                                              |
+| A new page nobody can read                                                 | neutral                                                                                                                                         |
+| A page removed                                                             | narrower                                                                                                                                        |
+| Who can read a page becomes unknown (a broken page tree), or known again   | wider                                                                                                                                           |
+| A page moved (another parent or partial URL)                               | neutral; its readers are compared as well                                                                                                       |
+| The same readers from other rules (a rule renamed, removed with no effect) | neutral                                                                                                                                         |
+| A rule's scope changed                                                     | wider when a Restrict Read stops covering the web files directly under its page, or a Grant Change starts covering them; narrower the other way |
+
+A rule changes its page and every page below it, so a change that a page shares with the pages below it is one line, on the topmost page: "Anyone can now read /internal/ (and 4 pages below it)". The JSON output lists every page (`pages`). Each line names the rules that changed on the way down to the page, and their files.
+
+Not compared yet: Server Logic, cloud flows and website access.
 
 ### Change kinds
 
 The JSON output's `kind` is one of a closed list:
 
-| Kind                                                           | Class                                                                                                                        |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `grant-gained`                                                 | wider, or neutral when global scope already covers it. A scope change on one permission that widens access                   |
-| `grant-lost`                                                   | narrower, or neutral when global scope still covers it. A scope change on one permission that narrows access                 |
-| `grant-rows-changed`                                           | wider                                                                                                                        |
-| `grant-source-changed`                                         | neutral: same access from another permission, a renamed permission, or a scope change that global scope covers on both sides |
-| `webapi-enabled`, `webapi-fields-wider`                        | wider                                                                                                                        |
-| `webapi-disabled`, `webapi-fields-narrower`                    | narrower                                                                                                                     |
-| `role-added`, `role-removed`, `role-renamed`, `role-recreated` | neutral                                                                                                                      |
-| `role-audience-changed`                                        | wider or narrower                                                                                                            |
-| `setting-wider`, `setting-narrower`                            | wider, narrower                                                                                                              |
+| Kind                                                              | Class                                                                                                                        |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `grant-gained`                                                    | wider, or neutral when global scope already covers it. A scope change on one permission that widens access                   |
+| `grant-lost`                                                      | narrower, or neutral when global scope still covers it. A scope change on one permission that narrows access                 |
+| `grant-rows-changed`                                              | wider                                                                                                                        |
+| `grant-source-changed`                                            | neutral: same access from another permission, a renamed permission, or a scope change that global scope covers on both sides |
+| `webapi-enabled`, `webapi-fields-wider`                           | wider                                                                                                                        |
+| `webapi-disabled`, `webapi-fields-narrower`                       | narrower                                                                                                                     |
+| `role-added`, `role-removed`, `role-renamed`, `role-recreated`    | neutral                                                                                                                      |
+| `role-audience-changed`                                           | wider or narrower                                                                                                            |
+| `setting-wider`, `setting-narrower`                               | wider, narrower                                                                                                              |
+| `page-read-gained`, `page-publish-gained`, `page-readers-unknown` | wider                                                                                                                        |
+| `page-read-lost`, `page-publish-lost`, `page-removed`             | narrower                                                                                                                     |
+| `page-added`, `page-moved`, `page-rules-changed`                  | neutral                                                                                                                      |
+| `page-rule-scope-changed`                                         | wider or narrower                                                                                                            |
 
 ## Order and wording
 

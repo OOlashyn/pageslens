@@ -1,0 +1,24 @@
+# Policy for test/fixtures/registration: every page statement shape, passing and failing.
+# Each statement's expected result is in the comment after it.
+pages:
+  - only "C1 ASP" can read page "/delete-course/" # fail: no Restrict Read rule on it
+  - only "C1 ASP" can read page "/Create-Course" # pass: URLs ignore case and slashes
+  - only "C1 ASP" can read page "/admin-home/" # fail: Authenticated Users on its rule
+  - anonymous cannot read page "/my-registrations/" # pass
+  - anonymous can read page "/" # pass
+  - authenticated can read page "/my-registrations/" # pass
+  - authenticated cannot read page "/v1/" # fail: C1 ASP
+  - role "C1 ASP" can read page "/my-registrations/" # pass: its members are signed in
+  - role "Administrators" can read page "/v1/v2/" # fail: Restrict Read on v1 keeps it out
+  - role "Administrators" cannot read page "/v1/v3/" # pass
+  - only "C1 ASP" can read pages under "/v1/" # pass: the page and both pages below it
+  - only authenticated can read pages under "/v1/" # pass: C1 ASP members are signed in
+  - nobody can read page "/vAnon/" # pass: the Anonymous Users role lets nobody in
+  - nobody can read page "/profile/" # fail: anyone
+  - only anonymous, authenticated can read page "/profile/" # pass
+  - only "C1 ASP" can publish pages under "/" # pass
+  - nobody can publish page "/v1/v3/" # fail: Grant Change on /v1/
+  - role "Administrators" can publish page "/" # fail: no Grant Change rule
+  - id: admin-pages
+    check: role "C1 ASP" cannot read page "/edit-course/" # fail
+    because: Example of the mapping form

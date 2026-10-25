@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder } from '../../src/adapters/site-folder.js';
 import { evaluatePolicy } from '../../src/policy/evaluate.js';
@@ -9,8 +10,10 @@ const broken = await loadSiteFolder('test/fixtures/broken');
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const brokenPolicy = await loadPolicy('.', 'test/fixtures/policies/broken.policy.yaml');
 const ecofluxPolicy = await loadPolicy('.', 'test/fixtures/policies/ecoflux.policy.yaml');
+const registration = await loadSiteFolder('test/fixtures/registration');
+const registrationPolicy = await loadPolicy('.', 'test/fixtures/policies/registration.policy.yaml');
 
-const checkOf = (section: 'access' | 'webapi' | 'settings', text: string) =>
+const checkOf = (section: 'access' | 'webapi' | 'settings' | 'pages', text: string) =>
   parsePolicy(`${section}:\n  - ${text}\n`, 'p.yaml').statements[0]!.check;
 
 /** The problems a policy text is rejected with. */
@@ -106,7 +109,7 @@ describe('parsePolicy', () => {
         'acess:\n  - x\nwebapi:\n  - fields are hidden\n  - id: a\n    check: fields are explicit\n  - id: a\n    check: fields are explicit\n  - { check: fields are explicit, why: x }\n',
       ),
     ).toEqual([
-      'p.yaml:1: unknown section "acess" (expected access, webapi, settings)',
+      'p.yaml:1: unknown section "acess" (expected access, webapi, settings, pages)',
       'p.yaml:4: expected "explicit", found "hidden": fields are hidden',
       'p.yaml:9: unknown key "why" (expected check, id, because)',
       'p.yaml:7: id "a" is already used on line 5',
@@ -211,6 +214,90 @@ describe('evaluatePolicy', () => {
     expect(eco!.evidence[1]).toMatchObject({
       message: 'Authentication/Registration/OpenRegistrationEnabled is "true"',
     });
+  });
+});
+
+describe('page statements', () => {
+  it('reads every page statement shape', () => {
+    expect(checkOf('pages', 'only "C1 ASP", authenticated can read pages under "/v1/"')).toEqual({
+      kind: 'page',
+      form: 'only',
+      who: [{ kind: 'role', name: 'C1 ASP' }, { kind: 'authenticated' }],
+      action: 'read',
+      page: { kind: 'under', url: '/v1/' },
+    });
+    expect(checkOf('pages', 'nobody can publish page "/"')).toEqual({
+      kind: 'page',
+      form: 'nobody',
+      who: [],
+      action: 'publish',
+      page: { kind: 'page', url: '/' },
+    });
+    expect(checkOf('pages', 'anonymous cannot read page "/x/"')).toMatchObject({
+      form: 'cannot',
+      who: [{ kind: 'anonymous' }],
+    });
+    expect(problems('pages:\n  - anonymous cannot read "/x/"\n')).toEqual([
+      'p.yaml:2: expected "page" or "pages", found "/x/": anonymous cannot read "/x/"',
+    ]);
+  });
+
+  it('passes and fails as the fixture comments say', () => {
+    const result = evaluatePolicy(registrationPolicy, registration);
+    const lines = readFileSync('test/fixtures/policies/registration.policy.yaml', 'utf8').split(
+      '\n',
+    );
+    for (const r of result.results) {
+      const expected = /# (pass|fail)/.exec(
+        `${lines[r.statement.line - 1]} ${lines[r.statement.line]}`,
+      )?.[1];
+      expect(r.passed ? 'pass' : 'fail', r.statement.text).toBe(expected);
+    }
+    expect(result.counts).toEqual({ passed: 11, failed: 8 });
+  });
+
+  it('names the rule or page that breaks a statement', () => {
+    const result = evaluatePolicy(registrationPolicy, registration);
+    const evidence = (text: string) =>
+      result.results.find((r) => r.statement.text === text)!.evidence;
+    expect(evidence('only "C1 ASP" can read page "/delete-course/"')).toEqual([
+      {
+        message: 'anyone can read /delete-course/: no Restrict Read rule on it or above it',
+        file: 'web-pages/[admin]-delete-course/[Admin]-Delete-Course.webpage.yml',
+        recordId: '27120917-5fcf-f111-a05a-70a8a52c89ad',
+      },
+    ]);
+    expect(evidence('nobody can publish page "/v1/v3/"')[0]!.message).toBe(
+      '"C1 ASP" can publish /v1/v3/ through Grant Change rule "Grant Change" on /v1/',
+    );
+  });
+
+  it('matches the text output snapshot', async () => {
+    const result = evaluatePolicy(registrationPolicy, registration);
+    await expect(
+      formatText(result, registration, 'site', 'registration.policy.yaml'),
+    ).toMatchFileSnapshot('__snapshots__/registration.txt');
+  });
+
+  it('rejects unknown, inactive and code-site pages', () => {
+    const errors = (site: typeof registration, statement: string) => {
+      try {
+        evaluatePolicy(parsePolicy(`pages:\n  - ${statement}\n`, 'p.yaml'), site);
+      } catch (error) {
+        if (error instanceof PolicyError) return error.problems;
+        throw error;
+      }
+      return [];
+    };
+    expect(errors(registration, 'anonymous cannot read page "/my-registration/"')).toEqual([
+      'p.yaml:2: no web page has the URL /my-registration/ (did you mean "/my-registrations/"?): anonymous cannot read page "/my-registration/"',
+    ]);
+    expect(errors(registration, 'anonymous cannot read page "/contact-us/"')).toEqual([
+      'p.yaml:2: the web page at /contact-us/ ("Contact us") is inactive: anonymous cannot read page "/contact-us/"',
+    ]);
+    expect(errors(ecoflux, 'anonymous cannot read page "/"')).toEqual([
+      'p.yaml:2: page access rules don\'t apply to code sites, so pageslens can\'t check page statements there: anonymous cannot read page "/"',
+    ]);
   });
 });
 

@@ -129,9 +129,11 @@ webapi:
   - only contact, incident are enabled
 settings:
   - registration is invite only
+pages: # classic sites
+  - only "C1 ASP" can read pages under "/admin/"
 ```
 
-Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy file, an unreadable statement or an unknown role. A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`), and `--format sarif` gives SARIF for code scanning.
+Exit codes: `0` every statement passes, `1` at least one fails, `2` no policy file, an unreadable statement, or an unknown role or page. A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`), and `--format sarif` gives SARIF for code scanning.
 
 The full grammar, what each statement means and how to write a good policy: [docs/policy.md](docs/policy.md).
 

@@ -1,0 +1,33 @@
+PagesLensEDM2 - registrationsite-p7ero (site), policy registration.policy.yaml
+
+pages
+  FAIL  only "C1 ASP" can read page "/delete-course/"  (line 4)
+        anyone can read /delete-course/: no Restrict Read rule on it or above it  web-pages/[admin]-delete-course/[Admin]-Delete-Course.webpage.yml
+  pass  only "C1 ASP" can read page "/Create-Course"
+  FAIL  only "C1 ASP" can read page "/admin-home/"  (line 6)
+        every signed-in user can read /admin-home/: Restrict Read rule "Restrict Read on C1 Courses Home" on /admin-home/ lets them in  webpagerule.yml
+  pass  anonymous cannot read page "/my-registrations/"
+  pass  anonymous can read page "/"
+  pass  authenticated can read page "/my-registrations/"
+  FAIL  authenticated cannot read page "/v1/"  (line 10)
+        "C1 ASP" can read /v1/ through Grant Change rule "Grant Change" on /v1/  webpagerule.yml
+  pass  role "C1 ASP" can read page "/my-registrations/"
+  FAIL  role "Administrators" can read page "/v1/v2/"  (line 12)
+        "Administrators" can't read /v1/v2/: Restrict Read rule "Restrict Read on v1" on /v1/ lets in "C1 ASP"  webpagerule.yml
+  pass  role "Administrators" cannot read page "/v1/v3/"
+  pass  only "C1 ASP" can read pages under "/v1/"
+  pass  only authenticated can read pages under "/v1/"
+  pass  nobody can read page "/vAnon/"
+  FAIL  nobody can read page "/profile/"  (line 17)
+        anyone can read /profile/: no Restrict Read rule on it or above it  web-pages/profile/Profile.webpage.yml
+  pass  only anonymous, authenticated can read page "/profile/"
+  pass  only "C1 ASP" can publish pages under "/"
+  FAIL  nobody can publish page "/v1/v3/"  (line 20)
+        "C1 ASP" can publish /v1/v3/ through Grant Change rule "Grant Change" on /v1/  webpagerule.yml
+  FAIL  role "Administrators" can publish page "/"  (line 21)
+        "Administrators" can't publish /: no Grant Change rule on it or above it lets it in  web-pages/home/Home.webpage.yml
+  FAIL  role "C1 ASP" cannot read page "/edit-course/"  (line 22, admin-pages)
+        because: Example of the mapping form
+        "C1 ASP" can read /edit-course/: Restrict Read rule "Restrict Read on Edit Course" on /edit-course/ lets it in  webpagerule.yml
+
+11 passed, 8 failed

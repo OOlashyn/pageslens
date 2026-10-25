@@ -24,6 +24,16 @@ export const CHANGE_KINDS = [
   'role-audience-changed',
   'setting-wider',
   'setting-narrower',
+  'page-read-gained',
+  'page-read-lost',
+  'page-readers-unknown',
+  'page-publish-gained',
+  'page-publish-lost',
+  'page-added',
+  'page-removed',
+  'page-moved',
+  'page-rules-changed',
+  'page-rule-scope-changed',
 ] as const;
 export type ChangeKind = (typeof CHANGE_KINDS)[number];
 
@@ -57,6 +67,10 @@ export interface Change {
   /** Web API field changes: the fields added or removed. */
   fields?: string[];
   setting?: string;
+  /** Page changes: the URL of the (topmost) page, on head, or on base for a removed page. */
+  page?: string;
+  /** A line that stands for a branch: every page in it, the topmost first. */
+  pages?: string[];
   /** Wider changes only: lint rules the head records behind it also trip. */
   lint?: string[];
   sources: ChangeSource[];

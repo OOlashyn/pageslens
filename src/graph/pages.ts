@@ -67,6 +67,10 @@ export interface PageGraph {
   page(id: string): PageNode | undefined;
   /** The page node for a rule's page, if it has one. */
   pageOf(rule: RuleNode): PageNode | undefined;
+  /** Active root pages at a URL, matched as Power Pages does: without case (`normalizeUrl`). */
+  atUrl(url: string): PageNode[];
+  /** Inactive root pages with the URL they'd have, for messages. */
+  inactive: { page: WebPage; url: string }[];
 }
 
 export function buildPageGraph(site: Site): PageGraph {
@@ -111,13 +115,44 @@ export function buildPageGraph(site: Site): PageGraph {
     })
     .sort((a, b) => compare(a.url, b.url) || compare(a.page.name, b.page.name));
   const nodesById = new Map(nodes.map((node) => [node.page.id, node]));
+  const byUrl = Map.groupBy(nodes, (node) => normalizeUrl(node.url));
+  // An inactive page's URL, through active and inactive parents alike
+  const allPages = new Map([...pagesById, ...inactivePages]);
+  const inactive = site.inactive.webPages
+    .filter((page) => page.isRoot)
+    .map((page) => ({
+      page,
+      url: urlOf([page, ...followPath(page, allPages, new Map()).ancestors]),
+    }));
 
   return {
     pages: nodes,
     rules,
     page: (id) => nodesById.get(rootOf(pagesById.get(id.toLowerCase()))?.id ?? ''),
     pageOf: (rule) => (rule.page ? nodesById.get(rule.page.id) : undefined),
+    atUrl: (url) => byUrl.get(normalizeUrl(url)) ?? [],
+    inactive,
   };
+}
+
+/** `/admin-home/` for `Admin-Home`, `/admin-home` or `/Admin-Home/`: Power Pages URLs ignore case. */
+export function normalizeUrl(url: string): string {
+  const path = url
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, '');
+  return path ? `/${path}/` : '/';
+}
+
+/**
+ * Who can publish a page: the roles of the Grant Change rules on its path. Undefined when the
+ * path is broken.
+ */
+export function publishersOf(node: PageNode): Audience | undefined {
+  if (node.pathBreak) return undefined;
+  return node.grantChanges
+    .map((grant) => grant.audience)
+    .reduce(union, { kind: 'roles', roles: [] } as Audience);
 }
 
 /**
@@ -161,7 +196,7 @@ function intersect(a: Audience, b: Audience): Audience {
   return { kind: 'roles', roles: a.roles.filter((role) => passes(b, role)) };
 }
 
-function union(a: Audience, b: Audience): Audience {
+export function union(a: Audience, b: Audience): Audience {
   if (a.kind === 'anyone' || b.kind === 'anyone') return { kind: 'anyone' };
   if (a.kind === 'signed-in' || b.kind === 'signed-in') return { kind: 'signed-in' };
   const roles = new Map([...a.roles, ...b.roles].map((role) => [role.id, role]));

@@ -155,5 +155,6 @@ function label(change: Change): string {
   if (change.kind.startsWith('webapi-')) return `Web API ${change.table}`;
   if (change.kind.startsWith('role-')) return `Role "${change.role!.name}"`;
   if (change.setting) return change.setting;
+  if (change.page) return `Page ${change.page}`;
   return `"${change.sources[0]?.name ?? ''}"`;
 }
