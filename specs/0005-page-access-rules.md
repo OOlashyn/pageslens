@@ -70,7 +70,7 @@ What it teaches:
 - **Inactive records must be skipped, everywhere.**
   - The two rules on Home are inactive. With them applied, the whole site would look restricted to Administrators and C1 ASP. In fact it's public, apart from five pages.
   - The same goes beyond pages. The site's "Feedback" table permission is inactive, but pageslens 0.5.0 reports it: `global-write-anonymous` and `global-write-authenticated` fire on it, and the access matrix shows its grants.
-  - Today's model ignores `statecode` for every kind. That's a bug in the released lint, `docs`, `test` and `diff`, and it's fixed before the page work (open question 10).
+  - Today's model ignores `statecode` for every kind. That was a bug in the released lint, `docs`, `test` and `diff`. It's fixed on `main` (PR #25): inactive records go to `site.inactive` and take part in nothing.
 - **"[Admin] Delete Course" has no rule.** Its three sibling admin pages are restricted to C1 ASP, but anyone can open this one, anonymous visitors included. No rule is broken, so lint can't know it's a mistake. The `pages.md` docs make it visible, a policy statement (`only "C1 ASP" can read page "/delete-course/"`) makes it a failure, and `diff` would have shown it as wider when the page was added (open question 11).
 - **A Restrict Read that lists Authenticated Users lets every signed-in user in.** On "[Admin] Courses Home", that makes Administrators and C1 ASP redundant, and the admin page is open to any signed-in user. That's probably not what was meant. It's a new lint candidate, `page-rule-authenticated`.
 - **Scope 2 on the home page** ("Restrict Read on Home") would leave the 26 web files under Home public. That's what Microsoft's note describes, and it's correct for CSS and images. pageslens should show the scope, not flag it.
@@ -166,6 +166,31 @@ The same model is read, and the rules that don't depend on page rendering run on
 5. Does `pac pages download` include the rule–publishing-state links? (Inactive records: yes, as `statecode: 1`.)
 6. Does `download-code-site` write `statecode` for inactive records the same way?
 
+### How to check it
+
+Run these on a classic test site (the Registration site works), in the Portal Management app. Each check needs:
+
+- **One private browser window per user.** Use three test contacts:
+  - A has only the Authenticated Users role;
+  - B has C1 ASP;
+  - C has Administrators.
+    Use a fourth window for anonymous visits.
+- **The site's cache cleared after each change.** Use **Sync** in the design studio, or restart the site.
+
+Create a small branch under Home first: **V1** (`/v1/`), with two children, **V2** (`/v1/v2/`) and **V3** (`/v1/v3/`).
+
+| #   | Set up                                                                                                                                | Check                                               | Read the result                                                                                   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | Restrict Read on V1: C1 ASP. Restrict Read on V3: Authenticated Users (the Portal Management app allows it; the design studio warns). | A opens `/v1/v3/`.                                  | Denied: rules on the path **intersect** (the design). Allowed: the **nearest rule wins**.         |
+| 2a  | Keep 1. Restrict Read on V2: Administrators. Grant Change on V1: C1 ASP, scope All content.                                           | B opens `/v1/v2/`.                                  | Allowed: Grant Change overrides Restrict Read below it, as documented.                            |
+| 2b  | Change that Grant Change's scope to Exclude direct child web files.                                                                   | B opens `/v1/v2/`.                                  | Still allowed: scope only affects web files (the design). Denied: scope also limits the override. |
+| 3   | A new page **V4** (`/v4/`) under Home, with one Restrict Read whose only role is Anonymous Users.                                     | Anonymous opens `/v4/`, then A.                     | Who gets in decides how pageslens reads that role. The design assumes everyone.                   |
+| 4   | On "Restrict Read on Create Course", add the **Published** publishing state (the rule's Publishing States tab).                       | Run `pac pages download` again.                     | Any new key in `webpagerule.yml` (or a new file) is the rule–state link.                          |
+| 5   | On a code site, add a Restrict Read on the home page for Administrators only.                                                         | Anonymous opens the site's root and a client route. | Blocked: page rules gate the whole application. Served: they don't apply to code sites.           |
+| 6   | On a code site, deactivate one table permission.                                                                                      | Run `pac pages download-code-site`.                 | Whether `statecode: 1` appears in its `.tablepermission.yml`.                                     |
+
+After checks 1–4, one more `pac pages download` of the classic site gives the page tree for the hand-written fixture (`classic-pages`), with real shapes.
+
 ## Open questions for Oleksandr
 
 1. **The real classic site as a fixture.** Copy it into `test/fixtures/registration/` (without `.portalconfig/`), read-only like EcoFlux? It's public once committed: its names, GUIDs, page content and 26 web files. Recommended: yes, keeping the web file contents too, since they're small and `docs` will list them.
@@ -177,7 +202,7 @@ The same model is read, and the rules that don't depend on page rendering run on
 7. **Page names in `test`.** Identify pages by URL path (`page "/internal/"`), by name, or both? Recommended: URL path. Names repeat across branches, and the URL is what people talk about.
 8. **Code sites.** Run only the rule-record lint rules on code sites in 0.6.0, as above? Recommended: yes.
 9. **Web files.** Include web files in effective access (who can download them) in 0.6.0, or pages only? Recommended: pages only, with the scope shown in `docs`. Web files come with their own docs section later.
-10. **Inactive records.** Fix first, as its own PR in 0.6.0: skip records with `statecode: 1` in the model, so lint, `docs`, `test` and `diff` stop reporting inactive table permissions and settings? And in `diff`, is activating a record wider and deactivating it narrower? Recommended: yes to both. It's a bug in every release so far, and the page work depends on it.
+10. **Inactive records.** Answered: fixed in PR #25, merged. Fix first, as its own PR in 0.6.0: skip records with `statecode: 1` in the model, so lint, `docs`, `test` and `diff` stop reporting inactive table permissions and settings? And in `diff`, is activating a record wider and deactivating it narrower? Recommended: yes to both. It's a bug in every release so far, and the page work depends on it.
 11. **Unrestricted pages next to restricted ones.** Leave "[Admin] Delete Course" to `docs`, `test` and `diff`, or add a heuristic lint rule (an unrestricted page whose siblings are all restricted)? Recommended: no heuristic rule. It would guess at intent, and the policy statement says it exactly.
 
 ## Sources
