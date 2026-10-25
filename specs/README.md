@@ -16,7 +16,7 @@ Design notes for pageslens: why it works the way it does. User docs are the [REA
 | [0002: SARIF output](0002-sarif.md)                  | shipped in 0.4.0                                   |
 | [0003: Access diffs, `pageslens diff`](0003-diff.md) | shipped in 0.4.0                                   |
 | [0004: GitHub Action](0004-github-action.md)         | shipped in 0.5.0                                   |
-| [0005: Page access rules](0005-page-access-rules.md) | lint and docs built for 0.6.0; test and diff later |
+| [0005: Page access rules](0005-page-access-rules.md) | lint and docs shipped in 0.6.0; test and diff next |
 
 ## Writing a spec
 
