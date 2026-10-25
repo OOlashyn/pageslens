@@ -1,7 +1,35 @@
+- adx_name: Grant Change
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 11d590c7-26d0-f111-a05a-70a8a52c89ad
+  adx_webpageid: 520ab6fa-7b87-2201-c1cb-fa36ca8afe70
+- adx_name: Allow Anon Only
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 7ec21211-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 212b598d-25d0-f111-a05a-70a8a52c89ad
+  adx_webpageid: 191385fa-738c-9749-5192-b8caa065909e
 - adx_name: Grant Change to Content
   adx_right: 1
   adx_scope: 1
   adx_webpageaccesscontrolruleid: 33c31211-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Admin Only
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 75c31211-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 4128d58d-26d0-f111-a05a-70a8a52c89ad
+  adx_webpageid: 37cf1b89-1487-73d2-ed12-7894d0604470
+- adx_name: Restrict Read on v1
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 4d08c09e-0dcd-1323-f050-3e26f817330a
+  adx_webpageid: 520ab6fa-7b87-2201-c1cb-fa36ca8afe70
 - adx_name: Restrict Read on Home
   adx_right: 2
   adx_scope: 2
@@ -12,6 +40,13 @@
   adx_webpageid: 58120917-5fcf-f111-a05a-70a8a52c89ad
   statecode: 1
   statuscode: 2
+- adx_name: Allow Auth
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 02110b1d-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 854d02c0-21d0-f111-a05a-70a8a52c89ad
+  adx_webpageid: f508f0a2-9ff7-81ea-affd-1361dcf3917d
 - adx_name: Restrict Read on Create Course
   adx_right: 2
   adx_scope: 1

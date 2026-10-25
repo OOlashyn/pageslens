@@ -44,8 +44,8 @@ describe('page graph', () => {
     expect(readers(classicPages, '/docs/')).toBe('"Administrators", "Employees"');
   });
 
-  it('reads the built-in roles as everyone and every signed-in user', () => {
-    expect(readers(classicPages, '/public/')).toBe('anyone, anonymous visitors included');
+  it('reads Authenticated Users as every signed-in user and Anonymous Users as nobody', () => {
+    expect(readers(classicPages, '/public/')).toBe('nobody');
     expect(readers(classicPages, '/members/')).toBe('every signed-in user');
     expect(readers(classicPages, '/account/')).toBe('every signed-in user');
     expect(readers(classicPages, '/locked/')).toBe('nobody');
@@ -65,7 +65,17 @@ describe('page graph', () => {
   it('skips the inactive rules on the real site', () => {
     const kinds = registration.pages.map((node) => (node.readers as Audience).kind);
     expect(kinds.filter((kind) => kind === 'anyone')).toHaveLength(12);
+    expect(readers(registration, '/')).toBe('anyone, anonymous visitors included');
     expect(readers(registration, '/delete-course/')).toBe('anyone, anonymous visitors included');
     expect(readers(registration, '/edit-course/')).toBe('"C1 ASP"');
+  });
+
+  it('matches what was checked on the real site', () => {
+    // 1: Authenticated Users on /v1/v3/ doesn't get past C1 ASP on /v1/
+    expect(readers(registration, '/v1/v3/')).toBe('"C1 ASP"');
+    // 2a and 2b: the Grant Change on /v1/ lets C1 ASP past Administrators on /v1/v2/
+    expect(readers(registration, '/v1/v2/')).toBe('"C1 ASP"');
+    // 3: the Anonymous Users role lets nobody in
+    expect(readers(registration, '/vAnon/')).toBe('nobody');
   });
 });

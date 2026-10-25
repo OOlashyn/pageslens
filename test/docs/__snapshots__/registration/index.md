@@ -4,7 +4,7 @@
 
 - 4 web roles, 10 table permissions (10 grant access) on 7 tables
 - Web API enabled on 5 tables
-- 17 web pages, 12 open to anyone, 6 page access rules
+- 21 web pages, 12 open to anyone, 11 page access rules
 - Left out as inactive: 1 table permission, 2 page access rules, 1 web page
 
 ## Pages

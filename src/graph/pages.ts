@@ -1,15 +1,15 @@
 import { compareText as compare } from '../model/normalize.js';
 import type { Site, WebPage, WebPageRule, WebRole } from '../model/schema.js';
 
-// Who can read each page, from Microsoft's documented semantics, read conservatively where the
-// docs leave a gap (specs/0005-page-access-rules.md):
+// Who can read each page, from Microsoft's documented semantics as checked on a classic site, read
+// conservatively where neither says (specs/0005-page-access-rules.md):
 // - a rule applies to its page and every page below it;
 // - with no Restrict Read on the path, anyone can read the page;
-// - a user has to pass every Restrict Read on the path (they intersect; to verify), but passing
-//   one of several on the same page is enough (Microsoft calls that a conflict and doesn't say);
-// - a Grant Change role reads its whole branch, whatever Restrict Read says;
-// - a rule listing Anonymous Users is passed by everyone, one listing Authenticated Users by every
-//   signed-in user, as are a custom role's members.
+// - a user has to pass every Restrict Read on the path (they intersect), but passing one of
+//   several on the same page is enough (Microsoft calls that a conflict and doesn't say);
+// - a Grant Change role reads its whole branch, whatever Restrict Read says, and whatever its scope;
+// - the Anonymous Users role in a rule lets nobody in, anonymous visitors included; the
+//   Authenticated Users role lets every signed-in user in, as are a custom role's members.
 // Pages carry access through their root page; content pages (one per language) follow it.
 
 export const RIGHTS = { grantChange: 1, restrictRead: 2 } as const;
@@ -120,11 +120,15 @@ export function buildPageGraph(site: Site): PageGraph {
   };
 }
 
-/** Who passes a rule with these roles. A rule with no role is passed by nobody. */
+/**
+ * Who passes a rule with these roles. A rule with no role is passed by nobody, and so is the
+ * Anonymous Users role: on a page restricted to it, anonymous and signed-in visitors were both
+ * refused.
+ */
 export function audienceOf(roles: WebRole[]): Audience {
-  if (roles.some((role) => role.anonymous)) return { kind: 'anyone' };
-  if (roles.some((role) => role.authenticated)) return { kind: 'signed-in' };
-  return { kind: 'roles', roles: sortRoles(roles) };
+  const counted = roles.filter((role) => !role.anonymous);
+  if (counted.some((role) => role.authenticated)) return { kind: 'signed-in' };
+  return { kind: 'roles', roles: sortRoles(counted) };
 }
 
 /** Whether a member of `role` passes a rule with this audience. */

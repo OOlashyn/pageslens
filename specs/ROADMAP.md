@@ -12,11 +12,10 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Before releasing `0.6.0`:** review the page lint rules' wording and severities on a real classic site, and finish the release notes. The Dataverse checks in spec 0005 aren't needed to release: lint and `docs` say which readings are assumed.
+1. **Before releasing `0.6.0`:** review the page lint rules' wording and severities, and finish the release notes. The spec 0005 checks are done, and their results are built in.
 2. **Release `0.6.0`** with page access rules (lint and `docs`, classic sites) and the fixes already on `main`.
-3. **Run the spec 0005 checks** ("How to check it") in a Dataverse environment, and adjust `src/graph/pages.ts` where a result contradicts the design (open question 4 below).
-4. **Page access in `test` and `diff` (0.7.0)**, after the checks: `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
-5. Then the candidates below.
+3. **Page access in `test` and `diff` (0.7.0):** `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
+4. Then the candidates below.
 
 ## Verification still owed
 
@@ -28,7 +27,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 1. Does an Account-scope permission without `accountrelationship` (as in EcoFlux) grant anything at runtime? Decides whether `scope-relationship-missing` stays an error.
 2. A child permission with a web role its parent lacks: does that role get access at runtime? Decides a `parent-roles-not-subset` rule.
 3. Does a standard data model site download in the same layout as an enhanced one, as the README expects?
-4. Page access rules ([0005](0005-page-access-rules.md), "Verification owed"): nested Restrict Read (intersection or nearest wins), the Anonymous Users role in a rule, Restrict Read on a code site's home page, the Grant Change scope, whether downloads include publishing-state links, and whether code site downloads write `statecode`.
+4. Page access rules ([0005](0005-page-access-rules.md)): which rule wins when a page has several Restrict Read rules, and what the Anonymous Users role does on a Grant Change rule. Everything else in its "Verification owed" was checked.
 
 ## Candidates
 

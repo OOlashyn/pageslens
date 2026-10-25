@@ -117,7 +117,7 @@
             "warning",
             "error"
           ],
-          "description": "A page access rule lists the Anonymous Users role, which Microsoft says not to assign to pages. Default: warning."
+          "description": "A page access rule lists the Anonymous Users role, which lets nobody in, anonymous visitors included. Default: error."
         },
         "page-rules-conflict": {
           "enum": [
