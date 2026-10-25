@@ -66,6 +66,31 @@ describe('loadSiteFolder: classic', async () => {
     });
   });
 
+  it('reads the real classic download: layout, root and content pages', async () => {
+    const registration = await loadSiteFolder('test/fixtures/registration');
+    expect(registration.layout).toBe('classic');
+    expect(site.layout).toBe('classic');
+    const roots = registration.webPages.filter((page) => page.isRoot);
+    expect(roots).toHaveLength(17);
+    expect(registration.webPages).toHaveLength(34);
+    expect(roots.find((page) => page.name === '[Admin] Delete-Course')).toMatchObject({
+      parentPageId: '58120917-5fcf-f111-a05a-70a8a52c89ad',
+      partialUrl: 'delete-course',
+      hiddenFromSitemap: false,
+    });
+    const content = registration.webPages.find(
+      (page) => !page.isRoot && page.name === '[Admin] Delete-Course',
+    );
+    expect(content?.rootPageId).toBe('27120917-5fcf-f111-a05a-70a8a52c89ad');
+    expect(registration.inactive.webPages.map((page) => page.name)).toEqual([
+      'Contact us',
+      'Contact us',
+    ]);
+    expect(
+      registration.webPageRules.find((r) => r.name === 'Restrict Read on Create Course')?.scope,
+    ).toBe(1);
+  });
+
   it('types site settings, page rules and website access', () => {
     const byName = new Map(site.siteSettings.map((s) => [s.name, s.value]));
     expect(site.siteSettings).toHaveLength(51);
@@ -155,6 +180,7 @@ describe('loadSiteFolder: classic layout details', () => {
     expect(loaded.webPageRules).toEqual([]);
     expect(loaded.inactive.webRoles.map((r) => r.name)).toEqual(['Retired']);
     expect(loaded.inactive.webPageRules.map((r) => r.name)).toEqual(['Restrict Read on Home']);
+    expect(loaded.inactive.webPageRules[0]!.scope).toBe(2);
     expect(loaded.records.filter((r) => r.kind === 'webrole')).toHaveLength(2);
   });
 

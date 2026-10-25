@@ -14,6 +14,8 @@ import { RULES } from '../../src/lint/rules/index.js';
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
 const classic = await loadSiteFolder('test/fixtures/classic');
+const classicPages = await loadSiteFolder('test/fixtures/classic-pages');
+const registration = await loadSiteFolder('test/fixtures/registration');
 const ruleIds = RULES.map((rule) => rule.id);
 
 const summary = (result: ReturnType<typeof lint>) =>
@@ -70,9 +72,58 @@ describe('rules on the fixtures', () => {
     ]);
   });
 
-  it('every rule fires on the broken fixture', () => {
-    const fired = new Set(lint(broken).findings.map((f) => f.ruleId));
+  it('every rule fires on the broken fixture, or on classic-pages for the classic-only page rules', () => {
+    const fired = new Set(
+      [...lint(broken).findings, ...lint(classicPages).findings].map((f) => f.ruleId),
+    );
     expect([...fired].sort()).toEqual([...ruleIds].sort());
+  });
+
+  it('finds exactly the classic-pages cases listed in test/fixtures/README.md', () => {
+    expect(summary(lint(classicPages))).toEqual([
+      ['page-parent-missing', 'error', 'web-pages/loop-a/Loop-A.webpage.yml'],
+      ['page-parent-missing', 'error', 'web-pages/loop-b/Loop-B.webpage.yml'],
+      ['page-parent-missing', 'error', 'web-pages/lost/Lost.webpage.yml'],
+      ['grant-change-overrides-read', 'warning', 'webpagerule.yml'],
+      ['page-roles-not-subset', 'warning', 'webpagerule.yml'],
+      ['page-rule-anonymous', 'warning', 'webpagerule.yml'],
+      ['page-rule-authenticated', 'warning', 'webpagerule.yml'],
+      ['page-rule-no-page', 'info', 'webpagerule.yml'],
+      ['page-rule-no-page', 'warning', 'webpagerule.yml'],
+      ['page-rule-no-role', 'info', 'webpagerule.yml'],
+      ['page-rule-no-role', 'error', 'webpagerule.yml'],
+      ['page-rules-conflict', 'error', 'webpagerule.yml'],
+      ['page-rules-conflict', 'error', 'webpagerule.yml'],
+    ]);
+  });
+
+  it('matches the classic-pages text output snapshot', async () => {
+    await expect(formatText(lint(classicPages), classicPages, 'site')).toMatchFileSnapshot(
+      '__snapshots__/classic-pages.txt',
+    );
+  });
+
+  it('finds the Authenticated Users rule and the template rule in the real classic site', () => {
+    const findings = lint(registration).findings.filter((f) => f.source.file === 'webpagerule.yml');
+    expect(findings.map((f) => [f.ruleId, f.severity, f.message])).toEqual([
+      [
+        'page-rule-authenticated',
+        'warning',
+        'Restrict Read rule "Restrict Read on C1 Courses Home" on "/admin-home/" lists the Authenticated Users role "Authenticated Users" with "Administrators", "C1 ASP", so every signed-in user can read the page and the other roles add nothing.',
+      ],
+      [
+        'page-rule-no-page',
+        'info',
+        'Grant Change rule "Grant Change to Content" applies to nothing: it has no web page.',
+      ],
+    ]);
+  });
+
+  it('runs no page rule on a code site', () => {
+    const pageRules = ruleIds.filter((id) => id.startsWith('page-') || id.startsWith('grant-'));
+    for (const site of [ecoflux, broken]) {
+      expect(lint(site).findings.filter((f) => pageRules.includes(f.ruleId))).toEqual([]);
+    }
   });
 
   it('finds only the missing account relationships in ecoflux', () => {
@@ -87,6 +138,9 @@ describe('rules on the fixtures', () => {
     expect(summary(lint(classic))).toEqual([
       ['global-write-anonymous', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
       ['global-write-authenticated', 'warning', 'table-permissions/Feedback.tablepermission.yml'],
+      // The fixture keeps no web pages, so the Grant Change rule's page is missing
+      ['page-rule-no-page', 'warning', 'webpagerule.yml'],
+      ['page-rule-no-page', 'info', 'webpagerule.yml'],
     ]);
   });
 
@@ -129,6 +183,18 @@ describe('rule metadata', () => {
 });
 
 describe('severity config', () => {
+  it("keeps a finding's own severity unless the config sets the rule", () => {
+    const severities = (config: Parameters<typeof lint>[1]) =>
+      lint(classicPages, config)
+        .findings.filter((f) => f.ruleId === 'page-rule-no-role')
+        .map((f) => f.severity);
+    expect(severities({ rules: {} })).toEqual(['info', 'error']);
+    expect(severities({ rules: { 'page-rule-no-role': 'warning' } })).toEqual([
+      'warning',
+      'warning',
+    ]);
+  });
+
   it('overrides a severity and turns a rule off', () => {
     const result = lint(broken, {
       rules: { 'global-write-anonymous': 'error', 'role-unused': 'off' },
@@ -141,6 +207,8 @@ describe('severity config', () => {
 
 describe('ignore config', () => {
   const feedback = '3453215b-d450-4073-a12c-88aa8a248b81';
+  // The classic fixture keeps no web pages: leave its page rule findings out here
+  const rules = { 'page-rule-no-page': 'off' } as const;
 
   it('leaves out findings on matching files and counts them', () => {
     const result = lint(broken, {
@@ -156,7 +224,7 @@ describe('ignore config', () => {
 
   it('leaves out findings on a record, from the listed rules only', () => {
     const result = lint(classic, {
-      rules: {},
+      rules,
       ignore: [{ rules: ['global-write-anonymous'], records: [feedback], reason: 'Contact form' }],
     });
     expect(result.findings.map((f) => f.ruleId)).toEqual(['global-write-authenticated']);
@@ -164,11 +232,11 @@ describe('ignore config', () => {
   });
 
   it('shows the ignored count in both formats', () => {
-    const result = lint(classic, { rules: {}, ignore: [{ records: [feedback] }] });
+    const result = lint(classic, { rules, ignore: [{ records: [feedback] }] });
     expect(formatText(result, classic, 'site').endsWith('No findings (2 ignored).\n')).toBe(true);
     expect(JSON.parse(formatJson(result, classic, 'site')).ignored).toBe(2);
     const partly = lint(classic, {
-      rules: {},
+      rules,
       ignore: [{ rules: ['global-write-anonymous'], records: [feedback] }],
     });
     expect(formatText(partly, classic, 'site')).toContain('0 errors, 1 warning, 0 info, 1 ignored');

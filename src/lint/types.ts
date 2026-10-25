@@ -1,4 +1,5 @@
 import type { AccessGraph } from '../graph/access.js';
+import type { PageGraph } from '../graph/pages.js';
 import type { WebApiTable } from '../graph/webapi.js';
 import type { Site, SourceRef } from '../model/schema.js';
 
@@ -10,6 +11,7 @@ export interface RuleContext {
   site: Site;
   graph: AccessGraph;
   webApi: WebApiTable[];
+  pages: PageGraph;
 }
 
 /** What a rule reports; the engine adds the rule id and the configured severity. */
@@ -18,6 +20,8 @@ export interface RuleFinding {
   source: SourceRef;
   /** GUID of the record the finding is about. */
   recordId: string;
+  /** The finding's severity when the config doesn't set the rule's, if not the rule's default. */
+  severity?: Severity;
 }
 
 export interface Rule {

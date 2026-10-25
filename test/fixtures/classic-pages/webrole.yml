@@ -1,0 +1,24 @@
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Administrators
+  adx_webroleid: 00000000-0000-0000-0005-000000000101
+- adx_anonymoususersrole: true
+  adx_authenticatedusersrole: false
+  adx_name: Anonymous Users
+  adx_webroleid: 00000000-0000-0000-0005-000000000102
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: true
+  adx_name: Authenticated Users
+  adx_webroleid: 00000000-0000-0000-0005-000000000103
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Employees
+  adx_webroleid: 00000000-0000-0000-0005-000000000104
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Managers
+  adx_webroleid: 00000000-0000-0000-0005-000000000105
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Partners
+  adx_webroleid: 00000000-0000-0000-0005-000000000106

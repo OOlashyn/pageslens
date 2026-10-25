@@ -77,8 +77,16 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | [`scope-relationship-missing`](rules/scope-relationship-missing.md)     | error   | Contact, Account or Parent scope without its relationship              |
 | [`multiple-authenticated-roles`](rules/multiple-authenticated-roles.md) | error   | More than one role flagged as Authenticated Users                      |
 | [`role-unused`](rules/role-unused.md)                                   | info    | Web role nothing uses                                                  |
+| [`page-rule-no-page`](rules/page-rule-no-page.md)                       | warning | Page access rule with no page, or a missing or inactive one            |
+| [`page-rule-no-role`](rules/page-rule-no-role.md)                       | error   | Page access rule with no web role                                      |
+| [`page-rule-anonymous`](rules/page-rule-anonymous.md)                   | warning | Page access rule listing Anonymous Users                               |
+| [`page-rules-conflict`](rules/page-rules-conflict.md)                   | error   | More than one Restrict Read rule on a page                             |
+| [`page-roles-not-subset`](rules/page-roles-not-subset.md)               | warning | Restrict Read role that a rule above keeps out                         |
+| [`grant-change-overrides-read`](rules/grant-change-overrides-read.md)   | warning | Grant Change role that reads past a Restrict Read                      |
+| [`page-rule-authenticated`](rules/page-rule-authenticated.md)           | warning | Restrict Read listing Authenticated Users with other roles             |
+| [`page-parent-missing`](rules/page-parent-missing.md)                   | error   | Web page whose parent is missing or inactive, or loops                 |
 
-Each rule's page says why it matters and how to fix it.
+Each rule's page says why it matters and how to fix it. The `page-` rules and `grant-change-overrides-read` check page access rules and run on classic sites only: on a code site, the browser routes pages, so page access rules don't decide who sees them.
 
 ### Configuration
 
@@ -158,13 +166,14 @@ What each change means and how it's classified: [docs/diff.md](docs/diff.md).
 pageslens docs [path] --out <dir>
 ```
 
-Writes three pages into `<dir>` (other files there are left alone):
+Writes three pages into `<dir>`, four for a classic site (other files there are left alone):
 
-| Page               | Contents                                                                                                                    |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `index.md`         | Counts, links, and a Mermaid diagram: roles → table permissions → tables, with parent chains                                |
-| `access-matrix.md` | Role × table matrix with privileges and scope, grants by role (including parent chains), and permissions that grant nothing |
-| `webapi.md`        | Tables reachable through `/_api`, their fields, and which roles can call them                                               |
+| Page               | Contents                                                                                                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.md`         | Counts, links, and a Mermaid diagram: roles → table permissions → tables, with parent chains                                                                                                   |
+| `access-matrix.md` | Role × table matrix with privileges and scope, grants by role (including parent chains), and permissions that grant nothing                                                                    |
+| `webapi.md`        | Tables reachable through `/_api`, their fields, and which roles can call them                                                                                                                  |
+| `pages.md`         | Classic sites only: who can read each page, from the page access rules (Restrict Read down the page tree, Grant Change overrides), every rule with its scope, and the inactive pages and rules |
 
 The output has no timestamps and a fixed order, so regenerating it for an unchanged site gives an empty diff. Commit it next to the site to review access changes in pull requests.
 

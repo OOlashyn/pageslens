@@ -1,6 +1,6 @@
 # 0005: Page access rules
 
-**Status:** draft 2, open questions for the maintainer. Draft 2 adds what a real classic download shows (see "A real classic site").
+**Status:** lint and `docs` built for 0.6.0 (see "Decisions" and "As built"). `test` and `diff` for pages wait for 0.7.0, after the checks in "Verification owed".
 
 Table permissions answer "who can read which records". Page access rules answer "who can open which pages". pageslens already reads page access rules into the model (`webPageRules`: name, right, page, roles), but only `role-unused` looks at them. This spec adds the meaning: who can read each page, which mistakes to lint, and how `docs`, `test` and `diff` show them. It starts with classic sites.
 
@@ -191,7 +191,25 @@ Create a small branch under Home first: **V1** (`/v1/`), with two children, **V2
 
 After checks 1–4, one more `pac pages download` of the classic site gives the page tree for the hand-written fixture (`classic-pages`), with real shapes.
 
-## Open questions for Oleksandr
+## Decisions (Oleksandr, 2026-10-24)
+
+Every recommendation is adopted except question 8:
+
+1. The real classic site becomes `test/fixtures/registration/`, without `.portalconfig/`, read-only like EcoFlux, web file contents included.
+2. Lint and `docs` in 0.6.0. `test` and `diff` for pages wait for 0.7.0, after the semantics are checked in a Dataverse environment.
+3. Nested Restrict Read rules intersect until verified, and the docs say so.
+4. When `diff` gets pages, it compares effective readers per branch.
+5. `page-rule-no-page` is info for a rule with neither a page nor a role, and a warning for a rule with roles but no page.
+6. A rule listing the Anonymous Users role counts as "everyone" until verified, and `page-rule-anonymous` warns about it.
+7. `test` names pages by URL path.
+8. **Not as recommended:** page access rules are classic-only in 0.6.0. No page lint rule runs on a code site, and `docs` doesn't write `pages.md` for one. (`role-unused` still counts a role used by a page rule, as before.)
+9. Pages only. `docs` shows each rule's scope; web files get their own section later.
+10. Answered before: inactive records are left out of the model (PR #25).
+11. No heuristic lint rule for an unrestricted page among restricted siblings. `pages.md` shows it now, and `test` and `diff` will catch it in 0.7.0.
+
+The checks in "How to check it" haven't been run yet, so everything under "Verification owed" still stands.
+
+## Open questions for Oleksandr (answered, see Decisions)
 
 1. **The real classic site as a fixture.** Copy it into `test/fixtures/registration/` (without `.portalconfig/`), read-only like EcoFlux? It's public once committed: its names, GUIDs, page content and 26 web files. Recommended: yes, keeping the web file contents too, since they're small and `docs` will list them.
 2. **Scope of 0.6.0.** All of lint, `docs`, `test` and `diff` for pages, or lint and `docs` first, with `test` and `diff` in a later release? Recommended: lint and `docs` in 0.6.0, `test` and `diff` in 0.7.0. The semantics should be checked against a real environment (verification 1–3) before a policy can depend on them.
@@ -204,6 +222,26 @@ After checks 1–4, one more `pac pages download` of the classic site gives the 
 9. **Web files.** Include web files in effective access (who can download them) in 0.6.0, or pages only? Recommended: pages only, with the scope shown in `docs`. Web files come with their own docs section later.
 10. **Inactive records.** Answered: fixed in PR #25, merged. Fix first, as its own PR in 0.6.0: skip records with `statecode: 1` in the model, so lint, `docs`, `test` and `diff` stop reporting inactive table permissions and settings? And in `diff`, is activating a record wider and deactivating it narrower? Recommended: yes to both. It's a bug in every release so far, and the page work depends on it.
 11. **Unrestricted pages next to restricted ones.** Leave "[Admin] Delete Course" to `docs`, `test` and `diff`, or add a heuristic lint rule (an unrestricted page whose siblings are all restricted)? Recommended: no heuristic rule. It would guess at intent, and the policy statement says it exactly.
+
+## As built
+
+Design: this document (draft 2, questions 1–11 answered; question 8 not as recommended). User reference: `rules/` for the eight rules and the README's `pageslens docs` section for `pages.md`.
+
+- The model reads web pages (`webPages`: root and content pages, with parent, root page, partial URL and site map flag), a rule's `scope`, and the site's `layout`. Effective access is in `src/graph/pages.ts`: per root page, its URL, ancestors, the Restrict Read and Grant Change rules on its path, and who can read it.
+- The eight lint rules of "Lint rules" are built as designed, classic sites only (decision 8). They skip inactive rules and pages, since those aren't in the model (PR #25).
+- `docs` writes `pages.md` for a classic site: a table of root pages in URL order (who can read, the Restrict Read and Grant Change rules that decide it, hidden from the site map), the Grant Change rules with roles, every rule with its right, page, roles and scope, and the inactive pages and rules. The index links it and counts pages, open pages and rules. Nothing changes for code sites.
+- Fixtures: `test/fixtures/registration/` (the real classic download, without `.portalconfig/`, decision 1) and `test/fixtures/classic-pages/` (hand-written). The trimmed `test/fixtures/classic/` has no pages, so its "Grant Change to Administrators" now reports `page-rule-no-page`.
+- Interpretations made while building:
+  - **Several Restrict Read rules on one page unite**: a user who passes any of them passes that page's level. Microsoft only calls it a conflict; uniting is the reading that gives more access (design rule 1), and `page-rules-conflict` reports it. Levels still intersect.
+  - A finding can carry its own severity (`RuleFinding.severity`), for the rules whose severity depends on the case: `page-rule-no-page` (info with no role), `page-rule-no-role` (info for Grant Change) and `page-parent-missing` (warning when the parent is inactive). A severity set in the config applies to every finding of the rule.
+  - `page-rule-no-role` skips a rule with no page; `page-rule-no-page` reports it. So the template "Grant Change to Content" gets one info finding, not two.
+  - An active page under an inactive page is reported by `page-parent-missing` as a warning, and `pages.md` shows it as "nobody". Pages below a missing parent or a loop are shown as "unknown" and aren't reported again.
+  - `page-roles-not-subset` doesn't report a role that a Grant Change on the path lets in. `grant-change-overrides-read` counts a Grant Change on the page itself as well as above it, as Microsoft's "Restrict read doesn't work for admins" case is a rule on the home page.
+  - A rule that points at a content page is read as being on its root page.
+  - URLs are built from the partial URLs of the page and its ancestors. A page in a loop gets the URL of the path followed until the loop.
+  - The publishing state link (verification 5) is still unknown, so no rule is shown as state-bound. A page's own publishing state isn't shown.
+- Tested: `test/graph/pages.test.ts` (URLs, intersection, same-page union, Grant Change, built-in roles, broken paths, both fixtures); every rule's case in `classic-pages` and the real site's findings in `test/lint/lint.test.ts`; docs snapshots for `registration` and `classic-pages`.
+- **Not verified:** everything under "Verification owed". The checks haven't been run yet.
 
 ## Sources
 

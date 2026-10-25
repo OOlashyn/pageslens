@@ -11,6 +11,16 @@
 | [`scope-relationship-missing`](scope-relationship-missing.md)     | error   | Contact, Account or Parent scope without its relationship              |
 | [`multiple-authenticated-roles`](multiple-authenticated-roles.md) | error   | More than one role flagged as Authenticated Users                      |
 | [`role-unused`](role-unused.md)                                   | info    | Web role nothing uses                                                  |
+| [`page-rule-no-page`](page-rule-no-page.md)                       | warning | Page access rule with no page, or a missing or inactive one            |
+| [`page-rule-no-role`](page-rule-no-role.md)                       | error   | Page access rule with no web role                                      |
+| [`page-rule-anonymous`](page-rule-anonymous.md)                   | warning | Page access rule listing Anonymous Users                               |
+| [`page-rules-conflict`](page-rules-conflict.md)                   | error   | More than one Restrict Read rule on a page                             |
+| [`page-roles-not-subset`](page-roles-not-subset.md)               | warning | Restrict Read role that a rule above keeps out                         |
+| [`grant-change-overrides-read`](grant-change-overrides-read.md)   | warning | Grant Change role that reads past a Restrict Read                      |
+| [`page-rule-authenticated`](page-rule-authenticated.md)           | warning | Restrict Read listing Authenticated Users with other roles             |
+| [`page-parent-missing`](page-parent-missing.md)                   | error   | Web page whose parent is missing or inactive, or loops                 |
+
+The `page-` rules and `grant-change-overrides-read` run on classic sites only (`pac pages download`). Where a rule's default names two severities, a finding gets the one that fits it, unless the config sets the rule's severity.
 
 Change a rule's severity, or turn it off, in `pageslens.config.yaml`:
 

@@ -1,0 +1,7 @@
+# clean: a content page follows its root page and isn't listed on its own
+adx_hiddenfromsitemap: false
+adx_isroot: false
+adx_name: Home
+adx_partialurl: /
+adx_rootwebpageid: 00000000-0000-0000-0005-000000000201
+adx_webpageid: 00000000-0000-0000-0005-000000000221

@@ -1,4 +1,5 @@
 import { buildAccessGraph } from '../graph/access.js';
+import { buildPageGraph } from '../graph/pages.js';
 import { buildWebApiSurface } from '../graph/webapi.js';
 import { compareText as compare } from '../model/normalize.js';
 import type { Site } from '../model/schema.js';
@@ -26,15 +27,20 @@ export function lint(
   rules: readonly Rule[] = RULES,
 ): LintResult {
   const graph = buildAccessGraph(site);
-  const context = { site, graph, webApi: buildWebApiSurface(site, graph) };
+  const context = {
+    site,
+    graph,
+    webApi: buildWebApiSurface(site, graph),
+    pages: buildPageGraph(site),
+  };
   const isIgnored = ignoreMatcher(config.ignore ?? []);
 
   const findings: Finding[] = [];
   let ignored = 0;
   for (const rule of rules) {
-    const setting = config.rules[rule.id] ?? rule.defaultSeverity;
+    const setting = config.rules[rule.id];
     if (setting === 'off') continue;
-    for (const finding of rule.check(context)) {
+    for (const { severity, ...finding } of rule.check(context)) {
       if (isIgnored(rule.id, finding)) {
         ignored++;
         continue;
@@ -42,7 +48,7 @@ export function lint(
       findings.push({
         ...finding,
         ruleId: rule.id,
-        severity: setting,
+        severity: setting ?? severity ?? rule.defaultSeverity,
         docs: `${RULE_DOCS_BASE}/${rule.id}.md`,
       });
     }

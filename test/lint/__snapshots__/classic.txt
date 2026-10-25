@@ -4,4 +4,8 @@ table-permissions/Feedback.tablepermission.yml
   warning  Table permission "Feedback" gives Anonymous Users create on every feedback record (global scope).  global-write-anonymous
   warning  Table permission "Feedback" gives Authenticated Users create on every feedback record (global scope).  global-write-authenticated
 
-0 errors, 2 warnings, 0 info
+webpagerule.yml
+  warning  Grant Change rule "Grant Change to Administrators" applies to nothing: its web page (0abe08de-6d38-4bcb-b613-7c2452f93c11) doesn't exist in the site.  page-rule-no-page
+  info     Grant Change rule "Grant Change to Content" applies to nothing: it has no web page.  page-rule-no-page
+
+0 errors, 3 warnings, 1 info

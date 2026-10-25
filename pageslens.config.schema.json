@@ -91,6 +91,78 @@
             "error"
           ],
           "description": "A web role that no table permission, page access rule or website access uses (built-in roles are skipped). Default: info."
+        },
+        "page-rule-no-page": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A page access rule has no web page, or its page is missing or inactive, so it applies to nothing (info when it has no web role either). Default: warning."
+        },
+        "page-rule-no-role": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A page access rule has no web role: a Restrict Read hides its pages from everyone but Grant Change roles (error), a Grant Change does nothing (info). Default: error."
+        },
+        "page-rule-anonymous": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A page access rule lists the Anonymous Users role, which Microsoft says not to assign to pages. Default: warning."
+        },
+        "page-rules-conflict": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A web page has more than one active Restrict Read rule. Default: error."
+        },
+        "page-roles-not-subset": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A Restrict Read rule lists a web role that a Restrict Read on a page above doesn't let in, so the role can't reach the page. Default: warning."
+        },
+        "grant-change-overrides-read": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A Grant Change rule lets a web role read pages that a Restrict Read on or below its page doesn't list. Default: warning."
+        },
+        "page-rule-authenticated": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A Restrict Read rule lists the Authenticated Users role with other roles, so every signed-in user passes it and the other roles add nothing. Default: warning."
+        },
+        "page-parent-missing": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A web page's parent page isn't in the site or is inactive (warning), or the parent pages loop, so who can read it is unknown. Default: error."
         }
       }
     },
@@ -126,7 +198,15 @@
                 "parent-chain-broken",
                 "scope-relationship-missing",
                 "multiple-authenticated-roles",
-                "role-unused"
+                "role-unused",
+                "page-rule-no-page",
+                "page-rule-no-role",
+                "page-rule-anonymous",
+                "page-rules-conflict",
+                "page-roles-not-subset",
+                "grant-change-overrides-read",
+                "page-rule-authenticated",
+                "page-parent-missing"
               ]
             },
             "minItems": 1
