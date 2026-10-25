@@ -19,6 +19,7 @@ export function formatJson(result: LintResult, site: Site, sitePath: string): st
       recordId: f.recordId,
       docs: f.docs,
     })),
+    unusedIgnores: result.unusedIgnores,
   };
   return `${JSON.stringify(output, null, 2)}\n`;
 }

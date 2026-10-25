@@ -183,7 +183,7 @@ describe('diff: settings', () => {
       'Authentication/Registration/Enabled turned on: was "false", now not set (defaults to true)',
       'Authentication/Registration/RequiresInvitation turned off: was "true", now "false"',
       'HTTP/Access-Control-Allow-Origin now also allows https://b.example.com',
-      'Webapi/error/innererror turned on: was "false", now "True"',
+      'Webapi/error/innererror turned on: was "false", now "True" (also reported by lint: webapi-inner-errors)',
       'Authentication/Registration/OpenRegistrationEnabled turned off: was not set (defaults to true), now "false"',
       'HTTP/Access-Control-Allow-Origin no longer allows https://c.example.com',
     ]);

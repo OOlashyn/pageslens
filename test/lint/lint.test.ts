@@ -30,6 +30,7 @@ describe('rules on the fixtures', () => {
         'warning',
         'site-settings/Webapi-dwcrm_invoice-enabled.sitesetting.yml',
       ],
+      ['webapi-inner-errors', 'warning', 'site-settings/Webapi-error-innererror.sitesetting.yml'],
       [
         'scope-relationship-missing',
         'error',
@@ -125,12 +126,13 @@ describe('rules on the fixtures', () => {
     }
   });
 
-  it('finds only the missing account relationships in ecoflux', () => {
+  it('finds only the missing account relationships and inner errors in ecoflux', () => {
     const result = lint(ecoflux);
-    expect(result.findings.map((f) => f.ruleId)).toEqual(
-      Array(4).fill('scope-relationship-missing'),
-    );
-    expect(result.counts).toEqual({ error: 4, warning: 0, info: 0 });
+    expect(result.findings.map((f) => f.ruleId)).toEqual([
+      'webapi-inner-errors',
+      ...Array(4).fill('scope-relationship-missing'),
+    ]);
+    expect(result.counts).toEqual({ error: 4, warning: 1, info: 0 });
   });
 
   it('finds the same cases in the classic fixture as in its records', () => {
@@ -218,7 +220,7 @@ describe('ignore config', () => {
     expect(files.some((f) => f.startsWith('web-roles/'))).toBe(false);
     expect(files).not.toContain('table-permissions/Incident---No-Role.tablepermission.yml');
     expect(result.ignored).toBe(4);
-    expect(result.counts).toEqual({ error: 5, warning: 4, info: 0 });
+    expect(result.counts).toEqual({ error: 5, warning: 5, info: 0 });
   });
 
   it('leaves out findings on a record, from the listed rules only', () => {
@@ -239,6 +241,57 @@ describe('ignore config', () => {
       ignore: [{ rules: ['global-write-anonymous'], records: [feedback] }],
     });
     expect(formatText(partly, classic, 'site')).toContain('0 errors, 1 warning, 0 info, 1 ignored');
+  });
+
+  it('lists the files and records that left out no finding', () => {
+    const gone = '00000000-0000-0000-0000-0000000000aa';
+    const result = lint(classic, {
+      rules,
+      ignore: [
+        { rules: ['global-write-anonymous'], records: [feedback, gone] },
+        { files: ['table-permissions/*.yml', 'web-roles/Legacy-*.webrole.yml'] },
+        { rules: ['role-unused'], records: [feedback] },
+      ],
+    });
+    expect(result.ignored).toBe(2);
+    expect(result.unusedIgnores).toEqual([
+      { entry: 1, field: 'records', value: gone },
+      { entry: 2, field: 'files', value: 'web-roles/Legacy-*.webrole.yml' },
+      { entry: 3, field: 'records', value: feedback },
+    ]);
+  });
+
+  it('counts a pattern as used when another entry also matches the finding', () => {
+    const result = lint(classic, {
+      rules,
+      ignore: [{ records: [feedback] }, { records: [feedback] }],
+    });
+    expect(result.unusedIgnores).toEqual([]);
+  });
+
+  it("doesn't check an entry that lists a rule that is turned off", () => {
+    const result = lint(classic, {
+      rules: { ...rules, 'role-unused': 'off' },
+      ignore: [{ rules: ['role-unused'], records: [feedback] }],
+    });
+    expect(result.unusedIgnores).toEqual([]);
+  });
+
+  it('shows unused ignores in text and JSON', () => {
+    const result = lint(classic, {
+      rules,
+      ignore: [{ records: [feedback] }, { files: ['web-roles/Legacy-*.webrole.yml'] }],
+    });
+    const text = formatText(result, classic, 'site', 'config/pageslens.config.yaml');
+    expect(text).toBe(
+      `${classic.website.name} (site)\n\n` +
+        'config/pageslens.config.yaml\n' +
+        '  warning  Ignore entry 2: file "web-roles/Legacy-*.webrole.yml" matches no finding; remove it if what it ignored is fixed.\n\n' +
+        'No findings (2 ignored, 1 unused ignore).\n',
+    );
+    expect(JSON.parse(formatJson(result, classic, 'site')).unusedIgnores).toEqual([
+      { entry: 2, field: 'files', value: 'web-roles/Legacy-*.webrole.yml' },
+    ]);
   });
 });
 
@@ -351,7 +404,7 @@ describe('output formats', () => {
       name: 'Broken Fixture',
       path: 'site',
     });
-    expect(output.summary).toEqual({ error: 7, warning: 5, info: 1 });
+    expect(output.summary).toEqual({ error: 7, warning: 6, info: 1 });
     expect(output.findings[0]).toEqual({
       ruleId: 'webapi-wildcard-fields',
       severity: 'error',
@@ -367,14 +420,16 @@ describe('output formats', () => {
     const text = formatText(lint(ecoflux), ecoflux, 'site');
     expect(text.startsWith('EcoFlux (site)\n\n')).toBe(true);
     expect(text).toContain(
-      'table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml\n  error  Table permission "Asset - Asset Manager CRUD" has account scope',
+      'table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml\n  error    Table permission "Asset - Asset Manager CRUD" has account scope',
     );
-    expect(text.endsWith('4 errors, 0 warnings, 0 info\n')).toBe(true);
+    expect(text.endsWith('4 errors, 1 warning, 0 info\n')).toBe(true);
   });
 
   it('says so when there are no findings', () => {
     const text = formatText(
-      lint(ecoflux, { rules: { 'scope-relationship-missing': 'off' } }),
+      lint(ecoflux, {
+        rules: { 'scope-relationship-missing': 'off', 'webapi-inner-errors': 'off' },
+      }),
       ecoflux,
       'site',
     );

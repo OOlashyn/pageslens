@@ -60,7 +60,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | 1         | At least one error                                                 |
 | 2         | The site or config couldn't be read, or the command was used wrong |
 
-`--format json` prints a versioned object (`version`, `site`, `summary`, `ignored`, `findings`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
+`--format json` prints a versioned object (`version`, `site`, `summary`, `ignored`, `findings`, `unusedIgnores`) for scripts and agents. Each finding has `ruleId`, `severity`, `message`, `file` (relative to the site folder), `recordId` and a `docs` link.
 
 `--format sarif` prints [SARIF 2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html) for GitHub code scanning and other tools that read it. See [In CI](#in-ci).
 
@@ -70,6 +70,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | ----------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
 | [`webapi-wildcard-fields`](rules/webapi-wildcard-fields.md)             | error   | Web API enabled with `*` as the fields list                            |
 | [`webapi-no-permission`](rules/webapi-no-permission.md)                 | warning | Web API enabled on a table no table permission covers                  |
+| [`webapi-inner-errors`](rules/webapi-inner-errors.md)                   | warning | Web API errors that include the inner error                            |
 | [`permission-no-role`](rules/permission-no-role.md)                     | warning | Table permission with no web role                                      |
 | [`global-write-anonymous`](rules/global-write-anonymous.md)             | warning | Global create, write or delete for Anonymous Users                     |
 | [`global-write-authenticated`](rules/global-write-authenticated.md)     | warning | Global create, write or delete for Authenticated Users                 |
@@ -107,7 +108,7 @@ ignore:
 
 Severities are `error`, `warning`, `info` and `off`. An unknown rule id is an error, so typos don't silently do nothing.
 
-An `ignore` entry leaves out findings on any of its `files` or `records`, from the listed `rules` only (every rule when `rules` is left out); `reason` is for reviewers. `files` are globs over the paths lint prints, relative to the site folder (`*` within a folder, `**` across folders). `records` are the GUIDs in the JSON output's `recordId`. Prefer `records` on a classic site, where many records share one file, and anywhere a file name may change: pac derives file names from record names. Ignored findings are counted in the summary (`ignored` in JSON) so they don't disappear unnoticed.
+An `ignore` entry leaves out findings on any of its `files` or `records`, from the listed `rules` only (every rule when `rules` is left out); `reason` is for reviewers. `files` are globs over the paths lint prints, relative to the site folder (`*` within a folder, `**` across folders). `records` are the GUIDs in the JSON output's `recordId`. Prefer `records` on a classic site, where many records share one file, and anywhere a file name may change: pac derives file names from record names. Ignored findings are counted in the summary (`ignored` in JSON) so they don't disappear unnoticed. A file glob or record in an entry that leaves out no finding is listed as an unused ignore under the config file's name (`unusedIgnores` in JSON), so an entry for something since fixed doesn't hide the next finding there. It doesn't fail the run. An entry that lists a rule that's turned off isn't checked.
 
 The `$schema` comment gives completion and validation in editors with the YAML language server (VS Code's YAML extension, JetBrains IDEs). The schema also ships in the package, at `node_modules/pageslens/pageslens.config.schema.json`.
 

@@ -102,8 +102,12 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
         );
         io.out(formatSarif(result, sitePath, RULES, lineOf));
       } else {
-        const format = options.format === 'json' ? formatJson : formatText;
-        io.out(format(result, site, sitePath));
+        const configPath = config.path && toPosixPath(relative(process.cwd(), config.path));
+        io.out(
+          options.format === 'json'
+            ? formatJson(result, site, sitePath)
+            : formatText(result, site, sitePath, configPath),
+        );
       }
       setExitCode(result.counts.error > 0 ? ExitCode.Findings : ExitCode.Ok);
     });

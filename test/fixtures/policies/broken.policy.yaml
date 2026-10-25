@@ -28,4 +28,4 @@ settings:
   - registration is invite only # fail: defaults
   - setting "Search/Enabled" is set # fail
   - setting "Search/Enabled" is not set # pass
-  - setting "Webapi/error/innererror" is not "true" # pass: not set
+  - setting "HTTP/Access-Control-Allow-Origin" is not "*" # pass: not set

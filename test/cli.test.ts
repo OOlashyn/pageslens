@@ -1,6 +1,6 @@
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
 import { ExitCode, run } from '../src/cli.js';
 import pkg from '../package.json' with { type: 'json' };
@@ -48,7 +48,7 @@ describe('cli lint', () => {
   it('exits 1 when there are errors', async () => {
     const result = await cli('lint', 'test/fixtures/broken');
     expect(result.code).toBe(ExitCode.Findings);
-    expect(result.out).toContain('7 errors, 5 warnings, 1 info');
+    expect(result.out).toContain('7 errors, 6 warnings, 1 info');
   });
 
   it('exits 0 when only warnings and info are left', async () => {
@@ -58,7 +58,25 @@ describe('cli lint', () => {
       await writeFile(config, 'rules:\n  scope-relationship-missing: warning\n');
       const result = await cli('lint', 'test/fixtures/ecoflux', '--config', config);
       expect(result.code).toBe(ExitCode.Ok);
-      expect(result.out).toContain('0 errors, 4 warnings, 0 info');
+      expect(result.out).toContain('0 errors, 5 warnings, 0 info');
+    } finally {
+      await rm(temp, { recursive: true, force: true });
+    }
+  });
+
+  it('names the config file for an unused ignore, without failing the run', async () => {
+    const temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
+    try {
+      const config = join(temp, 'pageslens.config.yaml');
+      await writeFile(
+        config,
+        'rules:\n  scope-relationship-missing: warning\nignore:\n  - files: [gone.yml]\n',
+      );
+      const result = await cli('lint', 'test/fixtures/ecoflux', '--config', config);
+      expect(result.code).toBe(ExitCode.Ok);
+      const shown = relative(process.cwd(), config).replaceAll('\\', '/');
+      expect(result.out).toContain(`${shown}\n  warning  Ignore entry 1: file "gone.yml"`);
+      expect(result.out).toContain('0 errors, 5 warnings, 0 info, 1 unused ignore');
     } finally {
       await rm(temp, { recursive: true, force: true });
     }
@@ -68,7 +86,7 @@ describe('cli lint', () => {
     const result = await cli('lint', 'test/fixtures/ecoflux', '--format', 'json');
     const output = JSON.parse(result.out);
     expect(output.site.path).toBe('test/fixtures/ecoflux/.powerpages-site');
-    expect(output.findings).toHaveLength(4);
+    expect(output.findings).toHaveLength(5);
   });
 
   it('rejects an unknown format', async () => {
