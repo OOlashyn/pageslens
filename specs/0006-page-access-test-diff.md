@@ -1,6 +1,6 @@
 # 0006: Page access in `test` and `diff`
 
-**Status:** built for 0.7.0 (see "Decisions" and "As built"). User reference: [docs/policy.md](../docs/policy.md) and [docs/diff.md](../docs/diff.md).
+**Status:** shipped in 0.7.0 (see "Decisions" and "As built"). User reference: [docs/policy.md](../docs/policy.md) and [docs/diff.md](../docs/diff.md).
 
 0.6.0 reads who can open each page of a classic site ([0005](0005-page-access-rules.md)) and shows it in `lint` and `pages.md`. This spec adds pages to the other two commands:
 
