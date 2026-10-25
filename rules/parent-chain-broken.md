@@ -4,7 +4,7 @@
 
 A Parent scope table permission can't be followed up to a permission that grants access, because:
 
-- its parent permission (`parententitypermission`) doesn't exist in the site, or isn't set;
+- its parent permission (`parententitypermission`) doesn't exist in the site, is inactive, or isn't set;
 - a permission in the chain has no web role (a child permission with no role of its own takes its parent's, so only the permission the roles should come from is named); or
 - the chain loops back on itself.
 

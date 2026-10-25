@@ -28,7 +28,7 @@ export function diffSites(base: Site | undefined, head: Site | undefined): Chang
   const roles = matchRoles(sides.base.roles, sides.head.roles);
   const grants = grantItems(sides, roles);
   const ranked = [
-    ...roleChanges(roles),
+    ...roleChanges(roles, sides),
     ...grantChanges(grants, sides, roles),
     ...permissionRenames(grants, sides),
     ...webApiChanges(sides),
@@ -176,7 +176,7 @@ function matchRoles(base: WebRole[], head: WebRole[]): RoleMatch {
   return { keyOf, pair: (key) => pairs.get(key)!, pairs: [...pairs.values()] };
 }
 
-function roleChanges(roles: RoleMatch): Ranked[] {
+function roleChanges(roles: RoleMatch, sides: Sides): Ranked[] {
   const changes: Ranked[] = [];
   const add = (
     cls: ChangeClass,
@@ -191,13 +191,13 @@ function roleChanges(roles: RoleMatch): Ranked[] {
 
   for (const { base, head } of roles.pairs) {
     if (!head) {
-      add('neutral', 'role-removed', base!, `Role "${base!.name}" removed`, [
-        source('base', base!),
-      ]);
+      const how = sides.head.inactive.has(base!.id) ? 'deactivated' : 'removed';
+      add('neutral', 'role-removed', base!, `Role "${base!.name}" ${how}`, [source('base', base!)]);
       continue;
     }
     if (!base) {
-      add('neutral', 'role-added', head, `Role "${head.name}" added`, [source('head', head)]);
+      const how = sides.base.inactive.has(head.id) ? 'activated' : 'added';
+      add('neutral', 'role-added', head, `Role "${head.name}" ${how}`, [source('head', head)]);
       continue;
     }
     const sources = [source('head', head)];
@@ -367,7 +367,11 @@ function causeOf(item: GrantItem, sides: Sides, roles: RoleMatch): string | unde
   const otherRole = roles.pair(item.roleKey)[to];
   const causes = new Set(
     item[from].map((fact) => {
-      const other = sides[to].permissions.get(fact.node.permission.id);
+      const id = fact.node.permission.id;
+      const other = sides[to].permissions.get(id);
+      if (!other && sides[to].inactive.has(id)) {
+        return item.kind === 'lost' ? 'deactivated' : 'activated';
+      }
       return item.kind === 'lost'
         ? lostCause(item, other, otherRole)
         : gainedCause(item, fact.node, other, otherRole);

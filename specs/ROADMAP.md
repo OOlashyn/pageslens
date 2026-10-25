@@ -4,11 +4,11 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                         |                                                                                                                                                                  |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                      |
-| On `main`, not released | the action compares with the pull request's head commit, not GitHub's merge commit. Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
-| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                     |
+|                         |                                                                                                                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                                                  |
+| On `main`, not released | inactive records (`statecode: 1`) left out everywhere; the action compares with the pull request's head commit. Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
+| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                 |
 
 ## Next
 

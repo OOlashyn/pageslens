@@ -1,0 +1,13 @@
+# permission-no-role: its only web role is inactive
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000009
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_order
+entityname: Order - Inactive Role
+id: 00000000-0000-0000-0002-000000000022
+read: true
+scope: 756150000
+write: false

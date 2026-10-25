@@ -11,6 +11,8 @@ pageslens reads a site downloaded with the Power Platform CLI, either the `.powe
 
 It needs no Dataverse connection and no agent: the same folder gives the same output every run.
 
+Records that are inactive in Dataverse (`statecode: 1` in the download) are left out everywhere, as Power Pages ignores them: an inactive table permission grants nothing, and an inactive role or setting counts for nothing. `docs` says how many were left out.
+
 > **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`). `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet. Unpacked solutions and solution `.zip` files are planned.
 
 ## Quick start

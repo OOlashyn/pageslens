@@ -1,0 +1,7 @@
+# clean: inactive (statecode 1), so role-unused must not fire
+anonymoususersrole: false
+authenticatedusersrole: false
+id: 00000000-0000-0000-0001-000000000009
+name: Retired Role
+statecode: 1
+statuscode: 2

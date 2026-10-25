@@ -1,0 +1,15 @@
+# parent-chain-broken: its parent permission is inactive
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: dwcrm_surveyanswer
+entityname: Survey Answer - Inactive Parent
+id: 00000000-0000-0000-0002-000000000021
+parententitypermission: 00000000-0000-0000-0002-000000000020
+parentrelationship: dwcrm_survey_answers
+read: true
+scope: 756150003
+write: false
