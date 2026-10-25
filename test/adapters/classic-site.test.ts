@@ -128,6 +128,36 @@ describe('loadSiteFolder: classic layout details', () => {
     ]);
   });
 
+  it('keeps inactive records (statecode 1) out of the model, in their own lists', async () => {
+    const path = await site({
+      'website.yml': website,
+      'webrole.yml': [
+        '- adx_name: Active',
+        '  adx_webroleid: 00000000-0000-0000-0001-000000000001',
+        '- adx_name: Retired',
+        '  adx_webroleid: 00000000-0000-0000-0001-000000000002',
+        '  statecode: 1',
+        '  statuscode: 2',
+        '',
+      ].join('\n'),
+      'webpagerule.yml': [
+        '- adx_name: Restrict Read on Home',
+        '  adx_right: 2',
+        '  adx_scope: 2',
+        '  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0004-000000000001',
+        '  statecode: 1',
+        '  statuscode: 2',
+        '',
+      ].join('\n'),
+    });
+    const loaded = await loadSiteFolder(path);
+    expect(loaded.webRoles.map((r) => r.name)).toEqual(['Active']);
+    expect(loaded.webPageRules).toEqual([]);
+    expect(loaded.inactive.webRoles.map((r) => r.name)).toEqual(['Retired']);
+    expect(loaded.inactive.webPageRules.map((r) => r.name)).toEqual(['Restrict Read on Home']);
+    expect(loaded.records.filter((r) => r.kind === 'webrole')).toHaveLength(2);
+  });
+
   it('reads child record lists in folders and web files in one flat folder', async () => {
     const path = await site({
       'website.yml': website,

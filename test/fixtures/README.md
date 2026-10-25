@@ -30,9 +30,13 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `scope-relationship-missing` | Contract - Case Manager Account |
 | `webapi-wildcard-fields` | `Webapi/contact/fields` = `*` |
 | `webapi-no-permission` | `Webapi/dwcrm_invoice/enabled` |
+| `permission-no-role` | Order - Inactive Role (its only role, Retired Role, is inactive) |
+| `parent-chain-broken` | Survey Answer - Inactive Parent (parent is inactive) |
 | `role-unused` | Unused Role |
 
 `Incident - Case Manager Contact`, its children `Incident Comment - Case Manager Parent` (a working parent chain with the parent's role) and `Incident Task - Inherited Roles` (no web role of its own, as the design studio makes child permissions, so it takes the parent's), and the `incident` Web API settings are clean and must produce no findings.
+
+`Survey - Inactive Anonymous Create` (global anonymous create) and the `Retired Role` web role are inactive (`statecode: 1`): they're left out of the model, so `global-write-anonymous` and `role-unused` must not fire on them.
 
 ## `classic/`
 
@@ -62,5 +66,6 @@ Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `
 | `neutral` | code | 4 neutral, nothing else: a role renamed and its file moved, a permission renamed and moved, a permission file renamed, a second permission with the same access, a grant global scope already covers |
 | `layouts` | classic base, code head | 1 wider (write added to Assets - Manager); every other record is the same in the other layout and must cause nothing |
 | `classic` | classic | 1 wider, 1 narrower, 1 neutral: the Web API enabled in `sitesetting.yml`, Anonymous Users taken off Feedback, a role renamed in `webrole.yml` |
+| `inactive` | code | 1 wider, 1 narrower, 1 neutral: a permission activated (wider, `(activated)`), one deactivated (narrower, `(deactivated)`), a role deactivated (neutral) |
 
 `test/diff/git.test.ts` commits the `grants` and `classic` pairs to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.

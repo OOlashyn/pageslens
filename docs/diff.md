@@ -37,6 +37,7 @@ Base comes first, like `git diff A B`: sentences read "head compared with base" 
 - **Records match by GUID**, never by file name or folder. Renaming or moving a file is not a change.
 - **A renamed record** (same GUID, new name) is a neutral change, shown once. Every other line uses the head name.
 - **A role deleted and created again** with the same name gets a new GUID. When exactly one removed role and one added role share a name, they're treated as one role ("recreated with a new id"), and their grants are compared as one.
+- **Deactivating a record** counts as removing it, and **activating** one as adding it: an inactive record takes part in nothing. The line says so: `(deactivated)`, `(activated)`, `Role "Partners" deactivated`.
 - **The Anonymous Users and Authenticated Users roles** are matched by their flag as well, when both have a new GUID. Moving a flag to another role is its own change.
 
 ## Classification
@@ -125,7 +126,7 @@ test: Authenticated Users has write on contact (global scope) from "Contact - Au
 diff: Authenticated Users gained write on contact (global scope) from "Contact - Authenticated Users Global Write"
 ```
 
-Privileges with the same role, table, scope and permission are joined (`gained read, write`). A parent-scope grant adds `, under "<top parent>"`, and `(inherits roles from "<parent>")` when its roles come from a parent. A gained or lost grant names the cause when there is one: `(removed)`, `(the privilege was turned off)`, `(the role was added to the permission)`, `(the chain under "Case" is now complete)`. A wider line whose records also trip a lint rule ends with `(also reported by lint: <rule>)`; the rules run at their default severities, without your `pageslens.config.yaml`.
+Privileges with the same role, table, scope and permission are joined (`gained read, write`). A parent-scope grant adds `, under "<top parent>"`, and `(inherits roles from "<parent>")` when its roles come from a parent. A gained or lost grant names the cause when there is one: `(removed)`, `(deactivated)`, `(activated)`, `(the privilege was turned off)`, `(the role was added to the permission)`, `(the chain under "Case" is now complete)`. A wider line whose records also trip a lint rule ends with `(also reported by lint: <rule>)`; the rules run at their default severities, without your `pageslens.config.yaml`.
 
 ## Output
 

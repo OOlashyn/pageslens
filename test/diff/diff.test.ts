@@ -160,6 +160,22 @@ describe('diff: roles', () => {
   });
 });
 
+describe('diff: inactive records', () => {
+  it('reads deactivating as removing and activating as adding, and says which', async () => {
+    const result = await diffCase('inactive');
+    expect(messages(result)).toEqual([
+      'Members gained read on salesorder (global scope) from "Order - Members Read" (activated)',
+      'Anonymous Users lost create on feedback (global scope) from "Feedback - Anonymous Create" (deactivated)',
+      'Role "Partners" deactivated',
+    ]);
+    expect(kinds(result)).toEqual([
+      'wider grant-gained',
+      'narrower grant-lost',
+      'neutral role-removed',
+    ]);
+  });
+});
+
 describe('diff: settings', () => {
   it('reads effective values with Power Pages defaults, in a fixed direction per setting', async () => {
     const result = await diffCase('settings');

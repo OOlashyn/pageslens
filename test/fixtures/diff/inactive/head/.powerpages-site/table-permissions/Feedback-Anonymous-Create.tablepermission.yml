@@ -1,0 +1,15 @@
+# narrower grant-lost: deactivated on head
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000001
+append: false
+appendto: false
+create: true
+delete: false
+entitylogicalname: feedback
+entityname: Feedback - Anonymous Create
+id: 00000000-0000-0000-0002-000000000002
+read: false
+scope: 756150000
+statecode: 1
+statuscode: 2
+write: false

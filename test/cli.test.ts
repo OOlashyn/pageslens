@@ -48,7 +48,7 @@ describe('cli lint', () => {
   it('exits 1 when there are errors', async () => {
     const result = await cli('lint', 'test/fixtures/broken');
     expect(result.code).toBe(ExitCode.Findings);
-    expect(result.out).toContain('6 errors, 4 warnings, 1 info');
+    expect(result.out).toContain('7 errors, 5 warnings, 1 info');
   });
 
   it('exits 0 when only warnings and info are left', async () => {

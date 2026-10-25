@@ -145,17 +145,30 @@ export interface SiteRecord {
   source: SourceRef;
 }
 
+export interface TypedRecords {
+  webRoles: WebRole[];
+  tablePermissions: TablePermission[];
+  siteSettings: SiteSetting[];
+  webPageRules: WebPageRule[];
+  websiteAccess: WebsiteAccess[];
+}
+
 export interface Site {
   /** Absolute path of the site folder: the `.powerpages-site` folder, or a classic site's folder. */
   root: string;
   website: Website;
-  /** Every record, sorted by source file. */
+  /** Every record, sorted by source file, inactive ones included. */
   records: SiteRecord[];
   webRoles: WebRole[];
   tablePermissions: TablePermission[];
   siteSettings: SiteSetting[];
   webPageRules: WebPageRule[];
   websiteAccess: WebsiteAccess[];
+  /**
+   * Records marked inactive (`statecode: 1`). They're left out of the lists above, so they grant,
+   * restrict and configure nothing, as in Power Pages, but stay here to be named.
+   */
+  inactive: TypedRecords;
   /** Files that are neither a record, a side file nor web file content. */
   unrecognizedFiles: string[];
 }

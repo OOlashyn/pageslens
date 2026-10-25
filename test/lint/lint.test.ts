@@ -54,6 +54,16 @@ describe('rules on the fixtures', () => {
         'error',
         'table-permissions/Note---Parent-Without-Role.tablepermission.yml',
       ],
+      [
+        'permission-no-role',
+        'warning',
+        'table-permissions/Order---Inactive-Role.tablepermission.yml',
+      ],
+      [
+        'parent-chain-broken',
+        'error',
+        'table-permissions/Survey-Answer---Inactive-Parent.tablepermission.yml',
+      ],
       ['multiple-authenticated-roles', 'error', 'web-roles/Authenticated-Users.webrole.yml'],
       ['multiple-authenticated-roles', 'error', 'web-roles/Signed-In-Users.webrole.yml'],
       ['role-unused', 'info', 'web-roles/Unused-Role.webrole.yml'],
@@ -141,7 +151,7 @@ describe('ignore config', () => {
     expect(files.some((f) => f.startsWith('web-roles/'))).toBe(false);
     expect(files).not.toContain('table-permissions/Incident---No-Role.tablepermission.yml');
     expect(result.ignored).toBe(4);
-    expect(result.counts).toEqual({ error: 4, warning: 3, info: 0 });
+    expect(result.counts).toEqual({ error: 5, warning: 4, info: 0 });
   });
 
   it('leaves out findings on a record, from the listed rules only', () => {
@@ -274,7 +284,7 @@ describe('output formats', () => {
       name: 'Broken Fixture',
       path: 'site',
     });
-    expect(output.summary).toEqual({ error: 6, warning: 4, info: 1 });
+    expect(output.summary).toEqual({ error: 7, warning: 5, info: 1 });
     expect(output.findings[0]).toEqual({
       ruleId: 'webapi-wildcard-fields',
       severity: 'error',
