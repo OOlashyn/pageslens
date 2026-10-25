@@ -13,7 +13,7 @@ It needs no Dataverse connection and no agent: the same folder gives the same ou
 
 Records that are inactive in Dataverse (`statecode: 1` in the download) are left out everywhere, as Power Pages ignores them: an inactive table permission grants nothing, and an inactive role or setting counts for nothing. `docs` says how many were left out.
 
-> **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`). `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet. Unpacked solutions and solution `.zip` files are planned.
+> **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`). `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet. Unpacked solutions are planned.
 
 ## Quick start
 
@@ -143,7 +143,7 @@ The full grammar, what each statement means and how to write a good policy: [doc
 pageslens diff <base> <head> [path] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
 ```
 
-Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, and a few settings such as open registration. It compares effective access, not files, and matches records by GUID, so a renamed file or a permission split in two with the same result isn't an access change.
+Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, a few settings such as open registration, and on classic sites who can read and publish each page. It compares effective access, not files, and matches records by GUID, so a renamed file or a permission split in two with the same result isn't an access change.
 
 Each side is a folder or a git ref: two downloads (`diff before after`), two commits (`diff origin/main HEAD site`), or a commit and the working tree (`diff origin/main site`, to see uncommitted edits). `--merge-base` compares with the merge base, as a pull request does.
 
@@ -203,7 +203,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # the merge base needs the history of both branches
-      - uses: OOlashyn/pageslens@v0.5.0
+      - uses: OOlashyn/pageslens@v0.7.0
         with:
           path: site
 ```
@@ -213,7 +213,7 @@ jobs:
 - **The job fails** when lint finds errors, a policy statement fails, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
 - **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
 - **Permissions:** without `security-events: write`, or with code scanning not available for the repository, the upload is skipped with a notice. Without `pull-requests: write`, the comment is.
-- **Version:** `v0.5.0` runs exactly pageslens 0.5.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
+- **Version:** `v0.7.0` runs exactly pageslens 0.7.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
 
 | Input          | Default                 | What                                                                                                    |
 | -------------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -339,7 +339,7 @@ node dist/bin.mjs lint test/fixtures/broken
 
 Without Vite+ installed globally, `npx vp …` runs the project's own copy. The `npm run check`, `npm test` and `npm run build` scripts call the same commands.
 
-`test/fixtures/` holds three sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule) and `classic` (a trimmed classic download), plus `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
+`test/fixtures/` holds five sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule), `classic` (a trimmed classic download), `registration` (a classic site) and `classic-pages` (page access rules), plus `policies/`, policy files for `pageslens test`, and `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
 
 ### Releasing
 

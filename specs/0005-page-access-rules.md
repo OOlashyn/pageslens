@@ -1,6 +1,6 @@
 # 0005: Page access rules
 
-**Status:** lint and `docs` shipped in 0.6.0 (see "Decisions" and "As built"). The semantics were checked on a classic site (see "Verification results"). `test` and `diff` for pages come in 0.7.0.
+**Status:** lint and `docs` shipped in 0.6.0 (see "Decisions" and "As built"). The semantics were checked on a classic site (see "Verification results"). `test` and `diff` for pages shipped in 0.7.0 ([0006](0006-page-access-test-diff.md)).
 
 Table permissions answer "who can read which records". Page access rules answer "who can open which pages". pageslens already reads page access rules into the model (`webPageRules`: name, right, page, roles), but only `role-unused` looks at them. This spec adds the meaning: who can read each page, which mistakes to lint, and how `docs`, `test` and `diff` show them. It starts with classic sites.
 
