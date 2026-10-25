@@ -1,5 +1,17 @@
 import { PRIVILEGES, type PermissionNode, type Privilege } from '../graph/access.js';
 import { grantSentence, plain, type Part } from '../graph/describe.js';
+import {
+  buildPageGraph,
+  describeAudience,
+  normalizeUrl,
+  publishersOf,
+  RIGHTS,
+  ruleLabel,
+  type Audience as PageAudience,
+  type PageGraph,
+  type PageNode,
+  type RuleNode,
+} from '../graph/pages.js';
 import type { WebApiTable } from '../graph/webapi.js';
 import { lint } from '../lint/engine.js';
 import type { Scope } from '../model/kinds.js';
@@ -33,6 +45,7 @@ export function diffSites(base: Site | undefined, head: Site | undefined): Chang
     ...permissionRenames(grants, sides),
     ...webApiChanges(sides),
     ...settingChanges(sides),
+    ...pageChanges(pageSides(base, head), roles, sides),
   ];
   const changes = ranked.sort((a, b) => compareOrder(a.order, b.order)).map((r) => r.change);
   return head ? withLintHints(changes, head) : changes;
@@ -802,6 +815,335 @@ function settingChanges(sides: Sides): Ranked[] {
           add('narrower', `${rule.name} no longer allows ${removed.join(', ')}`);
       }
     }
+  }
+  return changes;
+}
+
+// --- Pages ---------------------------------------------------------------------------------
+// Who can read and publish each root page of a classic site (specs/0006), matched by GUID.
+// Readers are compared as levels (anyone, every signed-in user, a set of roles), so a change
+// says who gained or lost; a change shared by a page and the pages below it is one line, on
+// the topmost page.
+
+/** The page graphs to compare: none unless every side that has a site is classic. */
+function pageSides(
+  base: Site | undefined,
+  head: Site | undefined,
+): Record<Side, PageGraph | undefined> | undefined {
+  const present = [base, head].filter((site) => site !== undefined);
+  if (present.length === 0 || present.some((site) => site.layout !== 'classic')) return undefined;
+  return {
+    base: base && buildPageGraph(base),
+    head: head && buildPageGraph(head),
+  };
+}
+
+/** 2: anyone, 1: every signed-in user, 0: a set of roles. */
+function level(audience: PageAudience): number {
+  return audience.kind === 'anyone' ? 2 : audience.kind === 'signed-in' ? 1 : 0;
+}
+
+/** One page's line before collapsing: what changed for whom, and on which page. */
+interface PageItem {
+  kind: ChangeKind;
+  class: ChangeClass;
+  /** Who the line is about: a role key, `anyone` or `signed-in`; empty for page-level lines. */
+  who: string;
+  /** The role to sort by and name. */
+  about?: WebRole;
+  page: { id: string; url: string; parentId?: string };
+  /** The sentence after the URL. */
+  tail: string;
+  /** Sentence before the URL. */
+  head: string;
+  sources: ChangeSource[];
+}
+
+function pageChanges(
+  graphs: Record<Side, PageGraph | undefined> | undefined,
+  roles: RoleMatch,
+  sides: Sides,
+): Ranked[] {
+  if (!graphs) return [];
+  const empty: PageNode[] = [];
+  const nodes = {
+    base: new Map((graphs.base?.pages ?? empty).map((n) => [n.page.id, n])),
+    head: new Map((graphs.head?.pages ?? empty).map((n) => [n.page.id, n])),
+  };
+  const inactive = {
+    base: new Set(graphs.base?.inactive.map((p) => p.page.id)),
+    head: new Set(graphs.head?.inactive.map((p) => p.page.id)),
+  };
+  const builtIn = (flag: 'anonymous' | 'authenticated') =>
+    sides.head.roles.find((r) => r[flag]) ?? sides.base.roles.find((r) => r[flag]);
+
+  const items: PageItem[] = [];
+  const ids = new Set([...nodes.base.keys(), ...nodes.head.keys()]);
+  for (const id of ids) {
+    const before = nodes.base.get(id);
+    const after = nodes.head.get(id);
+    const node = (after ?? before)!;
+    const side: Side = after ? 'head' : 'base';
+    const page = {
+      id,
+      url: node.url,
+      ...(node.ancestors[0] && { parentId: node.ancestors[0].id }),
+    };
+    const pageSource = source(side, node.page);
+
+    if (!after) {
+      const how = inactive.head.has(id) ? 'deactivated' : 'removed';
+      items.push({
+        kind: 'page-removed',
+        class: 'narrower',
+        who: '',
+        page,
+        head: 'Page ',
+        tail: ` ${how}`,
+        sources: [pageSource],
+      });
+      continue;
+    }
+    if (before && normalizeUrl(before.url) !== normalizeUrl(after.url)) {
+      items.push({
+        kind: 'page-moved',
+        class: 'neutral',
+        who: '',
+        page,
+        head: `Page "${after.page.name}" moved from ${before.url} to `,
+        tail: '',
+        sources: [pageSource],
+      });
+    }
+
+    const causes = before
+      ? ruleCauses(before, after)
+      : { text: inactive.base.has(id) ? 'page activated' : 'new page', sources: [] };
+    const why = causes.text;
+    const causeSources = causes.sources.length > 0 ? causes.sources : [pageSource];
+
+    // Readers that become, or stop being, unknown
+    if (!after.readers || (before && !before.readers)) {
+      if (before && !before.readers && !after.readers) continue;
+      items.push({
+        kind: 'page-readers-unknown',
+        class: 'wider',
+        who: '',
+        page,
+        head: 'Who can read ',
+        tail: after.readers
+          ? ` is known again: ${describeAudience(after.readers)}`
+          : ` is now unknown: the page tree above "${after.pathBreak!.at.name}" is broken`,
+        sources: [source('head', after.pathBreak?.at ?? after.page)],
+      });
+      continue;
+    }
+
+    const nobody: PageAudience = { kind: 'roles', roles: [] };
+    for (const [verb, of] of [
+      ['read', (n: PageNode) => n.readers!],
+      ['publish', (n: PageNode) => publishersOf(n)!],
+    ] as const) {
+      const was = before ? of(before) : nobody;
+      const now = of(after);
+      const gained = verb === 'read' ? 'page-read-gained' : 'page-publish-gained';
+      const lost = verb === 'read' ? 'page-read-lost' : 'page-publish-lost';
+      const push = (kind: ChangeKind, who: string, about: WebRole | undefined, name: string) => {
+        const wider = kind === gained;
+        items.push({
+          kind,
+          class: wider ? 'wider' : 'narrower',
+          who,
+          ...(about && { about }),
+          page,
+          head: `${name} can ${wider ? 'now' : 'no longer'} ${verb} `,
+          tail: `: ${why}`,
+          sources: causeSources,
+        });
+      };
+      const named = (lvl: number) =>
+        lvl === 2
+          ? { who: 'anyone', role: builtIn('anonymous'), name: 'Anyone' }
+          : { who: 'signed-in', role: builtIn('authenticated'), name: 'Every signed-in user' };
+      if (level(now) > level(was)) {
+        const n = named(level(now));
+        push(gained, n.who, n.role, n.name);
+      } else if (level(now) < level(was)) {
+        const n = named(level(was));
+        push(lost, n.who, n.role, n.name);
+      }
+      if (now.kind === 'roles' && was.kind === 'roles') {
+        const key = (s: Side, r: WebRole) => roles.keyOf(s, r);
+        const wasKeys = new Set(was.roles.map((r) => key('base', r)));
+        const nowKeys = new Set(now.roles.map((r) => key('head', r)));
+        for (const r of now.roles) {
+          if (!wasKeys.has(key('head', r))) push(gained, key('head', r), r, `"${r.name}"`);
+        }
+        for (const r of was.roles) {
+          if (!nowKeys.has(key('base', r))) push(lost, key('base', r), r, `"${r.name}"`);
+        }
+      }
+    }
+
+    if (!before) {
+      if (after.readers.kind === 'roles' && after.readers.roles.length === 0) {
+        items.push({
+          kind: 'page-added',
+          class: 'neutral',
+          who: '',
+          page,
+          head: 'Page ',
+          tail: ` ${inactive.base.has(id) ? 'activated' : 'added'}: nobody can read it`,
+          sources: [pageSource],
+        });
+      }
+      continue;
+    }
+
+    // Same readers and publishers, from other rules
+    const rulesKey = (n: PageNode) =>
+      [...n.restrictions, ...n.grantChanges]
+        .map((r) => `${r.rule.id}:${r.rule.name}:${roleSet(r)}`)
+        .sort()
+        .join(',');
+    const sameAccess = !items.some((i) => i.page.id === id && i.kind !== 'page-moved');
+    if (sameAccess && rulesKey(before) !== rulesKey(after)) {
+      items.push({
+        kind: 'page-rules-changed',
+        class: 'neutral',
+        who: '',
+        page,
+        head: 'Same access to ',
+        tail: ` from other rules: ${why}`,
+        sources: causeSources,
+      });
+    }
+  }
+
+  return [...collapse(items), ...ruleScopeChanges(graphs)];
+}
+
+/** What changed in the rules on a page's path, and the rule records behind it. */
+function ruleCauses(before: PageNode, after: PageNode): { text: string; sources: ChangeSource[] } {
+  const rulesOf = (n: PageNode) =>
+    new Map([...n.restrictions, ...n.grantChanges].map((r) => [r.rule.id, r]));
+  const was = rulesOf(before);
+  const now = rulesOf(after);
+  const causes: string[] = [];
+  const sources: ChangeSource[] = [];
+  for (const [id, r] of now) {
+    const old = was.get(id);
+    const cause = !old
+      ? `${ruleLabel(r.rule)} added`
+      : roleSet(old) !== roleSet(r)
+        ? `the roles of ${ruleLabel(r.rule)} changed`
+        : old.rule.name !== r.rule.name
+          ? `${ruleLabel(old.rule)} renamed to "${r.rule.name}"`
+          : undefined;
+    if (!cause) continue;
+    causes.push(cause);
+    sources.push(source('head', r.rule));
+  }
+  for (const [id, r] of was) {
+    if (now.has(id)) continue;
+    causes.push(`${ruleLabel(r.rule)} removed`);
+    sources.push(source('base', r.rule));
+  }
+  return { text: causes.join('; ') || 'the page moved', sources };
+}
+
+const roleSet = (r: RuleNode) =>
+  r.roles
+    .map((role) => role.id)
+    .sort()
+    .join(',');
+
+function dedupeSources(sources: ChangeSource[]): ChangeSource[] {
+  const seen = new Set<string>();
+  return sources.filter((s) => {
+    const key = `${s.side}:${s.recordId}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+/**
+ * One line per branch: an item whose parent page has the same kind, audience and cause is
+ * folded into the parent's line, which counts the pages below it and lists them (`pages`).
+ */
+function collapse(items: PageItem[]): Ranked[] {
+  const keyOf = (item: PageItem, pageId: string) =>
+    [item.kind, item.who, item.tail, pageId].join('\0');
+  const byKey = new Map(items.map((item) => [keyOf(item, item.page.id), item]));
+  const topOf = (item: PageItem): PageItem => {
+    let top = item;
+    for (;;) {
+      const parent = top.page.parentId && byKey.get(keyOf(item, top.page.parentId));
+      // Page-level lines (added, removed, moved) are about one page each
+      if (!parent || !item.who) return top;
+      top = parent;
+    }
+  };
+  const below = new Map<PageItem, PageItem[]>();
+  for (const item of items) {
+    const top = topOf(item);
+    if (top !== item) below.set(top, [...(below.get(top) ?? []), item]);
+  }
+  const folded = new Set([...below.values()].flat());
+
+  return items
+    .filter((item) => !folded.has(item))
+    .map((item) => {
+      const rest = (below.get(item) ?? []).sort((a, b) => compare(a.page.url, b.page.url));
+      const count =
+        rest.length === 0
+          ? ''
+          : ` (and ${rest.length} ${rest.length === 1 ? 'page' : 'pages'} below it)`;
+      const change: Change = {
+        class: item.class,
+        kind: item.kind,
+        message: [item.head, { code: item.page.url }, count, item.tail],
+        ...(item.about && { role: roleRef(item.about) }),
+        page: item.page.url,
+        ...(rest.length > 0 && { pages: [item.page.url, ...rest.map((r) => r.page.url)] }),
+        sources: dedupeSources([...item.sources, ...rest.flatMap((r) => r.sources)]),
+      };
+      return rank(change, item.about, otherOrder(item.kind, item.page.url));
+    });
+}
+
+/**
+ * A rule's scope decides only the web files directly under its page: Restrict Read set to
+ * exclude them, or Grant Change set to include them, is wider.
+ */
+function ruleScopeChanges(graphs: Record<Side, PageGraph | undefined>): Ranked[] {
+  if (!graphs.base || !graphs.head) return [];
+  const before = new Map(graphs.base.rules.map((r) => [r.rule.id, r]));
+  const changes: Ranked[] = [];
+  for (const now of graphs.head.rules) {
+    const was = before.get(now.rule.id);
+    const page = graphs.head.pageOf(now);
+    if (!was || !page) continue;
+    const scope = (r: RuleNode) => r.rule.scope ?? 1;
+    if (scope(was) === scope(now)) continue;
+    const excludes = scope(now) === 2;
+    const restrict = now.rule.right === RIGHTS.restrictRead;
+    const kind: ChangeKind = 'page-rule-scope-changed';
+    const change: Change = {
+      class: restrict === excludes ? 'wider' : 'narrower',
+      kind,
+      message: [
+        `${ruleLabel(now.rule)} on `,
+        { code: page.url },
+        excludes
+          ? ' no longer covers the web files directly under the page'
+          : ' now covers the web files directly under the page',
+      ],
+      page: page.url,
+      sources: [source('head', now.rule)],
+    };
+    changes.push(rank(change, undefined, otherOrder(kind, page.url)));
   }
   return changes;
 }

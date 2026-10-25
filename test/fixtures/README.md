@@ -92,6 +92,10 @@ Hand-written in the classic layout, for the page access cases the real site does
 
 Employees Only, Managers Only, Writers Publish Docs and Signed-in Only are clean, as are Lost Child (below the break, not reported again) and Home's content page.
 
+## `policies/`
+
+Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, and `registration.policy.yaml` for page statements against `registration/`.
+
 ## `diff/`
 
 Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `<case>/head`. Records match by GUID, so the pairs share GUIDs and the files that differ start with a `#` comment naming the class and kind they cause (or `clean:` for a difference that must cause nothing). Expected output is in `test/diff/diff.test.ts`, with text and Markdown snapshots in `test/diff/__snapshots__/`.
@@ -106,5 +110,6 @@ Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `
 | `layouts` | classic base, code head | 1 wider (write added to Assets - Manager); every other record is the same in the other layout and must cause nothing |
 | `classic` | classic | 1 wider, 1 narrower, 1 neutral: the Web API enabled in `sitesetting.yml`, Anonymous Users taken off Feedback, a role renamed in `webrole.yml` |
 | `inactive` | code | 1 wider, 1 narrower, 1 neutral: a permission activated (wider, `(activated)`), one deactivated (narrower, `(deactivated)`), a role deactivated (neutral) |
+| `pages` | classic | 8 wider, 2 narrower, 3 neutral, page access only. Base is `classic-pages/` without its comments, plus an Archive page under `/internal/`. Head removes Employees Only (anyone can now read `/internal/` and the Archive page below it, one line; Partners can now read `/internal/reports/`; `/internal/team/` has the same readers from other rules), adds Partners to Docs Readers, takes Authenticated Users off Members and Admins, adds a Grant Change for Managers on `/members/`, adds a public News page, removes Locked, moves Account to `/my-account/`, renames Signed-in Only, sets Shared A's scope to exclude web files, and fixes Lost's parent (readers known again for Lost and Lost Child) |
 
 `test/diff/git.test.ts` commits the `grants` and `classic` pairs to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.

@@ -1,0 +1,94 @@
+- adx_name: Grant Change to Content
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000301
+- adx_name: Orphan Rule
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000104
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000302
+  adx_webpageid: 00000000-0000-0000-0005-0000000002fe
+- adx_name: Grant Change Without Role
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000303
+  adx_webpageid: 00000000-0000-0000-0005-000000000201
+- adx_name: Employees Only
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000104
+  - 00000000-0000-0000-0005-000000000105
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000304
+  adx_webpageid: 00000000-0000-0000-0005-000000000202
+- adx_name: Managers and Partners
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000105
+  - 00000000-0000-0000-0005-000000000106
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000305
+  adx_webpageid: 00000000-0000-0000-0005-000000000203
+- adx_name: Managers Only
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000105
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000306
+  adx_webpageid: 00000000-0000-0000-0005-000000000204
+- adx_name: Docs Readers
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000104
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000307
+  adx_webpageid: 00000000-0000-0000-0005-000000000205
+- adx_name: Writers Publish Docs
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000101
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000308
+  adx_webpageid: 00000000-0000-0000-0005-000000000205
+- adx_name: Shared A
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000104
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000309
+  adx_webpageid: 00000000-0000-0000-0005-000000000206
+- adx_name: Shared B
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000106
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000310
+  adx_webpageid: 00000000-0000-0000-0005-000000000206
+- adx_name: Public Visitors
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000102
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000311
+  adx_webpageid: 00000000-0000-0000-0005-000000000207
+- adx_name: Members and Admins
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000103
+  - 00000000-0000-0000-0005-000000000101
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000312
+  adx_webpageid: 00000000-0000-0000-0005-000000000208
+- adx_name: Signed-in Only
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-0005-000000000103
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000313
+  adx_webpageid: 00000000-0000-0000-0005-000000000209
+- adx_name: Locked Without Role
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-0005-000000000314
+  adx_webpageid: 00000000-0000-0000-0005-000000000210

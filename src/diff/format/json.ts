@@ -23,6 +23,8 @@ export function formatJson(result: DiffResult): string {
       ...(c.webApiEnabled !== undefined && { webApiEnabled: c.webApiEnabled }),
       ...(c.fields && { fields: c.fields }),
       ...(c.setting && { setting: c.setting }),
+      ...(c.page && { page: c.page }),
+      ...(c.pages && { pages: c.pages }),
       ...(c.lint && { lint: c.lint }),
       sources: c.sources,
     })),

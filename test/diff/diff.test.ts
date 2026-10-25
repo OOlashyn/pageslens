@@ -247,6 +247,71 @@ describe('diff: layouts', () => {
   });
 });
 
+describe('diff: pages', async () => {
+  const result = await diffCase('pages');
+
+  it('classifies every page change as the fixture comments say', () => {
+    expect(kinds(result)).toEqual([
+      'wider page-read-gained',
+      'wider page-read-gained',
+      'wider page-publish-gained',
+      'wider page-read-gained',
+      'wider page-read-gained',
+      'wider page-readers-unknown',
+      'wider page-readers-unknown',
+      'wider page-rule-scope-changed',
+      'narrower page-read-lost',
+      'narrower page-removed',
+      'neutral page-moved',
+      'neutral page-rules-changed',
+      'neutral page-rules-changed',
+    ]);
+  });
+
+  it('writes one line per branch, with every page in it', () => {
+    const internal = find(result, 'Anyone can now read /internal/');
+    expect(plain(internal.message)).toBe(
+      'Anyone can now read /internal/ (and 1 page below it): Restrict Read rule "Employees Only" removed',
+    );
+    expect(internal.pages).toEqual(['/internal/', '/internal/archive/']);
+    expect(internal.sources).toEqual([
+      {
+        side: 'base',
+        recordId: '00000000-0000-0000-0005-000000000304',
+        name: 'Employees Only',
+        file: 'webpagerule.yml',
+      },
+    ]);
+  });
+
+  it('names who gained or lost, and why', () => {
+    expect(messages(result)).toContain(
+      '"Partners" can now read /internal/reports/: Restrict Read rule "Employees Only" removed',
+    );
+    expect(messages(result)).toContain('Anyone can now read /news/: new page');
+    expect(messages(result)).toContain('Page "Account" moved from /account/ to /my-account/');
+    expect(messages(result)).toContain(
+      'Same access to /internal/team/ from other rules: Restrict Read rule "Employees Only" removed',
+    );
+  });
+
+  it('turns the other way round into the opposite changes', async () => {
+    const reversed = await diffCase('pages', true);
+    expect(messages(reversed)).toContain(
+      'Anyone can no longer read /internal/ (and 1 page below it): Restrict Read rule "Employees Only" added',
+    );
+    expect(messages(reversed)).toContain('Page /news/ removed');
+  });
+
+  it('compares no pages unless both sides are classic', async () => {
+    expect((await diffCase('layouts')).changes.some((c) => c.kind.startsWith('page-'))).toBe(false);
+  });
+
+  it('matches the text output snapshot', async () => {
+    await expect(formatText(result)).toMatchFileSnapshot('__snapshots__/pages.txt');
+  });
+});
+
 describe('diff output', () => {
   it('writes versioned JSON', async () => {
     const output = JSON.parse(formatJson(await diffCase('roles')));

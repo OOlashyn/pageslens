@@ -1,8 +1,11 @@
 import { buildAccessGraph, type Grant, type Privilege } from '../graph/access.js';
+import { buildPageGraph, type PageGraph } from '../graph/pages.js';
 import { grantSentence, plain } from '../graph/describe.js';
 import { buildWebApiSurface, type WebApiTable } from '../graph/webapi.js';
 import type { Site, SiteSetting, WebRole } from '../model/schema.js';
+import { closest } from '../util/closest.js';
 import { PolicyError } from './parse.js';
+import { checkPage, pageError } from './pages.js';
 import type { Check, Policy, Statement, TableRef, Who } from './types.js';
 
 /** Something in the site that makes a statement fail, and where it is. */
@@ -42,18 +45,24 @@ const REGISTRATION = {
 export function evaluatePolicy(policy: Policy, site: Site): TestResult {
   const graph = buildAccessGraph(site);
   const webApi = buildWebApiSurface(site, graph);
+  const pages = buildPageGraph(site);
   const context = new Context(
     site,
     graph.roles.flatMap((role) => graph.grants(role.id)),
     webApi,
+    pages,
   );
 
-  const problems = policy.statements.flatMap((statement) =>
-    whoOf(statement.check).flatMap((who) => {
+  const problems = policy.statements.flatMap((statement) => {
+    const at = `${policy.path}:${statement.line}`;
+    const errors = whoOf(statement.check).flatMap((who) => {
       const error = who.kind === 'role' ? context.roleError(who.name) : undefined;
-      return error ? [`${policy.path}:${statement.line}: ${error}: ${statement.text}`] : [];
-    }),
-  );
+      return error ? [`${at}: ${error}: ${statement.text}`] : [];
+    });
+    const { check } = statement;
+    const pageProblem = check.kind === 'page' ? pageError(site, pages, check.page) : undefined;
+    return pageProblem ? [...errors, `${at}: ${pageProblem}: ${statement.text}`] : errors;
+  });
   if (problems.length > 0) throw new PolicyError(problems);
 
   const results = policy.statements.map((statement): StatementResult => {
@@ -71,7 +80,7 @@ export function evaluatePolicy(policy: Policy, site: Site): TestResult {
 
 function whoOf(check: Check): Who[] {
   if (check.kind === 'can' || check.kind === 'cannot' || check.kind === 'call') return [check.who];
-  if (check.kind === 'only') return check.who;
+  if (check.kind === 'only' || check.kind === 'page') return check.who;
   return [];
 }
 
@@ -84,6 +93,7 @@ class Context {
     site: Site,
     private readonly grants: Grant[],
     private readonly webApi: WebApiTable[],
+    private readonly pages: PageGraph,
   ) {
     this.roles = site.webRoles;
     for (const setting of site.siteSettings) {
@@ -190,6 +200,8 @@ class Context {
         return this.registration();
       case 'setting':
         return this.setting(check);
+      case 'page':
+        return checkPage(check, this.pages, (name) => this.role(name));
     }
   }
 
@@ -355,34 +367,4 @@ function sameValue(actual: string, expected: string): boolean {
   const b = expected.trim();
   const isBool = (v: string) => /^(true|false)$/i.test(v);
   return isBool(a) && isBool(b) ? a.toLowerCase() === b.toLowerCase() : a === b;
-}
-
-/** The candidate within two edits of `name` (ignoring case), if there's exactly one best. */
-function closest(name: string, candidates: string[]): string | undefined {
-  let best: string | undefined;
-  let bestDistance = 3;
-  for (const candidate of candidates) {
-    const d = distance(name.toLowerCase(), candidate.toLowerCase());
-    if (d < bestDistance) {
-      best = candidate;
-      bestDistance = d;
-    }
-  }
-  return best;
-}
-
-function distance(a: string, b: string): number {
-  let previous = Array.from({ length: b.length + 1 }, (_, i) => i);
-  for (let i = 1; i <= a.length; i++) {
-    const current = [i];
-    for (let j = 1; j <= b.length; j++) {
-      current[j] = Math.min(
-        previous[j]! + 1,
-        current[j - 1]! + 1,
-        previous[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1),
-      );
-    }
-    previous = current;
-  }
-  return previous[b.length]!;
 }

@@ -1,6 +1,6 @@
 # 0006: Page access in `test` and `diff`
 
-**Status:** decided, to build for 0.7.0 (see "Decisions").
+**Status:** built for 0.7.0 (see "Decisions" and "As built"). User reference: [docs/policy.md](../docs/policy.md) and [docs/diff.md](../docs/diff.md).
 
 0.6.0 reads who can open each page of a classic site ([0005](0005-page-access-rules.md)) and shows it in `lint` and `pages.md`. This spec adds pages to the other two commands:
 
@@ -212,6 +212,23 @@ Every recommendation is adopted:
 ## Verification owed
 
 - The two unknowns carried over from 0005: several Restrict Read rules on one page, and the Anonymous Users role on a Grant Change rule. `test` and `diff` inherit pageslens's reading of both until they're checked.
+
+## As built
+
+Design: this document (draft 1, all 9 questions answered with the recommendations). User reference: the "Page statements" section of `docs/policy.md` and the "Pages" section of `docs/diff.md`.
+
+- `test`: a `pages` section with the eight forms, in `src/policy/parse.ts` and `src/policy/pages.ts`. URL, inactive-page and code-site problems are reported with unknown roles, before anything is checked (exit 2).
+- `diff`: the page section of `src/diff/compare.ts`, ten new kinds in `CHANGE_KINDS`, and `page` and `pages` on a change (added fields, so the JSON `version` stays 1).
+- `src/graph/pages.ts` gained `atUrl` and `normalizeUrl` (URLs without case), `publishersOf`, and the URLs of inactive pages for messages.
+- Interpretations made while building:
+  - **`diff` names levels, not built-in roles**: "Anyone can now read /internal/" and "Every signed-in user can no longer read /members/", rather than "Anonymous Users can now read", since a page open to anyone is open to every role. The lines sort with the Anonymous Users and Authenticated Users roles.
+  - A line's cause lists every rule that changed on the way down to the page, and its files are those rules (the page itself for a new or moved page). A cause that touches several pages in the same way folds them into one line.
+  - A page that moved gets a `page-moved` line and its readers are compared as well; with no rule change on its path, a readers change says "the page moved".
+  - `page-rules-changed` covers a rule renamed, removed or added with no effect on readers or publishers.
+  - Page changes sort after a role's grants, with the other non-grant changes, by kind and URL.
+  - `test` evidence for a reader names the Grant Change rule that lets it in first, then the nearest Restrict Read rule; for `can`, the nearest Restrict Read rule that keeps it out.
+  - `role "X" cannot read P` fails when P is open to every signed-in user, as members of X are signed in.
+- Tested: every statement shape against `registration/` (`test/fixtures/policies/registration.policy.yaml`, each line's result in a comment), the errors, the evidence and a text snapshot; the `pages` diff case both ways round, branch folding, mixed layouts and a text snapshot.
 
 ## Sources
 

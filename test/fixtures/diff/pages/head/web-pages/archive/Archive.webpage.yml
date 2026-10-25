@@ -1,0 +1,7 @@
+# clean: no rule of its own; its change is folded into the /internal/ line
+adx_hiddenfromsitemap: false
+adx_isroot: true
+adx_name: Archive
+adx_parentpageid: 00000000-0000-0000-0005-000000000202
+adx_partialurl: archive
+adx_webpageid: 00000000-0000-0000-0005-000000000216

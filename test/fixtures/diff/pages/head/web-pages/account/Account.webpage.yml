@@ -1,0 +1,7 @@
+# neutral page-moved: /account/ to /my-account/
+adx_hiddenfromsitemap: true
+adx_isroot: true
+adx_name: Account
+adx_parentpageid: 00000000-0000-0000-0005-000000000201
+adx_partialurl: my-account
+adx_webpageid: 00000000-0000-0000-0005-000000000209

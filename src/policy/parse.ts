@@ -8,6 +8,8 @@ import {
   SECTIONS,
   type AccessScope,
   type Check,
+  type PageAction,
+  type PageRef,
   type Policy,
   type Section,
   type Statement,
@@ -241,7 +243,9 @@ function parseCheck(section: Section, text: string): Check {
       ? parseAccess(reader)
       : section === 'webapi'
         ? parseWebApi(reader)
-        : parseSetting(reader);
+        : section === 'pages'
+          ? parsePages(reader)
+          : parseSetting(reader);
   reader.end();
   return check;
 }
@@ -381,4 +385,31 @@ function parseSetting(reader: Reader): Check {
   }
   const value = reader.string('a value (or "set")');
   return { kind: 'setting', name, op: negated ? 'is-not' : 'is', value };
+}
+
+function parsePages(reader: Reader): Check {
+  if (reader.isWord('only')) {
+    reader.next();
+    const who = [parseWho(reader)];
+    while (reader.comma()) who.push(parseWho(reader));
+    reader.word('can');
+    return { kind: 'page', form: 'only', who, ...parsePageAccess(reader) };
+  }
+  if (reader.isWord('nobody')) {
+    reader.next();
+    reader.word('can');
+    return { kind: 'page', form: 'nobody', who: [], ...parsePageAccess(reader) };
+  }
+  const who = parseWho(reader);
+  const form = reader.word('can', 'cannot') as 'can' | 'cannot';
+  return { kind: 'page', form, who: [who], ...parsePageAccess(reader) };
+}
+
+function parsePageAccess(reader: Reader): { action: PageAction; page: PageRef } {
+  const action = reader.word('read', 'publish') as PageAction;
+  if (reader.word('page', 'pages') === 'page') {
+    return { action, page: { kind: 'page', url: reader.string('the page URL') } };
+  }
+  reader.word('under');
+  return { action, page: { kind: 'under', url: reader.string('the page URL') } };
 }

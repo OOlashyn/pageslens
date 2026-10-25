@@ -1,7 +1,7 @@
 import type { Privilege } from '../graph/access.js';
 import type { Scope } from '../model/kinds.js';
 
-export const SECTIONS = ['access', 'webapi', 'settings'] as const;
+export const SECTIONS = ['access', 'webapi', 'settings', 'pages'] as const;
 export type Section = (typeof SECTIONS)[number];
 
 /** Who a statement is about. `authenticated` is every signed-in user, `anonymous` every visitor who isn't. */
@@ -14,6 +14,15 @@ export type Who =
 export type TableRef = { kind: 'any' } | { kind: 'table'; name: string };
 
 export type AccessScope = Exclude<Scope, 'unknown'>;
+
+/** `page "<url>"`, or `pages under "<url>"`: the page and every page below it. */
+export interface PageRef {
+  kind: 'page' | 'under';
+  url: string;
+}
+
+/** `read` is who can open the page; `publish` is Grant Change, which also gives read. */
+export type PageAction = 'read' | 'publish';
 
 interface AccessBase {
   privileges: Privilege[];
@@ -30,6 +39,14 @@ export type Check =
   | { kind: 'not-enabled'; table: TableRef }
   | { kind: 'call'; negated: boolean; who: Who; table: TableRef }
   | { kind: 'registration-invite-only' }
+  | {
+      kind: 'page';
+      form: 'can' | 'cannot' | 'only' | 'nobody';
+      /** One for `can` and `cannot`, the list for `only`, none for `nobody`. */
+      who: Who[];
+      action: PageAction;
+      page: PageRef;
+    }
   | {
       kind: 'setting';
       name: string;
