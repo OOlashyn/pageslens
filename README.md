@@ -79,7 +79,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | [`role-unused`](rules/role-unused.md)                                   | info    | Web role nothing uses                                                  |
 | [`page-rule-no-page`](rules/page-rule-no-page.md)                       | warning | Page access rule with no page, or a missing or inactive one            |
 | [`page-rule-no-role`](rules/page-rule-no-role.md)                       | error   | Page access rule with no web role                                      |
-| [`page-rule-anonymous`](rules/page-rule-anonymous.md)                   | warning | Page access rule listing Anonymous Users                               |
+| [`page-rule-anonymous`](rules/page-rule-anonymous.md)                   | error   | Page access rule listing Anonymous Users, which lets nobody in         |
 | [`page-rules-conflict`](rules/page-rules-conflict.md)                   | error   | More than one Restrict Read rule on a page                             |
 | [`page-roles-not-subset`](rules/page-roles-not-subset.md)               | warning | Restrict Read role that a rule above keeps out                         |
 | [`grant-change-overrides-read`](rules/grant-change-overrides-read.md)   | warning | Grant Change role that reads past a Restrict Read                      |

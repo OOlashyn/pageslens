@@ -4,7 +4,7 @@
 
 - 6 web roles, 0 table permissions (0 grant access) on 0 tables
 - Web API enabled on 0 tables
-- 14 web pages, 2 open to anyone, 14 page access rules
+- 14 web pages, 1 open to anyone, 14 page access rules
 
 ## Pages
 

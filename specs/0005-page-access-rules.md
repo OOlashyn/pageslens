@@ -1,6 +1,6 @@
 # 0005: Page access rules
 
-**Status:** lint and `docs` built for 0.6.0 (see "Decisions" and "As built"). `test` and `diff` for pages wait for 0.7.0, after the checks in "Verification owed".
+**Status:** lint and `docs` built for 0.6.0 (see "Decisions" and "As built"). The semantics were checked on a classic site (see "Verification results"). `test` and `diff` for pages come in 0.7.0.
 
 Table permissions answer "who can read which records". Page access rules answer "who can open which pages". pageslens already reads page access rules into the model (`webPageRules`: name, right, page, roles), but only `role-unused` looks at them. This spec adds the meaning: who can read each page, which mistakes to lint, and how `docs`, `test` and `diff` show them. It starts with classic sites.
 
@@ -159,6 +159,8 @@ The same model is read, and the rules that don't depend on page rendering run on
 
 ## Verification owed (needs a Dataverse environment)
 
+Checked on 2026-10-24; the answers are in "Verification results" below.
+
 1. Nested Restrict Read: does a user need a role from every rule on the path (intersection), or does the nearest rule win?
 2. Grant Change on a parent with scope `2`: does it still override Restrict Read for the child pages?
 3. A rule listing the Anonymous Users role: what happens at runtime?
@@ -191,6 +193,20 @@ Create a small branch under Home first: **V1** (`/v1/`), with two children, **V2
 
 After checks 1–4, one more `pac pages download` of the classic site gives the page tree for the hand-written fixture (`classic-pages`), with real shapes.
 
+## Verification results (Oleksandr, 2026-10-24)
+
+Run on the Registration test site as "How to check it" describes, and a new `pac pages download` afterwards. The design studio wouldn't create the rules for checks 1 and 3, so they were made in the Power Pages Management app; the design studio then showed a warning on them.
+
+| #   | Result                                                                                                                                        | What it means for pageslens                                                       |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1   | A user with only Authenticated Users couldn't open `/v1/v3/` (Restrict Read on V1: C1 ASP, on V3: Authenticated Users).                       | Rules on the path **intersect**, as designed.                                     |
+| 2a  | A C1 ASP user could open `/v1/v2/` (Restrict Read on V2: Administrators, Grant Change on V1: C1 ASP).                                         | Grant Change overrides Restrict Read below it, as documented.                     |
+| 2b  | Still allowed with the Grant Change's scope set to Exclude direct child web files.                                                            | Scope only affects web files, as designed.                                        |
+| 3   | On a page (`/vAnon/`) whose Restrict Read lists only Anonymous Users, both an anonymous visitor and a signed-in user got "Access Restricted". | **Not as designed:** the Anonymous Users role lets nobody in. See decision 12.    |
+| 4   | The new download has the V pages and their rules. `webpagerule.yml` has no new key and there's no new file for a rule's publishing states.    | Downloads don't carry the rule–publishing-state link, so pageslens can't show it. |
+| 5   | A Restrict Read on a code site's home page doesn't affect the site.                                                                           | Page access rules don't apply to code sites: decision 8 holds.                    |
+| 6   | `download-code-site` writes `statecode: 1` (with `statuscode: 2`) on a deactivated table permission, as a classic download does.              | Inactive records are skipped on code sites too (PR #25); nothing to change.       |
+
 ## Decisions (Oleksandr, 2026-10-24)
 
 Every recommendation is adopted except question 8:
@@ -200,14 +216,15 @@ Every recommendation is adopted except question 8:
 3. Nested Restrict Read rules intersect until verified, and the docs say so.
 4. When `diff` gets pages, it compares effective readers per branch.
 5. `page-rule-no-page` is info for a rule with neither a page nor a role, and a warning for a rule with roles but no page.
-6. A rule listing the Anonymous Users role counts as "everyone" until verified, and `page-rule-anonymous` warns about it.
+6. A rule listing the Anonymous Users role counts as "everyone" until verified, and `page-rule-anonymous` warns about it. Replaced by decision 12.
 7. `test` names pages by URL path.
 8. **Not as recommended:** page access rules are classic-only in 0.6.0. No page lint rule runs on a code site, and `docs` doesn't write `pages.md` for one. (`role-unused` still counts a role used by a page rule, as before.)
 9. Pages only. `docs` shows each rule's scope; web files get their own section later.
 10. Answered before: inactive records are left out of the model (PR #25).
 11. No heuristic lint rule for an unrestricted page among restricted siblings. `pages.md` shows it now, and `test` and `diff` will catch it in 0.7.0.
+12. After verification 3: a rule listing the Anonymous Users role is an **error**, and the role counts as letting nobody in. This replaces decision 6.
 
-The checks in "How to check it" haven't been run yet, so everything under "Verification owed" still stands.
+The checks in "How to check it" were run on 2026-10-24: see "Verification results".
 
 ## Open questions for Oleksandr (answered, see Decisions)
 
@@ -241,7 +258,8 @@ Design: this document (draft 2, questions 1–11 answered; question 8 not as rec
   - URLs are built from the partial URLs of the page and its ancestors. A page in a loop gets the URL of the path followed until the loop.
   - The publishing state link (verification 5) is still unknown, so no rule is shown as state-bound. A page's own publishing state isn't shown.
 - Tested: `test/graph/pages.test.ts` (URLs, intersection, same-page union, Grant Change, built-in roles, broken paths, both fixtures); every rule's case in `classic-pages` and the real site's findings in `test/lint/lint.test.ts`; docs snapshots for `registration` and `classic-pages`.
-- **Not verified:** everything under "Verification owed". The checks haven't been run yet.
+- After "Verification results": the Anonymous Users role in a rule lets nobody in (`audienceOf` leaves it out), and `page-rule-anonymous` is an error (decision 12). The docs no longer call the intersection an assumption. `test/fixtures/registration/` was replaced by the new download, which adds the V pages: the real site now has a case for `page-roles-not-subset` (`/v1/v2/`, `/v1/v3/`), `grant-change-overrides-read` (`/v1/v2/`) and `page-rule-anonymous` (`/vAnon/`).
+- **Still unknown:** which rule wins when a page has several Restrict Read rules (pageslens unites them; `page-rules-conflict` reports it), and what an Anonymous Users role does on a Grant Change rule (pageslens counts it as nobody, as on Restrict Read).
 
 ## Sources
 

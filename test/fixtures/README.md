@@ -57,9 +57,9 @@ Access to the Accounts Assets (account scope with `adx_accountrelationship`, rol
 
 ## `registration/`
 
-A copy of a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-24), unchanged except that `.portalconfig/` was removed (it names the source environment). Web file contents are kept. Read-only like `ecoflux/`: don't edit it to make a test pass. Used for page access rules (spec 0005) and docs snapshots.
+A copy of a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-24) after the spec 0005 checks were run on it, unchanged except that `.portalconfig/` was removed (it names the source environment). Web file contents are kept. Read-only like `ecoflux/`: don't edit it to make a test pass. Used for page access rules (spec 0005) and docs snapshots.
 
-What it has: 17 root pages, all directly under Home (a flat tree), each with one `en-US` content page; eight page access rules, two of them inactive (on Home); an inactive page (Contact us) and an inactive table permission (Feedback); rule scope `2` on the inactive "Restrict Read on Home"; "[Admin] Delete-Course" with no rule next to three admin pages restricted to C1 ASP.
+What it has: 21 root pages, each with one `en-US` content page, all directly under Home except V2 and V3 under V1; 13 page access rules, two of them inactive (on Home); an inactive page (Contact us) and an inactive table permission (Feedback); rule scope `2` on the inactive "Restrict Read on Home"; "[Admin] Delete-Course" with no rule next to three admin pages restricted to C1 ASP. The V pages are the checks from spec 0005's "Verification results": `/v1/` restricted to C1 ASP with a Grant Change for C1 ASP, `/v1/v2/` restricted to Administrators, `/v1/v3/` to Authenticated Users, and `/vAnon/` to Anonymous Users.
 
 Expected lint findings:
 
@@ -67,6 +67,9 @@ Expected lint findings:
 |---|---|
 | `page-rule-authenticated` | Restrict Read on C1 Courses Home (Authenticated Users with Administrators and C1 ASP) |
 | `page-rule-no-page` (info) | Grant Change to Content (no page, no role) |
+| `page-roles-not-subset` | Admin Only (`/v1/v2/`) and Allow Auth (`/v1/v3/`): their roles can't get past Restrict Read on v1 |
+| `grant-change-overrides-read` | Admin Only (the Grant Change on `/v1/` lets C1 ASP in) |
+| `page-rule-anonymous` | Allow Anon Only (`/vAnon/`) |
 | `global-write-authenticated` | ASP C2 Course, ASP C2 Registration, ASP Contacts |
 | `webapi-no-permission` | `Webapi/adx_webrole_contact/enabled` |
 

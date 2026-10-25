@@ -71,8 +71,8 @@ describe('loadSiteFolder: classic', async () => {
     expect(registration.layout).toBe('classic');
     expect(site.layout).toBe('classic');
     const roots = registration.webPages.filter((page) => page.isRoot);
-    expect(roots).toHaveLength(17);
-    expect(registration.webPages).toHaveLength(34);
+    expect(roots).toHaveLength(21);
+    expect(registration.webPages).toHaveLength(42);
     expect(roots.find((page) => page.name === '[Admin] Delete-Course')).toMatchObject({
       parentPageId: '58120917-5fcf-f111-a05a-70a8a52c89ad',
       partialUrl: 'delete-course',

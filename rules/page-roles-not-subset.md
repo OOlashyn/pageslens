@@ -8,7 +8,7 @@ Classic sites only (`pac pages download`). On a code site, the browser routes pa
 
 ## Why it matters
 
-A rule affects its page and every page below it, so a user has to pass every Restrict Read rule on the way down. Microsoft's docs say a child page restricted to a role that the parent doesn't allow "won't be available to those roles". The role is listed, but can't reach the page. (pageslens assumes nested rules narrow access like this; it's still to be checked in an environment.)
+A rule affects its page and every page below it, so a user has to pass every Restrict Read rule on the way down. Microsoft's docs say a child page restricted to a role that the parent doesn't allow "won't be available to those roles". The role is listed, but can't reach the page. Checked on a classic site: a user with only the Authenticated Users role was refused a page restricted to Authenticated Users below a page restricted to another role.
 
 ## How to fix
 

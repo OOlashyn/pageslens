@@ -13,7 +13,7 @@
 | [`role-unused`](role-unused.md)                                   | info    | Web role nothing uses                                                  |
 | [`page-rule-no-page`](page-rule-no-page.md)                       | warning | Page access rule with no page, or a missing or inactive one            |
 | [`page-rule-no-role`](page-rule-no-role.md)                       | error   | Page access rule with no web role                                      |
-| [`page-rule-anonymous`](page-rule-anonymous.md)                   | warning | Page access rule listing Anonymous Users                               |
+| [`page-rule-anonymous`](page-rule-anonymous.md)                   | error   | Page access rule listing Anonymous Users, which lets nobody in         |
 | [`page-rules-conflict`](page-rules-conflict.md)                   | error   | More than one Restrict Read rule on a page                             |
 | [`page-roles-not-subset`](page-roles-not-subset.md)               | warning | Restrict Read role that a rule above keeps out                         |
 | [`grant-change-overrides-read`](grant-change-overrides-read.md)   | warning | Grant Change role that reads past a Restrict Read                      |

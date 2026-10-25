@@ -86,7 +86,7 @@ describe('rules on the fixtures', () => {
       ['page-parent-missing', 'error', 'web-pages/lost/Lost.webpage.yml'],
       ['grant-change-overrides-read', 'warning', 'webpagerule.yml'],
       ['page-roles-not-subset', 'warning', 'webpagerule.yml'],
-      ['page-rule-anonymous', 'warning', 'webpagerule.yml'],
+      ['page-rule-anonymous', 'error', 'webpagerule.yml'],
       ['page-rule-authenticated', 'warning', 'webpagerule.yml'],
       ['page-rule-no-page', 'info', 'webpagerule.yml'],
       ['page-rule-no-page', 'warning', 'webpagerule.yml'],
@@ -103,20 +103,19 @@ describe('rules on the fixtures', () => {
     );
   });
 
-  it('finds the Authenticated Users rule and the template rule in the real classic site', () => {
+  it('finds the page rule cases in the real classic site', () => {
     const findings = lint(registration).findings.filter((f) => f.source.file === 'webpagerule.yml');
-    expect(findings.map((f) => [f.ruleId, f.severity, f.message])).toEqual([
-      [
-        'page-rule-authenticated',
-        'warning',
-        'Restrict Read rule "Restrict Read on C1 Courses Home" on "/admin-home/" lists the Authenticated Users role "Authenticated Users" with "Administrators", "C1 ASP", so every signed-in user can read the page and the other roles add nothing.',
-      ],
-      [
-        'page-rule-no-page',
-        'info',
-        'Grant Change rule "Grant Change to Content" applies to nothing: it has no web page.',
-      ],
+    expect(findings.map((f) => [f.ruleId, f.severity])).toEqual([
+      ['grant-change-overrides-read', 'warning'],
+      ['page-roles-not-subset', 'warning'],
+      ['page-roles-not-subset', 'warning'],
+      ['page-rule-anonymous', 'error'],
+      ['page-rule-authenticated', 'warning'],
+      ['page-rule-no-page', 'info'],
     ]);
+    expect(findings.map((f) => f.message)).toContain(
+      `Restrict Read rule "Allow Auth" on "/v1/v3/" lists "Authenticated Users", but Restrict Read rule "Restrict Read on v1" on "/v1/" doesn't let it in, so it can't reach "/v1/v3/".`,
+    );
   });
 
   it('runs no page rule on a code site', () => {
