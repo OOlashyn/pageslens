@@ -7,12 +7,12 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 |                         |                                                                                                                                                                                                                                                                                                 |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Released (`latest`)     | `0.7.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores, inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
-| On `main`, not released | the `webapi-inner-errors` lint rule, and unused ignore entries listed by `lint`                                                                                                                                                                                                                 |
+| On `main`, not released | the `webapi-inner-errors` lint rule, and unused ignore entries listed by `lint`. Goes out with `0.8.0`                                                                                                                                                                                          |
 | Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                                                                                                                    |
 
 ## Next
 
-1. **Release** the `webapi-inner-errors` rule and the unused ignore entries.
+1. **Release `0.8.0`** with the `webapi-inner-errors` rule and the unused ignore entries. Notes: [releases/0.8.0.md](releases/0.8.0.md).
 2. **Solution adapter** (M3, starts as a spec). Read an unpacked solution (`powerpagecomponents/<guid>`, as `pac solution unpack` writes it) into the same model, so teams that keep solutions in git rather than a `pac pages` download can use pageslens. Unpacked only: most teams pack from the repository, and a `.zip` is one `pac solution unpack` away.
 3. **`align`** (M3, its own spec): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed ([alm-story.md](research/alm-story.md)).
 4. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
