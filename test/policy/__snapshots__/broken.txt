@@ -45,6 +45,6 @@ settings
   FAIL  setting "Search/Enabled" is set  (line 29)
         Search/Enabled isn't set
   pass  setting "Search/Enabled" is not set
-  pass  setting "Webapi/error/innererror" is not "true"
+  pass  setting "HTTP/Access-Control-Allow-Origin" is not "*"
 
 12 passed, 12 failed

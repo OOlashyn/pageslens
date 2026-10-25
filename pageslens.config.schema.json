@@ -29,6 +29,15 @@
           ],
           "description": "Web API is enabled on a table that no table permission with a web role covers. Default: warning."
         },
+        "webapi-inner-errors": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "Web API error responses include the inner error (`Webapi/error/innererror = true`). Default: warning."
+        },
         "permission-no-role": {
           "enum": [
             "off",
@@ -192,6 +201,7 @@
               "enum": [
                 "webapi-wildcard-fields",
                 "webapi-no-permission",
+                "webapi-inner-errors",
                 "permission-no-role",
                 "global-write-anonymous",
                 "global-write-authenticated",

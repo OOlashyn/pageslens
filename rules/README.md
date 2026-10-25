@@ -4,6 +4,7 @@
 | ----------------------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
 | [`webapi-wildcard-fields`](webapi-wildcard-fields.md)             | error   | Web API enabled with `*` as the fields list                            |
 | [`webapi-no-permission`](webapi-no-permission.md)                 | warning | Web API enabled on a table no table permission covers                  |
+| [`webapi-inner-errors`](webapi-inner-errors.md)                   | warning | Web API errors that include the inner error                            |
 | [`permission-no-role`](permission-no-role.md)                     | warning | Table permission with no web role                                      |
 | [`global-write-anonymous`](global-write-anonymous.md)             | warning | Global create, write or delete for Anonymous Users                     |
 | [`global-write-authenticated`](global-write-authenticated.md)     | warning | Global create, write or delete for Authenticated Users                 |

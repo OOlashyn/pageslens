@@ -11,6 +11,7 @@ Expected lint findings:
 | rule | record |
 |---|---|
 | `scope-relationship-missing` | the 4 Account-scope (`756150002`) permissions, none of which has `accountrelationship`: Asset / Condition Log / Marketplace Listing - Asset Manager CRUD, and Chain of Custody - Logistics Partner ReadWrite. To confirm in an environment whether these grants work at all. |
+| `webapi-inner-errors` | `Webapi/error/innererror` = `true` |
 | `role-unused` | none: roles flagged as Anonymous or Authenticated Users are built-in and skipped; Administrators is used by a page rule and website access |
 
 No Web API wildcard fields, no permissions without a role, no global write.
@@ -30,6 +31,7 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `scope-relationship-missing` | Contract - Case Manager Account |
 | `webapi-wildcard-fields` | `Webapi/contact/fields` = `*` |
 | `webapi-no-permission` | `Webapi/dwcrm_invoice/enabled` |
+| `webapi-inner-errors` | `Webapi/error/innererror` = `True` |
 | `permission-no-role` | Order - Inactive Role (its only role, Retired Role, is inactive) |
 | `parent-chain-broken` | Survey Answer - Inactive Parent (parent is inactive) |
 | `role-unused` | Unused Role |
@@ -72,6 +74,7 @@ Expected lint findings:
 | `page-rule-anonymous` | Allow Anon Only (`/vAnon/`) |
 | `global-write-authenticated` | ASP C2 Course, ASP C2 Registration, ASP Contacts |
 | `webapi-no-permission` | `Webapi/adx_webrole_contact/enabled` |
+| `webapi-inner-errors` | `Webapi/error/innererror` = `true` |
 
 ## `classic-pages/`
 
