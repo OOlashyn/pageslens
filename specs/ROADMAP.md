@@ -12,10 +12,9 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Before releasing `0.6.0`:** review the page lint rules' wording and severities, and finish the release notes. The spec 0005 checks are done, and their results are built in.
-2. **Release `0.6.0`** with page access rules (lint and `docs`, classic sites) and the fixes already on `main`.
-3. **Page access in `test` and `diff` (0.7.0):** `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
-4. Then the candidates below.
+1. **Release `0.6.0`** with page access rules (lint and `docs`, classic sites) and the fixes already on `main`. Ready: the lint rules are reviewed and the notes are in [releases/0.6.0.md](releases/0.6.0.md).
+2. **Page access in `test` and `diff` (0.7.0):** `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
+3. Then the candidates below.
 
 ## Verification still owed
 
