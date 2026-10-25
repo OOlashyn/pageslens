@@ -2,19 +2,18 @@
 
 Where pageslens stands and what comes next. Keep this file short and current: update it in the same change that finishes or starts a piece of work. History lives in the feature specs and in [archive/m1-plan.md](archive/m1-plan.md).
 
-## Status (2026-10-24)
+## Status (2026-10-25)
 
-|                         |                                                                                                                                                                                                                                                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                                                                                                                                                                               |
-| On `main`, not released | inactive records (`statecode: 1`) left out everywhere; the action compares with the pull request's head commit; page access rules for classic sites in `lint` (eight rules) and `docs` (`pages.md`), spec [0005](0005-page-access-rules.md). Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
-| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                                                                                                                                              |
+|                         |                                                                                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`)     | `0.6.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores, page access rules for classic sites (`lint` and `docs`), inactive records left out |
+| On `main`, not released | nothing                                                                                                                                                                                                         |
+| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                                    |
 
 ## Next
 
-1. **Release `0.6.0`** with page access rules (lint and `docs`, classic sites) and the fixes already on `main`. Ready: the lint rules are reviewed and the notes are in [releases/0.6.0.md](releases/0.6.0.md).
-2. **Page access in `test` and `diff` (0.7.0):** `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
-3. Then the candidates below.
+1. **Page access in `test` and `diff` (0.7.0):** `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in [0005](0005-page-access-rules.md)). Needs a spec section or a new spec with open questions first, as the grammar and `diff` kinds are closed (AGENTS.md).
+2. Then the candidates below.
 
 ## Verification still owed
 
