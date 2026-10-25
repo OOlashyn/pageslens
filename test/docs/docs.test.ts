@@ -9,6 +9,8 @@ import { renderSiteDocs, writeSiteDocs } from '../../src/docs/write.js';
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
 const classic = await loadSiteFolder('test/fixtures/classic');
+const classicPages = await loadSiteFolder('test/fixtures/classic-pages');
+const registration = await loadSiteFolder('test/fixtures/registration');
 
 describe('docs snapshots', () => {
   // Reviewable in PRs: test/docs/__snapshots__/<fixture>/<page>
@@ -16,6 +18,8 @@ describe('docs snapshots', () => {
     ['ecoflux', ecoflux],
     ['broken', broken],
     ['classic', classic],
+    ['classic-pages', classicPages],
+    ['registration', registration],
   ] as const) {
     for (const [file, content] of renderSiteDocs(site)) {
       it(`${name}/${file}`, async () => {
@@ -70,6 +74,43 @@ describe('docs content', () => {
     expect(index).toMatch(/r\d --> p\d/);
     expect(index).toMatch(/p\d -\. parent \.-> p\d/);
     expect(index).not.toContain('Comment - Missing Parent');
+  });
+});
+
+describe('pages docs', () => {
+  it('writes pages.md for classic sites only', () => {
+    expect([...renderSiteDocs(registration).keys()]).toContain('pages.md');
+    expect([...renderSiteDocs(ecoflux).keys()]).not.toContain('pages.md');
+    expect(renderSiteDocs(ecoflux).get('index.md')).not.toContain('pages.md');
+  });
+
+  it('shows the unrestricted admin page next to the restricted ones', () => {
+    const pages = renderSiteDocs(registration).get('pages.md')!;
+    expect(pages).toContain('| [Admin] Delete-Course | `/delete-course/` | anyone |');
+    expect(pages).toContain(
+      '| [Admin] Create Course | `/create-course/` | C1 ASP | Restrict Read on Create Course |',
+    );
+    expect(pages).toContain(
+      '| [Admin] Courses Home | `/admin-home/` | every signed-in user | Restrict Read on C1 Courses Home |',
+    );
+    // The inactive rules on Home restrict nothing
+    expect(pages).toContain('| Home | `/` | anyone |');
+    expect(pages).toContain('- Restrict Read rule "Restrict Read on Home"');
+    expect(pages).toContain('- Web page "Contact us"');
+  });
+
+  it('shows nested rules, the Grant Change override and broken parents', () => {
+    const pages = renderSiteDocs(classicPages).get('pages.md')!;
+    expect(pages).toContain(
+      '| Reports | `/internal/reports/` | Managers | Managers and Partners<br>Employees Only (on `/internal/`) |',
+    );
+    expect(pages).toContain(
+      '| Docs | `/docs/` | Administrators, Employees | Docs Readers | Writers Publish Docs |',
+    );
+    expect(pages).toContain('| Shared | `/shared/` | Employees, Partners |');
+    expect(pages).toContain(
+      '| Lost Child | `/lost/child/` | unknown: the parent of "Lost" isn\'t in the site |',
+    );
   });
 });
 

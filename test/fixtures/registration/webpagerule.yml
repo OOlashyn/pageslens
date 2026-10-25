@@ -1,0 +1,60 @@
+- adx_name: Grant Change to Content
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolruleid: 33c31211-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Restrict Read on Home
+  adx_right: 2
+  adx_scope: 2
+  adx_webpageaccesscontrolrule_webrole:
+  - 75c31211-5fcf-f111-a05a-70a8a52c89ad
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 65c21211-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 58120917-5fcf-f111-a05a-70a8a52c89ad
+  statecode: 1
+  statuscode: 2
+- adx_name: Restrict Read on Create Course
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 8c110917-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 66c11211-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Restrict Read on Duplicate Course
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 8f110b1d-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 4f110b1d-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Grant Change to Administrators
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 75c31211-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: 9b110917-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 58120917-5fcf-f111-a05a-70a8a52c89ad
+  statecode: 1
+  statuscode: 2
+- adx_name: Restrict Read on C1 Courses Home
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 02110b1d-5fcf-f111-a05a-70a8a52c89ad
+  - 75c31211-5fcf-f111-a05a-70a8a52c89ad
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: ba100917-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 82c31211-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Restrict Read on Edit Course
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - b56b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: e4c21211-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: 14120917-5fcf-f111-a05a-70a8a52c89ad
+- adx_name: Restrict Read on My Registrations
+  adx_right: 2
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 02110b1d-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageaccesscontrolruleid: ec120917-5fcf-f111-a05a-70a8a52c89ad
+  adx_webpageid: bc120917-5fcf-f111-a05a-70a8a52c89ad

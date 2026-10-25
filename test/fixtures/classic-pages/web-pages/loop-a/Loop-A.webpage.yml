@@ -1,0 +1,7 @@
+# page-parent-missing: Loop A and Loop B are each other's parent
+adx_hiddenfromsitemap: false
+adx_isroot: true
+adx_name: Loop A
+adx_parentpageid: 00000000-0000-0000-0005-000000000214
+adx_partialurl: loop-a
+adx_webpageid: 00000000-0000-0000-0005-000000000213

@@ -4,11 +4,13 @@
 
 - 4 web roles, 3 table permissions (3 grant access) on 3 tables
 - Web API enabled on 0 tables
+- 0 web pages, 0 open to anyone, 2 page access rules
 
 ## Pages
 
 - [Access matrix](access-matrix.md): which role can do what on which table
 - [Web API surface](webapi.md): tables reachable through `/_api`, their fields and callers
+- [Pages](pages.md): who can read each page, from the page access rules
 
 ## Roles, permissions and tables
 

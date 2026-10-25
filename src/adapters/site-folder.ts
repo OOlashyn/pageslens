@@ -1,5 +1,5 @@
 import { join, resolve } from 'node:path';
-import type { Site } from '../model/schema.js';
+import type { Site, SiteLayout } from '../model/schema.js';
 import { isDirectory, isFile } from '../util/fs.js';
 import { isClassicWebsite, readClassicSite } from './classic-site.js';
 import {
@@ -15,14 +15,9 @@ import {
 import { folderSource, type FileSource } from './files.js';
 
 export { SiteLoadError, type Problem } from './common.js';
+export type { SiteLayout } from '../model/schema.js';
 
 export const SITE_FOLDER = '.powerpages-site';
-
-/**
- * `code`: the `.powerpages-site` folder `pac pages download-code-site` writes, with unprefixed keys.
- * `classic`: the site folder `pac pages download` writes, with `adx_` keys and single-file lists.
- */
-export type SiteLayout = 'code' | 'classic';
 
 /** A code site's keys are already the model's: `id`, `name`, `entityname`, ... */
 const CODE_FIELDS: FieldMapping = {
@@ -76,5 +71,5 @@ async function readCodeSite(source: FileSource): Promise<Site> {
   const files = await listFiles(source);
   const claimed = new Set<string>();
   const records = await readRecordFiles(source, files, CODE_FIELDS, problems, claimed);
-  return buildSite(source, files, records, claimed, CODE_FIELDS, problems);
+  return buildSite('code', source, files, records, claimed, CODE_FIELDS, problems);
 }

@@ -4,17 +4,19 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Status (2026-10-24)
 
-|                         |                                                                                                                                                                                              |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                                                  |
-| On `main`, not released | inactive records (`statecode: 1`) left out everywhere; the action compares with the pull request's head commit. Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
-| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                 |
+|                         |                                                                                                                                                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`)     | `0.5.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores                                                                                                                                                                                               |
+| On `main`, not released | inactive records (`statecode: 1`) left out everywhere; the action compares with the pull request's head commit; page access rules for classic sites in `lint` (eight rules) and `docs` (`pages.md`), spec [0005](0005-page-access-rules.md). Goes out with `0.6.0`; draft notes in [releases/0.6.0.md](releases/0.6.0.md) |
+| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. `align` waits for the solution adapter (M3)                                                                                                                                                                                                              |
 
 ## Next
 
-1. **Page access rules, classic sites first.** Spec [0005](0005-page-access-rules.md), draft 2, checked against a real classic download: effective page access down the page tree, eight lint rules, a pages section in `docs`, then `test` and `diff`. Next: the maintainer answers its open questions and runs the checks in its "How to check it" section on a test site.
-2. **Release `0.6.0`** with the page access work and the action fix already on `main`.
-3. Then the candidates below.
+1. **Before releasing `0.6.0`:** review the page lint rules' wording and severities on a real classic site, and finish the release notes. The Dataverse checks in spec 0005 aren't needed to release: lint and `docs` say which readings are assumed.
+2. **Release `0.6.0`** with page access rules (lint and `docs`, classic sites) and the fixes already on `main`.
+3. **Run the spec 0005 checks** ("How to check it") in a Dataverse environment, and adjust `src/graph/pages.ts` where a result contradicts the design (open question 4 below).
+4. **Page access in `test` and `diff` (0.7.0)**, after the checks: `page "<url>"` statements in the policy grammar, and the effective per-branch diff (decisions 4 and 7 in spec 0005).
+5. Then the candidates below.
 
 ## Verification still owed
 
@@ -26,7 +28,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 1. Does an Account-scope permission without `accountrelationship` (as in EcoFlux) grant anything at runtime? Decides whether `scope-relationship-missing` stays an error.
 2. A child permission with a web role its parent lacks: does that role get access at runtime? Decides a `parent-roles-not-subset` rule.
 3. Does a standard data model site download in the same layout as an enhanced one, as the README expects?
-4. Page access rules ([0005](0005-page-access-rules.md), "Verification owed"): nested Restrict Read (intersection or nearest wins), the Anonymous Users role in a rule, Restrict Read on a code site's home page, and whether downloads include inactive rules and publishing-state links.
+4. Page access rules ([0005](0005-page-access-rules.md), "Verification owed"): nested Restrict Read (intersection or nearest wins), the Anonymous Users role in a rule, Restrict Read on a code site's home page, the Grant Change scope, whether downloads include publishing-state links, and whether code site downloads write `statecode`.
 
 ## Candidates
 

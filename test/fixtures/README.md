@@ -1,6 +1,6 @@
 # Test fixtures
 
-`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/` is a classic site folder (`pac pages download`, `adx_` keys).
+`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys).
 
 ## `ecoflux/`
 
@@ -50,8 +50,44 @@ Expected lint findings:
 |---|---|
 | `global-write-anonymous` | Feedback (global create, includes Anonymous Users) |
 | `global-write-authenticated` | Feedback (global create, includes Authenticated Users) |
+| `page-rule-no-page` | Grant Change to Administrators (its page isn't in this trimmed copy) |
+| `page-rule-no-page` (info) | Grant Change to Content (no page, no role) |
 
 Access to the Accounts Assets (account scope with `adx_accountrelationship`, role Manager) and its child Access to Assets Condition Logs (parent scope, no web role of its own, so it takes Manager from its parent) are clean, and every role is used.
+
+## `registration/`
+
+A copy of a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-24), unchanged except that `.portalconfig/` was removed (it names the source environment). Web file contents are kept. Read-only like `ecoflux/`: don't edit it to make a test pass. Used for page access rules (spec 0005) and docs snapshots.
+
+What it has: 17 root pages, all directly under Home (a flat tree), each with one `en-US` content page; eight page access rules, two of them inactive (on Home); an inactive page (Contact us) and an inactive table permission (Feedback); rule scope `2` on the inactive "Restrict Read on Home"; "[Admin] Delete-Course" with no rule next to three admin pages restricted to C1 ASP.
+
+Expected lint findings:
+
+| rule | record |
+|---|---|
+| `page-rule-authenticated` | Restrict Read on C1 Courses Home (Authenticated Users with Administrators and C1 ASP) |
+| `page-rule-no-page` (info) | Grant Change to Content (no page, no role) |
+| `global-write-authenticated` | ASP C2 Course, ASP C2 Registration, ASP Contacts |
+| `webapi-no-permission` | `Webapi/adx_webrole_contact/enabled` |
+
+## `classic-pages/`
+
+Hand-written in the classic layout, for the page access cases the real site doesn't have: a nested branch (`/internal/`, `/internal/reports/`, `/internal/team/`), a Grant Change override (`/docs/`), two Restrict Reads on one page (`/shared/`), the Anonymous Users role (`/public/`), a missing parent (`/lost/` and its child) and a parent loop (Loop A and Loop B). Each page file with a case, and each rule in `webpagerule.yml`, has a `#` comment naming the lint rule (or `clean:`).
+
+| rule | record |
+|---|---|
+| `page-rule-no-page` (info) | Grant Change to Content (no page, no role) |
+| `page-rule-no-page` | Orphan Rule (its page isn't in the site) |
+| `page-rule-no-role` | Locked Without Role (Restrict Read) |
+| `page-rule-no-role` (info) | Grant Change Without Role (on Home) |
+| `page-rule-anonymous` | Public Visitors |
+| `page-rules-conflict` | Shared A and Shared B (one finding on each) |
+| `page-roles-not-subset` | Managers and Partners (Partners can't get past Employees Only) |
+| `grant-change-overrides-read` | Docs Readers (Writers Publish Docs lets Administrators in) |
+| `page-rule-authenticated` | Members and Admins |
+| `page-parent-missing` | Lost (missing parent), Loop A and Loop B (a loop) |
+
+Employees Only, Managers Only, Writers Publish Docs and Signed-in Only are clean, as are Lost Child (below the break, not reported again) and Home's content page.
 
 ## `diff/`
 

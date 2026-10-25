@@ -7,10 +7,12 @@ import {
   siteSettingSchema,
   tablePermissionSchema,
   webPageRuleSchema,
+  webPageSchema,
   webRoleSchema,
   websiteAccessSchema,
   websiteSchema,
   type Site,
+  type SiteLayout,
   type SiteRecord,
   type SourceRef,
   type TypedRecords,
@@ -183,6 +185,7 @@ export async function readRecordFiles(
 
 /** Types the records into a site, or throws every problem found while reading and typing. */
 export function buildSite(
+  layout: SiteLayout,
   source: FileSource,
   files: string[],
   records: SiteRecord[],
@@ -207,12 +210,14 @@ export function buildSite(
     tablePermissions: ofKind('tablepermission', tablePermissionSchema, active),
     siteSettings: ofKind('sitesetting', siteSettingSchema, active),
     webPageRules: ofKind('webpagerule', webPageRuleSchema, active),
+    webPages: ofKind('webpage', webPageSchema, active),
     websiteAccess: ofKind('websiteaccess', websiteAccessSchema, active),
   });
 
   const website = typed(websiteSchema, websiteRecord)[0];
   const site = {
     root: source.root,
+    layout,
     records,
     ...typedRecords(true),
     inactive: typedRecords(false),

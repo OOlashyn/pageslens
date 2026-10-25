@@ -22,19 +22,20 @@ pageslens reads two download layouts into the same model (`src/model/schema.ts`)
 - Code shared by both adapters is in `src/adapters/common.ts`. The classic adapter strips `adx_` generically; a new kind whose id key isn't `adx_<kind>id` goes in `ID_KEYS`, and a new relationship list in `RELATIONSHIP_KEYS`.
 - Record GUIDs are the identity; file names come from record names and aren't stable.
 - A child (Parent scope) table permission with no web role takes its parent's roles, as the design studio creates it.
+- Page access rules only decide who opens a page on a classic site. The page lint rules and `pages.md` check `site.layout` and do nothing on a code site. Effective page access is in `src/graph/pages.ts` (spec 0005).
 
 ## Changing a lint rule
 
-A rule touches all of these. The tests check that every rule has a page listed in `rules/README.md` and fires on `broken`; keep the rest in step by hand:
+A rule touches all of these. The tests check that every rule has a page listed in `rules/README.md` and fires on `broken` (or on `classic-pages`, for the classic-only page rules); keep the rest in step by hand:
 
 - `src/lint/rules/<id>.ts`, registered in `src/lint/rules/index.ts`
 - `rules/<id>.md` (why it matters, how to fix), plus the tables in `rules/README.md` and `README.md`
-- a case in `test/fixtures/broken/` whose file starts with a `#` comment naming the rule (or `# clean:` for a record that must not fire)
+- a case in `test/fixtures/broken/` whose file starts with a `#` comment naming the rule (or `# clean:` for a record that must not fire); page access rules go in `test/fixtures/classic-pages/`
 - the expected findings in `test/fixtures/README.md` and `test/lint/lint.test.ts`
 - docs snapshots in `test/docs/__snapshots__/` if the output changes
 - `pageslens.config.schema.json`, generated from the rules: `vp test -u` rewrites it, and a test fails while it's out of date
 
-`test/fixtures/ecoflux/` is a copy of a real demo site: don't edit it to make a test pass. Fixture files are kept byte-exact (`.gitattributes`) and are excluded from formatting.
+`test/fixtures/ecoflux/` and `test/fixtures/registration/` are copies of real sites: don't edit them to make a test pass. Fixture files are kept byte-exact (`.gitattributes`) and are excluded from formatting.
 
 ## Changing the policy grammar
 

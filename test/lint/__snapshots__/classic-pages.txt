@@ -1,0 +1,24 @@
+Classic Pages (site)
+
+web-pages/loop-a/Loop-A.webpage.yml
+  error    Web page "Loop A" can't be placed in the page tree: its parent pages loop back to it.  page-parent-missing
+
+web-pages/loop-b/Loop-B.webpage.yml
+  error    Web page "Loop B" can't be placed in the page tree: its parent pages loop back to it.  page-parent-missing
+
+web-pages/lost/Lost.webpage.yml
+  error    Web page "Lost" can't be placed in the page tree: its parent page (00000000-0000-0000-0005-0000000002ff) doesn't exist in the site.  page-parent-missing
+
+webpagerule.yml
+  warning  Grant Change rule "Writers Publish Docs" on "/docs/" lets "Administrators" read "/docs/", though Restrict Read rule "Docs Readers" doesn't list it: Grant Change overrides Restrict Read.  grant-change-overrides-read
+  warning  Restrict Read rule "Managers and Partners" on "/internal/reports/" lists "Partners", but Restrict Read rule "Employees Only" on "/internal/" doesn't let it in, so it can't reach "/internal/reports/".  page-roles-not-subset
+  warning  Restrict Read rule "Public Visitors" lists the Anonymous Users role "Anonymous Users", which Microsoft says not to assign to pages; pageslens reads it as "anyone".  page-rule-anonymous
+  warning  Restrict Read rule "Members and Admins" on "/members/" lists the Authenticated Users role "Authenticated Users" with "Administrators", so every signed-in user can read the page and the other roles add nothing.  page-rule-authenticated
+  info     Grant Change rule "Grant Change to Content" applies to nothing: it has no web page.  page-rule-no-page
+  warning  Restrict Read rule "Orphan Rule" applies to nothing: its web page (00000000-0000-0000-0005-0000000002fe) doesn't exist in the site.  page-rule-no-page
+  info     Grant Change rule "Grant Change Without Role" on "/": it has no web role, so it does nothing.  page-rule-no-role
+  error    Restrict Read rule "Locked Without Role" on "/locked/": it has no web role, so only Grant Change roles can read "/locked/" and the pages below it.  page-rule-no-role
+  error    Restrict Read rule "Shared A" is one of 2 Restrict Read rules on "/shared/" ("Shared A", "Shared B"); Power Pages reports this as a conflict and expects one.  page-rules-conflict
+  error    Restrict Read rule "Shared B" is one of 2 Restrict Read rules on "/shared/" ("Shared A", "Shared B"); Power Pages reports this as a conflict and expects one.  page-rules-conflict
+
+6 errors, 5 warnings, 2 info

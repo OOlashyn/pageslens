@@ -99,6 +99,7 @@ export const webPageRuleSchema = z
     id: guid,
     name: z.string().min(1),
     right: integer.optional(),
+    scope: integer.optional(),
     webpageid: optionalGuid,
     adx_webpageaccesscontrolrule_webrole: guidList,
   })
@@ -106,8 +107,31 @@ export const webPageRuleSchema = z
     id: r.id,
     name: r.name,
     right: r.right,
+    scope: r.scope,
     webPageId: r.webpageid,
     roleIds: r.adx_webpageaccesscontrolrule_webrole,
+  }));
+
+// A site has a root page per page and a content page per page and language. Content pages point
+// at their root page (`rootwebpageid`), and `parentpageid` points at the parent's root page.
+export const webPageSchema = z
+  .object({
+    id: guid,
+    name: z.string().min(1),
+    isroot: flag,
+    rootwebpageid: optionalGuid,
+    parentpageid: optionalGuid,
+    partialurl: optionalText,
+    hiddenfromsitemap: flag,
+  })
+  .transform((p) => ({
+    id: p.id,
+    name: p.name,
+    isRoot: p.isroot,
+    rootPageId: p.rootwebpageid,
+    parentPageId: p.parentpageid,
+    partialUrl: p.partialurl,
+    hiddenFromSitemap: p.hiddenfromsitemap,
   }));
 
 export const websiteAccessSchema = z
@@ -130,6 +154,7 @@ export type WebRole = Sourced<typeof webRoleSchema>;
 export type TablePermission = Sourced<typeof tablePermissionSchema>;
 export type SiteSetting = Sourced<typeof siteSettingSchema>;
 export type WebPageRule = Sourced<typeof webPageRuleSchema>;
+export type WebPage = Sourced<typeof webPageSchema>;
 export type WebsiteAccess = Sourced<typeof websiteAccessSchema>;
 
 /** Any record in the folder, typed or not, with its YAML fields as parsed (keys as downloaded). */
@@ -150,12 +175,21 @@ export interface TypedRecords {
   tablePermissions: TablePermission[];
   siteSettings: SiteSetting[];
   webPageRules: WebPageRule[];
+  /** Root and content pages alike. */
+  webPages: WebPage[];
   websiteAccess: WebsiteAccess[];
 }
+
+/**
+ * `code`: the `.powerpages-site` folder `pac pages download-code-site` writes, with unprefixed keys.
+ * `classic`: the site folder `pac pages download` writes, with `adx_` keys and single-file lists.
+ */
+export type SiteLayout = 'code' | 'classic';
 
 export interface Site {
   /** Absolute path of the site folder: the `.powerpages-site` folder, or a classic site's folder. */
   root: string;
+  layout: SiteLayout;
   website: Website;
   /** Every record, sorted by source file, inactive ones included. */
   records: SiteRecord[];
@@ -163,6 +197,8 @@ export interface Site {
   tablePermissions: TablePermission[];
   siteSettings: SiteSetting[];
   webPageRules: WebPageRule[];
+  /** Root and content pages alike. */
+  webPages: WebPage[];
   websiteAccess: WebsiteAccess[];
   /**
    * Records marked inactive (`statecode: 1`). They're left out of the lists above, so they grant,

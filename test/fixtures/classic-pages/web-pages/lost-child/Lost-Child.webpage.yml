@@ -1,0 +1,7 @@
+# clean: below a broken parent; only Lost is reported
+adx_hiddenfromsitemap: false
+adx_isroot: true
+adx_name: Lost Child
+adx_parentpageid: 00000000-0000-0000-0005-000000000211
+adx_partialurl: child
+adx_webpageid: 00000000-0000-0000-0005-000000000212
