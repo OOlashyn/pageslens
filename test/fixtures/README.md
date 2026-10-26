@@ -1,6 +1,6 @@
 # Test fixtures
 
-`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/`, `pageslensedm2/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys). `solution-ecoflux/`, `solution-pageslensedm2/` and `solution-broken/` are unpacked solutions (XML format, spec 0007).
+`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys). `solution-ecoflux/`, `solution-registration/` and `solution-broken/` are unpacked solutions (XML format, spec 0007).
 
 ## `ecoflux/`
 
@@ -59,7 +59,7 @@ Access to the Accounts Assets (account scope with `adx_accountrelationship`, rol
 
 ## `registration/`
 
-A copy of a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-24) after the spec 0005 checks were run on it, unchanged except that `.portalconfig/` was removed (it names the source environment). Web file contents are kept. Read-only like `ecoflux/`: don't edit it to make a test pass. Used for page access rules (spec 0005) and docs snapshots.
+A copy of the PagesLensEDM2 site, a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-24) after the spec 0005 checks were run on it, unchanged except that `.portalconfig/` was removed (it names the source environment). Web file contents are kept. Read-only like `ecoflux/`: don't edit it to make a test pass. Used for page access rules (spec 0005), docs snapshots, and as the download `solution-registration/` is checked against. `sitesetting.yml` is from a second download on 2026-10-25, after `ASP/Pagination/CardsPerPage` was moved to an environment variable (spec 0007); every other file was the same in both downloads.
 
 What it has: 21 root pages, each with one `en-US` content page, all directly under Home except V2 and V3 under V1; 13 page access rules, two of them inactive (on Home); an inactive page (Contact us) and an inactive table permission (Feedback); rule scope `2` on the inactive "Restrict Read on Home"; "[Admin] Delete-Course" with no rule next to three admin pages restricted to C1 ASP. The V pages are the checks from spec 0005's "Verification results": `/v1/` restricted to C1 ASP with a Grant Change for C1 ASP, `/v1/v2/` restricted to Administrators, `/v1/v3/` to Authenticated Users, and `/vAnon/` to Anonymous Users.
 
@@ -95,13 +95,11 @@ Hand-written in the classic layout, for the page access cases the real site does
 
 Employees Only, Managers Only, Writers Publish Docs and Signed-in Only are clean, as are Lost Child (below the break, not reported again) and Home's content page.
 
-## `pageslensedm2/` and `solution-pageslensedm2/`
+## `solution-registration/`
 
-PagesLensEDM2, a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-25, without `.portalconfig/`) and its solution synced with `pac solution sync` into a `pac solution clone` project the same day. Read-only copies of a real site. The solution leaves out `primarydomainname` in `Assets/powerpagesites.xml` and the publisher's e-mail address in `Other/Solution.xml`.
+The PagesLensEDM2 solution, the same site as `registration/`, synced with `pac solution sync` into a `pac solution clone` project on 2026-10-25, the day of `registration/`'s `sitesetting.yml`. Read-only. It leaves out `primarydomainname` in `Assets/powerpagesites.xml` and the publisher's e-mail address in `Other/Solution.xml`.
 
-The two read into the same records, model, side files and lint findings (`test/adapters/solution.test.ts`), apart from `ASP/Pagination/CardsPerPage`. It takes its value from the environment variable `dwcrm_CardsPerPage` (current value 20, default 18): the solution has the variable, and the download has only the setting's leftover `adx_value: 18`, so its value is unknown there.
-
-Expected lint findings, on both: the same as `registration/`, a copy of the same template.
+It reads into the same records, model, side files and lint findings as `registration/` (`test/adapters/solution.test.ts`), apart from `ASP/Pagination/CardsPerPage`. That setting takes its value from the environment variable `dwcrm_CardsPerPage` (current value 20, default 18): the solution has the variable, and the download has only the setting's leftover `adx_value: 18`, so its value is unknown there.
 
 ## `solution-ecoflux/`
 

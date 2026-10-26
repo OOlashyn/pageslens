@@ -278,8 +278,8 @@ describe('diff: solutions and environment variables', () => {
 
   it('finds no change between a download and a solution of the same site', async () => {
     const sides = await loadSides({
-      base: 'test/fixtures/solution-pageslensedm2',
-      head: 'test/fixtures/pageslensedm2',
+      base: 'test/fixtures/solution-registration',
+      head: 'test/fixtures/registration',
       cwd: process.cwd(),
     });
     const changes = diffSites(sides.base.site, sides.head.site);

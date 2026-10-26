@@ -12,8 +12,8 @@ import type { Site } from '../../src/model/schema.js';
 
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const solutionEcoflux = await loadSiteFolder('test/fixtures/solution-ecoflux');
-const edm2 = await loadSiteFolder('test/fixtures/pageslensedm2');
-const solutionEdm2 = await loadSiteFolder('test/fixtures/solution-pageslensedm2');
+const registration = await loadSiteFolder('test/fixtures/registration');
+const solutionRegistration = await loadSiteFolder('test/fixtures/solution-registration');
 const broken = await loadSiteFolder('test/fixtures/solution-broken');
 
 const CARDS_PER_PAGE = '8f6b0323-5fcf-f111-a05a-70a8a52c89ad';
@@ -103,9 +103,12 @@ describe('solution adapter: EcoFlux, a code site', () => {
   });
 });
 
-describe('solution adapter: PagesLensEDM2, a classic site', () => {
+describe('solution adapter: Registration, a classic site', () => {
   it('reads it as a classic site', () => {
-    expect([solutionEdm2.format, solutionEdm2.layout]).toEqual(['solution', 'classic']);
+    expect([solutionRegistration.format, solutionRegistration.layout]).toEqual([
+      'solution',
+      'classic',
+    ]);
   });
 
   it('reads the same model as the download, apart from the variable-backed setting', () => {
@@ -113,21 +116,21 @@ describe('solution adapter: PagesLensEDM2, a classic site', () => {
       const m = model(site);
       return { ...m, siteSettings: m.siteSettings.filter((s) => s.id !== CARDS_PER_PAGE) };
     };
-    expect(withoutVariable(solutionEdm2)).toEqual(withoutVariable(edm2));
-    expect(solutionEdm2.records).toHaveLength(edm2.records.length);
-    expect(texts(solutionEdm2)).toEqual(texts(edm2));
-    expect(findings(solutionEdm2)).toEqual(findings(edm2));
+    expect(withoutVariable(solutionRegistration)).toEqual(withoutVariable(registration));
+    expect(solutionRegistration.records).toHaveLength(registration.records.length);
+    expect(texts(solutionRegistration)).toEqual(texts(registration));
+    expect(findings(solutionRegistration)).toEqual(findings(registration));
   });
 
   it('reads the variable value the site uses, where the download has only the leftover value', () => {
     const setting = (site: Site) => site.siteSettings.find((s) => s.id === CARDS_PER_PAGE);
-    expect(setting(solutionEdm2)).toMatchObject({
+    expect(setting(solutionRegistration)).toMatchObject({
       value: '20',
       variable: 'dwcrm_CardsPerPage',
       unknown: false,
     });
-    expect(setting(edm2)).toMatchObject({ variable: 'dwcrm_CardsPerPage', unknown: true });
-    expect(setting(edm2)?.value).toBeUndefined();
+    expect(setting(registration)).toMatchObject({ variable: 'dwcrm_CardsPerPage', unknown: true });
+    expect(setting(registration)?.value).toBeUndefined();
   });
 
   it("keeps a page rule's publishing states, which the download leaves out", () => {
@@ -135,10 +138,10 @@ describe('solution adapter: PagesLensEDM2, a classic site', () => {
       site.records.find(
         (r) => r.kind === 'webpagerule' && r.name === 'Restrict Read on Create Course',
       );
-    expect(rule(solutionEdm2)?.fields.adx_accesscontrolrule_publishingstate).toEqual([
+    expect(rule(solutionRegistration)?.fields.adx_accesscontrolrule_publishingstate).toEqual([
       'de110917-5fcf-f111-a05a-70a8a52c89ad',
     ]);
-    expect(rule(edm2)?.fields.adx_accesscontrolrule_publishingstate).toBeUndefined();
+    expect(rule(registration)?.fields.adx_accesscontrolrule_publishingstate).toBeUndefined();
   });
 });
 

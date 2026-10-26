@@ -160,8 +160,10 @@
 - adx_name: ASP/Course/Form/Validation/Field/Format
   adx_sitesettingid: 8e100b1d-5fcf-f111-a05a-70a8a52c89ad
   adx_value: Format
-- adx_name: ASP/Pagination/CardsPerPage
+- adx_envvar_schema: dwcrm_CardsPerPage
+  adx_name: ASP/Pagination/CardsPerPage
   adx_sitesettingid: 8f6b0323-5fcf-f111-a05a-70a8a52c89ad
+  adx_source: 1
   adx_value: 18
 - adx_description: Set whether the header web template is output cached.
   adx_name: Header/OutputCache/Enabled

@@ -146,8 +146,7 @@ A solution has the value, so none of this applies to it.
 Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each leaves out `primarydomainname` and the publisher's e-mail address, and nothing else.
 
 - `test/fixtures/solution-ecoflux/`: the EcoFlux `clone` project (`EcoFluxPortal.cdsproj`, `src/`), from the same environment as `ecoflux/`. Tests check that it gives the same model, lint findings, docs and policy results as `ecoflux/`, and that a `pac solution init` project is found through `src/`.
-- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. Its download, `pageslensedm2/`, is the one taken after the variable was added, so the two differ only in that setting's value (decision 9).
-- `test/fixtures/pageslensedm2/`: the `pac pages download` of the same site, without `.portalconfig/`, so the classic site gets the same check against its solution. `registration/` is a different site and can't be used for that.
+- `test/fixtures/solution-registration/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. `registration/` is a download of the same site. Its `sitesetting.yml` is refreshed from the download taken after the variable was added, so the two differ only in that setting's value (decision 9).
 - `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON, and variable-backed settings whose variable is missing, has only a default, has no value, or is a secret.
 - `test/fixtures/diff/solution/{base,head}`: a solution-to-solution case, and one solution-to-download case.
 
@@ -202,9 +201,10 @@ Design: this document (draft 3, all 9 questions answered). User reference: the "
   - **`docs`** has no settings page, so the variable shows on the Web API page (an unknown value, or "from environment variable"), and the index names the solution.
   - **Mixed `diff` note.** The existing "the layouts differ" note now names the format: "classic site (unpacked solution)".
 - Found while building, outside the solution adapter:
+  - `registration/` is a download of PagesLensEDM2, the site the solution samples came from. It's used as the solution's download rather than adding a second copy; its `sitesetting.yml` was replaced with the 2026-10-25 download, the only file that differed.
   - The classic adapter read lists without an id: their id key is `adx_entitylistid`. Added to `ID_KEYS`. Lists aren't typed, so no output changed.
   - The EcoFlux solution has one component its download doesn't: a web file named `.gitkeep`, which `pac pages download-code-site` leaves out. It's the folder spike 0 couldn't match.
-- Tested: `test/adapters/solution.test.ts` checks `solution-ecoflux/` against `ecoflux/` (model, side files, lint findings, docs) and `solution-pageslensedm2/` against `pageslensedm2/` (the same, apart from the variable-backed setting), the hand-written `solution-broken/`, and the errors on copies in a temporary folder. `diff` has a `solution` case (variable values between two solutions, also committed as a clone project's `src/` in `git.test.ts`), a `variables` case (downloads, both ways round) and a solution-to-download case with no changes. Their marker comments are XML comments, in the head's environment variable definitions, since a component file can't start with `#`.
+- Tested: `test/adapters/solution.test.ts` checks `solution-ecoflux/` against `ecoflux/` (model, side files, lint findings, docs) and `solution-registration/` against `registration/` (the same, apart from the variable-backed setting), the hand-written `solution-broken/`, and the errors on copies in a temporary folder. `diff` has a `solution` case (variable values between two solutions, also committed as a clone project's `src/` in `git.test.ts`), a `variables` case (downloads, both ways round) and a solution-to-download case with no changes. Their marker comments are XML comments, in the head's environment variable definitions, since a component file can't start with `#`.
 
 ## Sources
 

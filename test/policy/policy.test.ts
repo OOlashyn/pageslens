@@ -248,7 +248,7 @@ describe('evaluatePolicy', () => {
   });
 
   it('reads a variable-backed value from a solution', async () => {
-    const solution = await loadSiteFolder('test/fixtures/solution-pageslensedm2');
+    const solution = await loadSiteFolder('test/fixtures/solution-registration');
     const policy = parsePolicy(
       'settings:\n  - setting "ASP/Pagination/CardsPerPage" is "18"\n',
       'p.yaml',

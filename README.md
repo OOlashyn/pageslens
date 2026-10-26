@@ -348,7 +348,7 @@ node dist/bin.mjs lint test/fixtures/broken
 
 Without Vite+ installed globally, `npx vp …` runs the project's own copy. The `npm run check`, `npm test` and `npm run build` scripts call the same commands.
 
-`test/fixtures/` holds the sites the tests read: downloads (`ecoflux`, a demo code site; `broken`, one deliberate mistake per rule; `classic`, a trimmed classic download; `registration` and `pageslensedm2`, classic sites; `classic-pages`, page access rules), unpacked solutions (`solution-ecoflux` and `solution-pageslensedm2`, the same environments as their downloads; `solution-broken`, adapter cases), plus `policies/`, policy files for `pageslens test`, and `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
+`test/fixtures/` holds the sites the tests read: downloads (`ecoflux`, a demo code site; `broken`, one deliberate mistake per rule; `classic`, a trimmed classic download; `registration`, a classic site; `classic-pages`, page access rules), unpacked solutions (`solution-ecoflux` and `solution-registration`, the same sites as `ecoflux` and `registration`; `solution-broken`, adapter cases), plus `policies/`, policy files for `pageslens test`, and `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
 
 ### Releasing
 
