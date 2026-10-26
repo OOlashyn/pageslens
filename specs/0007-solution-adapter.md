@@ -1,6 +1,6 @@
 # 0007: Solution adapter
 
-**Status:** draft 2, decisions recorded (see "Decisions"); ready to build. Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
+**Status:** draft 3, decisions 1 to 8 recorded (see "Decisions"); one new open question (9) about downloads. Ready to build, apart from question 9. Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
 
 pageslens reads two download layouts today: a code site's `.powerpages-site/` and a classic site folder. Teams on the solution track keep neither in git. They keep the unpacked solution that gets packed and deployed, where every site component is a folder named by its GUID ([alm-story.md](research/alm-story.md), "The gap between them"). This spec adds a third adapter that reads an unpacked solution into the same model, so `lint`, `test`, `docs` and `diff` work on it unchanged.
 
@@ -50,6 +50,8 @@ Results:
   - The setting's `content` became `{"value": "18", "source": 1, "envvar_schema": "dwcrm_CardsPerPage"}`. `source: 1` means the value comes from the variable named by `envvar_schema`. The setting keeps its own old `value`.
   - The variable is `environmentvariabledefinitions/dwcrm_CardsPerPage/environmentvariabledefinition.xml` (`schemaname`, `defaultvalue` 18, `type` 100000001, `secretstore` 0), with its current value, 20, in `environmentvariablevalues.json` next to it.
   - `Solution.xml` doesn't list the variable, as it doesn't list site components: the folder being there is what puts it in the solution.
+  - The site uses the variable's current value: the page showed 20, not 18.
+  - A new `pac pages download` writes `adx_source: 1` and `adx_envvar_schema: dwcrm_CardsPerPage` on the setting, and still `adx_value: 18`. It has nothing of the variable: no definition, no value. Everything else still matches the solution: 475 of 475 components, all fields and side files.
   - Nothing else changed: the sync rewrote only that setting and added the variable's folder. Some components' `content` is pretty-printed JSON (21 of 475) and the rest compact, before and after, so the adapter parses it and never compares it as text.
 - **What a public fixture must leave out:** `primarydomainname` in `Assets/powerpagesites.xml` (the site's host name) and the publisher's e-mail address in `Other/Solution.xml`.
 
@@ -115,6 +117,19 @@ When there's no value to read, the setting is treated as not set, and `docs` say
 
 Per-stage values (a deployment settings file) are out of scope here; `align` or a later `--settings` option can take them.
 
+### Variable-backed settings in a download (a fix)
+
+A download has the setting's `source: 1` and `envvar_schema`, but only its leftover `value`. Every release so far reads that leftover value, which the site doesn't use. For `ASP/Pagination/CardsPerPage` that's 18 where the site shows 20, and for `Webapi/<table>/enabled` or `Authentication/Registration/Enabled` it can be the opposite of what the site does.
+
+Proposed fix, in both download adapters (question 9): a setting with `source: 1` has an **unknown** value, named as coming from the variable.
+
+- `lint`: a rule that reads the value skips the setting. No finding either way, since pageslens can't tell.
+- `test`: a statement that depends on the value fails and says why ("ASP/Pagination/CardsPerPage comes from environment variable dwcrm_CardsPerPage, which a download doesn't include"), as an unknown page does in 0006.
+- `diff`: a setting moved to a variable is a wider change, by the conservative rule, unless both sides are unknown from the same variable. The message names the variable.
+- `docs` and the Web API surface: the value shows as "from environment variable dwcrm_CardsPerPage (not in the download)".
+
+A solution has the value, so none of this applies to it.
+
 ### Commands
 
 - `lint`, `test`, `docs`: unchanged, on the model. Messages name records as today. Findings point at `powerpagecomponents/<guid>/powerpagecomponent.xml`, on the line with the GUID.
@@ -131,7 +146,7 @@ Per-stage values (a deployment settings file) are out of scope here; `align` or 
 Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each leaves out `primarydomainname` and the publisher's e-mail address, and nothing else.
 
 - `test/fixtures/solution-ecoflux/`: the EcoFlux `clone` project (`EcoFluxPortal.cdsproj`, `src/`), from the same environment as `ecoflux/`. Tests check that it gives the same model, lint findings, docs and policy results as `ecoflux/`, and that a `pac solution init` project is found through `src/`.
-- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. The download predates the variable, so the comparison with it leaves that one setting out, until the site is downloaded again (verification 2).
+- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. Its download, `pageslensedm2/`, is the one taken after the variable was added, so the two differ only in that setting's value (question 9).
 - `test/fixtures/pageslensedm2/`: the `pac pages download` of the same site, without `.portalconfig/`, so the classic site gets the same check against its solution. `registration/` is a different site and can't be used for that.
 - `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON, and variable-backed settings whose variable is missing, has only a default, has no value, or is a secret.
 - `test/fixtures/diff/solution/{base,head}`: a solution-to-solution case, and one solution-to-download case.
@@ -147,6 +162,10 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 7. `fast-xml-parser` is added as a dependency, as recommended.
 8. Fixtures from the samples above. No standard `unpack` of EcoFlux is needed: PagesLensEDM2 shows that `clone` and `unpack` give the same components.
 
+## Open question for Oleksandr
+
+9. **Variable-backed settings in a download.** Read a download's setting with `source: 1` as having an unknown value, as above, instead of its leftover `value`? Recommended: yes, in 0.8.0, listed under "Fixed" in the release notes. The leftover value is wrong as soon as the variable's value changes, and pageslens would pass a policy or miss a wider change on a value the site doesn't use. The cost: a site that backs `Webapi/<table>/enabled` with a variable loses that table's Web API checks in a download, and `test` fails on it until the policy is run against the solution.
+
 ## Open questions for Oleksandr (answered, see Decisions)
 
 1. **Formats.** Read the XML format only in 0.8.0, or the YAML source control format too? Recommended: decide from a sample. If Power Pages components keep their `powerpagecomponents/<guid>/` folders in the YAML format, both formats share the component reader, so do both. If they're stored differently, ship XML first and YAML in a later release.
@@ -161,10 +180,10 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 ## Verification owed (needs a sample or an environment)
 
 1. **The YAML source control format** (later, decision 1): what a Power Pages component looks like in it, from a `pac` that writes it and from Git integration.
-2. **A variable-backed setting at runtime and in a download.** That the site uses the variable's current value (20), not the default (18) or the setting's own leftover `value` (18): set `ASP/Pagination/CardsPerPage` somewhere visible, or read it with Liquid (`{{ settings['ASP/Pagination/CardsPerPage'] }}`). And what `pac pages download` writes for the setting now (`source`, `envvar_schema`, which value), so a download and a solution of the same site give the same model.
+2. A code site's download of a variable-backed setting: `source: 1` and `envvar_schema`, as EcoFlux's download already writes `source: 0`. Expected, not seen yet.
 3. Advanced forms, column permissions, Server Logic and cloud flows in a solution: that `content` keeps the download's keys for them too. Nothing typed reads them yet, so this doesn't block 0.8.0.
 
-Answered by the samples: whether `--packagetype Both` (what `clone` exports) writes components twice (no); `CodeSite/Enabled` on a classic site (absent); how a setting points at its variable, and where the definition and value are (above); and whether `pac solution sync` writes stable output (yes: one change rewrote only what changed).
+Answered by the samples: whether `--packagetype Both` (what `clone` exports) writes components twice (no); `CodeSite/Enabled` on a classic site (absent); how a setting points at its variable, and where the definition and value are (above); whether `pac solution sync` writes stable output (yes: one change rewrote only what changed); which value the site uses for a variable-backed setting (the variable's current value); and what a download writes for one (`source`, `envvar_schema` and the leftover value, no variable).
 
 ## Sources
 
