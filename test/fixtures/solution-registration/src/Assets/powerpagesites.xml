@@ -1,0 +1,11 @@
+<powerpagesites>
+  <powerpagesite powerpagesiteid="a7120f29-5fcf-f111-a05a-70a8a52c89ad">
+    <content>{"defaultlanguage":"a9120f29-5fcf-f111-a05a-70a8a52c89ad","footerwebtemplateid":"9a100b1d-5fcf-f111-a05a-70a8a52c89ad","headerwebtemplateid":"f2100917-5fcf-f111-a05a-70a8a52c89ad","statecode":0,"statuscode":1,"website_language":1033,"defaultbotconsumerid":"ada0c267-60cf-f111-a05a-70a8a52c89ad"}</content>
+    <datamodelversion>2.0</datamodelversion>
+    <enhancedauthorization>0</enhancedauthorization>
+    <iscustomizable>1</iscustomizable>
+    <name>PagesLensEDM2 - registrationsite-p7ero</name>
+    <statecode>0</statecode>
+    <statuscode>1</statuscode>
+  </powerpagesite>
+</powerpagesites>

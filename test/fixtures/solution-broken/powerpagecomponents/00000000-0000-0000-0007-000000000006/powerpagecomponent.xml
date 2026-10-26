@@ -1,0 +1,11 @@
+<!-- secret variable: not set -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000006">
+  <content>{"value":"leftover","source":1,"envvar_schema":"dwcrm_Secret"}</content>
+  <name>Authentication/OpenIdConnect/Test/ClientSecret</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

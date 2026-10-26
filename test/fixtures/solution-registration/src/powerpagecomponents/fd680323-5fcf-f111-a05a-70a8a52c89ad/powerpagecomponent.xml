@@ -1,0 +1,19 @@
+<powerpagecomponent powerpagecomponentid="fd680323-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"copy":"&lt;div class=\"row sectionBlockLayout\"&gt;\r\n  &lt;div class=\"container\"&gt;\r\n    &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 300px;\"&gt;{% entityform name: 'Delete Course Form' %}&lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;","customcss":"body{\r\n    background-color:transparent;\r\n}\r\ndiv#EntityFormPanel {\r\n    background-color: #fff;\r\n}\r\ndiv.navbar {display: none;}\r\n.crmEntityFormView td .control .form-control {\r\n    background-color: #F2F2F2;\r\n}\r\n.crmEntityFormView .cell textarea, .crmEntityFormView td .control textarea.form-control {\r\n    height: 100px;\r\n}","customjavascript":"{% if request.params['id'] | xml_escape %}\r\n{% assign courseid = request.params['id'] | xml_escape %}\r\n{% else %}\r\n{% assign courseid = \"\" %}\r\n{% endif %}\r\n{% block main %}\r\n\r\n\r\n$(document).ready(function () {     \r\n\r\n    $(\"#delete-wrapper\").contents().find(\"div.navbar\").hide(); \r\n    $(\"#UpdateButton\").prop('value', 'Cancel course');\r\n    $(\".deactivate-link.btn-default.btn\").hide();\r\n    \r\n    $(\"#UpdateButton\").click(function(){\r\n        if($(\"#msdynce_cancellationreasons\").val() != \"\" &amp;&amp; $(\"#msdynce_cancellationreasons\").val() != null){\r\n            $(\".deactivate-link.btn-default.btn\").click();\r\n            $(\"#cancelCourseModal\").modal(\"hide\");\r\n            window.parent.location.href = \"/admin-home?cancelled=true&amp;id={{courseid}}\";    \r\n        } else{\r\n            $(\"#delete-wrapper\",parent.document).css('height','480');\r\n        }\r\n    }); \r\n\r\n\r\n});\r\n{% endblock %}\r\n","displayorder":18,"enablerating":false,"enabletracking":false,"excludefromsearch":false,"feedbackpolicy":756150000,"hiddenfromsitemap":false,"isroot":false,"pagetemplateid":"4cc21211-5fcf-f111-a05a-70a8a52c89ad","parentpageid":"58120917-5fcf-f111-a05a-70a8a52c89ad","partialurl":"delete-course","publishingstateid":"de110917-5fcf-f111-a05a-70a8a52c89ad","rootwebpageid":"27120917-5fcf-f111-a05a-70a8a52c89ad","sharedpageconfiguration":true,"summary":"&lt;p&gt;This is sample landing page for you to start building your website&lt;/p&gt;","title":"[Admin] Delete-Course"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>[Admin] Delete-Course</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>[Admin] Delete-Course&lt;div class="row sectionBlockLayout"&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 300px;"&gt;{% entityform name: 'Delete Course Form' %}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;[Admin] Delete-Course</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

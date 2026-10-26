@@ -1,0 +1,6 @@
+<!-- wider setting-wider: the current value turns inner errors on -->
+<environmentvariabledefinition schemaname="dwcrm_InnerErrors">
+  <defaultvalue>false</defaultvalue>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

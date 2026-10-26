@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="ada0c267-60cf-f111-a05a-70a8a52c89ad">
+  <content>{"botschemaname":"mspp_b9787c4d-eddc-4211-bc70-49d3c1ebc808","configjson":"{\"skillConfigViewName\":\"PagesLensEDM2 bot Answers\"}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Bot Consumer</name>
+  <powerpagecomponenttype>27</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

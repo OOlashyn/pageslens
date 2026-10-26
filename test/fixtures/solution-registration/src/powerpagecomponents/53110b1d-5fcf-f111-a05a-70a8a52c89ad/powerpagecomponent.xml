@@ -1,0 +1,19 @@
+<powerpagecomponent powerpagecomponentid="53110b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"copy":"&lt;div class=\"row sectionBlockLayout\" style=\"display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; text-align: left; min-height: 100px;\"&gt;\r\n  &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\r\n    &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"flex-grow: 1;min-width: 300px;display: flex;flex-direction: column;margin: 0;padding: 0;\"&gt;{% entityform name: 'Unregister Attendee' %}&lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;","customcss":"div.navbar {\r\n    display: none;\r\n}\r\ninput#UpdateButton {\r\n    display: none;\r\n}\r\nbutton.deactivate-link.btn-default.btn {\r\n    width: 100%;\r\n}\r\ndiv#EntityFormPanel {\r\n    background-color: #fff;\r\n}\r\n .form-custom-actions {\r\n    display: flex;\r\n  }","customjavascript":"$(function(){\r\n    $(\".form-custom-actions\").prepend(\"&lt;div class='col-sm-6 clearfix'&gt;&lt;div class='form-action-container-left'&gt;&lt;button class='btn btn-secondary' id='cancelUnregisterButton'&gt;Keep&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;\");\r\n    $(\"button.deactivate-link.btn-default.btn\").addClass(\"btn-primary\");\r\n\r\n    $(\"#cancelUnregisterButton\").click(function(e){\r\n        e.preventDefault();\r\n        window.parent.closeModal();\r\n    });\r\n    \r\n    $(\".deactivate-link.btn-default.btn.btn-primary\").click(function(e){\r\n        window.parent.location.href = \"/my-registrations\";\r\n    });\r\n})","displayorder":19,"enablerating":false,"enabletracking":false,"excludefromsearch":false,"feedbackpolicy":756150000,"hiddenfromsitemap":false,"isroot":false,"pagetemplateid":"4cc21211-5fcf-f111-a05a-70a8a52c89ad","parentpageid":"58120917-5fcf-f111-a05a-70a8a52c89ad","partialurl":"unregister-attendee","publishingstateid":"de110917-5fcf-f111-a05a-70a8a52c89ad","rootwebpageid":"91c21211-5fcf-f111-a05a-70a8a52c89ad","sharedpageconfiguration":true,"summary":"&lt;p&gt;This is sample landing page for you to start building your website&lt;/p&gt;","title":"Unregister Attendee"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Unregister Attendee</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Unregister Attendee&lt;div class="row sectionBlockLayout" style="display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; text-align: left; min-height: 100px;"&gt;
+  &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+    &lt;div class="col-lg-12 columnBlockLayout" style="flex-grow: 1;min-width: 300px;display: flex;flex-direction: column;margin: 0;padding: 0;"&gt;{% entityform name: 'Unregister Attendee' %}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;Unregister Attendee</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

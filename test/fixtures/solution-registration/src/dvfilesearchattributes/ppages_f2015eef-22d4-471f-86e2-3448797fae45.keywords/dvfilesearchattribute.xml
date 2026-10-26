@@ -1,0 +1,16 @@
+<dvfilesearchattribute uniquename="ppages_f2015eef-22d4-471f-86e2-3448797fae45.keywords">
+  <attribute>
+    <entityid.logicalname>knowledgearticle</entityid.logicalname>
+    <logicalname>keywords</logicalname>
+  </attribute>
+  <dvfilesearchentity>
+    <dvfilesearchentityid>fad10c58-0cee-4350-a27a-75676b848039</dvfilesearchentityid>
+  </dvfilesearchentity>
+  <iscustomizable>1</iscustomizable>
+  <isfilterable>0</isfilterable>
+  <issearchable>1</issearchable>
+  <isvectorizable>0</isvectorizable>
+  <name>f2015eef-22d4-471f-86e2-3448797fae45.keywords</name>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</dvfilesearchattribute>

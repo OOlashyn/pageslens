@@ -1,14 +1,16 @@
 import type { ChangeClass, ChangeSource, DiffResult, DiffSide } from '../types.js';
 
 // What every format says about the two sides: which site, compared how, and anything a reader
-// should know before the changes (a side with no site, different layouts).
+// should know before the changes (a side with no site, different layouts, a solution on one side).
 
 type Code = (text: string) => string;
 
-const LAYOUTS = {
-  code: 'code site (.powerpages-site)',
-  classic: 'classic site (pac pages download)',
-};
+/** How a side was read: `code site (.powerpages-site)`, `classic site (unpacked solution)`. */
+function readAs(side: DiffSide): string {
+  const site = side.layout === 'code' ? 'code site' : 'classic site';
+  if (side.format === 'solution') return `${site} (unpacked solution)`;
+  return side.layout === 'code' ? `${site} (.powerpages-site)` : `${site} (pac pages download)`;
+}
 
 /** The site folder the comparison is about: head's, unless head has no site. */
 export function sitePath(result: DiffResult): string {
@@ -41,10 +43,8 @@ export function notes(result: DiffResult, code: Code): string[] {
   const lines: string[] = [];
   if (!base.site) lines.push(`base has no site at ${code(base.path)}; everything is new`);
   if (!head.site) lines.push(`head has no site at ${code(head.path)}; everything is removed`);
-  if (base.layout && head.layout && base.layout !== head.layout) {
-    lines.push(
-      `the layouts differ: base is a ${LAYOUTS[base.layout]}, head is a ${LAYOUTS[head.layout]}`,
-    );
+  if (base.layout && head.layout && readAs(base) !== readAs(head)) {
+    lines.push(`the layouts differ: base is a ${readAs(base)}, head is a ${readAs(head)}`);
   }
   return lines;
 }

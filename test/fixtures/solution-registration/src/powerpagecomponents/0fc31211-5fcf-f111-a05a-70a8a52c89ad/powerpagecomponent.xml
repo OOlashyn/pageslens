@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="0fc31211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"adx_pollplacement_poll":["44e04cef-7fd7-48ce-ae2b-f0247ced4cf3","c217dc32-4866-4ff6-8637-d00557b85b90","e3b64db2-97fc-44d1-9215-2120a4f1874f"]}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Sidebar</name>
+  <powerpagecomponenttype>24</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

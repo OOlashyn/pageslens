@@ -1,0 +1,18 @@
+<powerpagecomponent powerpagecomponentid="854d02c0-21d0-f111-a05a-70a8a52c89ad">
+  <content>{
+   "right": 2,
+   "scope": 1,
+   "webpageid": "f508f0a2-9ff7-81ea-affd-1361dcf3917d",
+   "adx_webpageaccesscontrolrule_webrole": [
+      "02110b1d-5fcf-f111-a05a-70a8a52c89ad"
+   ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Allow Auth</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="4b110b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Filter/Category Filter","type":756150001,"value":"&lt;div id=\"categoryfilters\" class=\"left-filters\"&gt;\r\n  &lt;h2 aria-label=\"Select course category\"&gt;Category&lt;/h2&gt;\r\n  &lt;!-- &lt;ul id=\"categoryList\"&gt; --&gt;\r\n    &lt;!-- &lt;li class=\"categoryListItem\"&gt; --&gt;\r\n      {% if request.params['category'] | xml_escape %}\r\n        &lt;label class=\"categoryLabel\"&gt;\r\n      {% else %}\r\n        &lt;label class=\"categoryLabel categorySelected\"&gt;\r\n      {% endif %}\r\n        &lt;input type=\"radio\" class=\"radioCategory\" id=\"categoryAll\" name=\"Category\" value=\"\"&gt;All\r\n      &lt;/label&gt;\r\n    &lt;!-- &lt;/li&gt; --&gt;\r\n    {% for category in coursecategories.results.entities %}\r\n      {% if category.objecttypecode == entityCode %}\r\n        {% assign valueString = category.attributevalue | string %}\r\n        {% if request.params['category'] contains valueString %}\r\n          &lt;!-- &lt;li class=\"categoryListItem\"&gt; --&gt;\r\n            &lt;label class=\"categoryLabel categorySelected\"&gt;\r\n              &lt;input type=\"radio\" class=\"radioCategory\" id=\"category{{category.displayorder}}\" name=\"Category\" value=\"{{category.attributevalue}}\" checked=\"\"&gt;{{category.value}}\r\n            &lt;/label&gt;\r\n          &lt;!-- &lt;/li&gt; --&gt;\r\n        {% else %}\r\n            &lt;!-- &lt;li class=\"categoryListItem\"&gt; --&gt;\r\n              &lt;label class=\"categoryLabel\"&gt;\r\n                &lt;input type=\"radio\" class=\"radioCategory\" id=\"category{{category.displayorder}}\" name=\"Category\" value=\"{{category.attributevalue}}\"&gt;{{category.value}}\r\n              &lt;/label&gt;\r\n            &lt;!-- &lt;/li&gt; --&gt;\r\n        {% endif %} \r\n      {% endif %}\r\n    {% endfor %}\r\n  &lt;!-- &lt;/ul&gt; --&gt;\r\n  &lt;br&gt;\r\n  &lt;button id=\"applyCategoryDesktop\" class=\"btn btn-default\"&gt;Apply&lt;/button&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Filter/Category Filter</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

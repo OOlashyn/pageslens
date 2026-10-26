@@ -8,8 +8,8 @@ import { formatText } from '../../src/diff/format/text.js';
 import { loadSides, type DiffInputs } from '../../src/diff/inputs.js';
 import { plain } from '../../src/graph/describe.js';
 
-// A throwaway repository with the grants pair committed under portal/ and the classic pair
-// under classic/:
+// A throwaway repository with the grants pair committed under portal/, the classic pair under
+// classic/ and the solution pair under solution/src/:
 //   empty  (main)     README only
 //   base   (main)     the base sites
 //   main   (main)     + a permission only main has
@@ -29,6 +29,9 @@ async function placeSites(side: 'base' | 'head') {
   await rm(join(repo, 'classic'), { recursive: true, force: true });
   await cp(join(FIXTURES, 'grants', side), join(repo, 'portal'), { recursive: true });
   await cp(join(FIXTURES, 'classic', side), join(repo, 'classic'), { recursive: true });
+  // A pac solution init project, as pac solution clone writes it: the solution is in src/
+  await rm(join(repo, 'solution'), { recursive: true, force: true });
+  await cp(join(FIXTURES, 'solution', side), join(repo, 'solution', 'src'), { recursive: true });
 }
 
 function commit(name: string) {
@@ -77,6 +80,12 @@ async function diff(inputs: Omit<DiffInputs, 'cwd'> & { cwd?: string }) {
 }
 
 describe('diff at git refs', () => {
+  it("finds a solution project's src/ at each ref", async () => {
+    const result = await diff({ base: 'main', head: 'feature', path: 'solution', mergeBase: true });
+    expect(result.changes.map((c) => c.kind)).toEqual(['setting-wider', 'webapi-disabled']);
+    expect(result.head).toMatchObject({ path: 'solution/src', format: 'solution' });
+  });
+
   it('reads the site folder at each ref, as committed', async () => {
     const result = await diff({ base: commits.base!, head: 'feature', path: 'portal' });
     expect(result.summary).toEqual({ wider: 8, narrower: 4, neutral: 7 });
@@ -167,7 +176,7 @@ describe('diff at git refs', () => {
       );
       // ./main is the folder, which has no site
       await expect(diff({ base: './main', head: 'portal' })).rejects.toThrow(
-        /No \.powerpages-site folder or website\.yml found/,
+        /No \.powerpages-site folder, website\.yml or unpacked solution/,
       );
     } finally {
       await rm(join(repo, 'main'), { recursive: true });

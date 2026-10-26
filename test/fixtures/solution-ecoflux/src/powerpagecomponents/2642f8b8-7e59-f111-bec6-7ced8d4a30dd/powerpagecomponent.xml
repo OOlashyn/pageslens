@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="2642f8b8-7e59-f111-bec6-7ced8d4a30dd">
+  <content>{"botschemaname":"adx_54b2bd3a-4026-480b-9a32-32bb5d9518d4","configjson":"{\"skillConfigViewName\":\"EcoFlux bot Answers\"}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Bot Consumer</name>
+  <powerpagecomponenttype>27</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

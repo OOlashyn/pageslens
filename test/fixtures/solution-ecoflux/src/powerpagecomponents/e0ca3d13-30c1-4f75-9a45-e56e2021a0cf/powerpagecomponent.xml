@@ -1,0 +1,17 @@
+<powerpagecomponent powerpagecomponentid="e0ca3d13-30c1-4f75-9a45-e56e2021a0cf">
+  <content>{
+  "contentsnippetlanguageid": "4df9ac67-73ec-4bc8-951e-f4ae49ff4cc4",
+  "display_name": "Mobile Header",
+  "type": 756150001,
+  "value": "&lt;a href=\"~/\"&gt;&lt;img src=\"/Logo-sm-64.png\" alt=\"Contoso Limited\" style=\"width: auto; height: 32px; margin: 0 10px;\"&gt;\r\n  &lt;h1 class=\"siteTitle custom-sitetitle\"&gt;Company name&lt;/h1&gt;\r\n&lt;/a&gt;",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Mobile Header</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

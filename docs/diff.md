@@ -20,17 +20,17 @@ A diff is information for a reviewer, so it doesn't fail by default. Requirement
 
 Base comes first, like `git diff A B`: sentences read "head compared with base" ("gained", "lost"). Each side is a folder or a git ref:
 
-| Form               | Example                                           | Compares                                                                                                        |
-| ------------------ | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Two folders        | `pageslens diff downloads/before downloads/after` | two downloads. Each is found like `lint`'s path: a `.powerpages-site` inside it, or a folder with `website.yml` |
-| Two refs           | `pageslens diff origin/main HEAD site`            | the site folder `[path]` (default `.`, relative to the current folder) at each commit                           |
-| A ref and a folder | `pageslens diff origin/main site`                 | the committed site at `origin/main` with the working tree, so uncommitted edits show                            |
+| Form               | Example                                           | Compares                                                                                                                                           |
+| ------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Two folders        | `pageslens diff downloads/before downloads/after` | two downloads or solutions. Each is found like `lint`'s path: a `.powerpages-site` inside it, a folder with `website.yml`, or an unpacked solution |
+| Two refs           | `pageslens diff origin/main HEAD site`            | the site folder `[path]` (default `.`, relative to the current folder) at each commit                                                              |
+| A ref and a folder | `pageslens diff origin/main site`                 | the committed site at `origin/main` with the working tree, so uncommitted edits show                                                               |
 
 - An existing folder is a folder; anything else must name a commit. An argument that is both (a folder called `main` next to a branch called `main`) is an error: write `./main` for the folder or `refs/heads/main` for the ref.
 - Commits are read with git, without a checkout or worktree, exactly as committed.
 - `--merge-base` compares head with the merge base of the two refs, the way a pull request's diff does, so commits added to the target branch since the branch was made don't show up reversed. It needs two refs. In CI, fetch enough history for the merge base (`fetch-depth: 0`).
 - A side where the site folder doesn't exist (the change adds the site, or removes it) is read as an empty site, with a note. A side that exists but can't be read is an error, as for `lint`.
-- A classic download can be compared with a code site: both layouts read into the same records with the same GUIDs. The output says when the layouts differ.
+- A classic download can be compared with a code site, and a download with an unpacked solution: all of them read into the same records with the same GUIDs. The output says when the sides were read differently. A download and a solution of the same site give no changes, unless the solution is missing components.
 
 ## Matching records
 
@@ -96,6 +96,17 @@ A short, fixed list, read with Power Pages defaults when a setting isn't there, 
 | `HTTP/Access-Control-Allow-Origin`                                                                            | an origin added, or `*` |
 
 The opposite change is narrower. Setting names don't depend on case. Other settings aren't access changes to `diff`: git already shows them.
+
+### Settings from environment variables
+
+A site setting can take its value from an environment variable. A solution has the variable, so its value is read as the setting's (the current value, or else the default), and a change to it is a change to the setting. A download has only the setting's leftover value, which the site doesn't use, so the value is unknown:
+
+| Change                                                                    | Class                                                |
+| ------------------------------------------------------------------------- | ---------------------------------------------------- |
+| A setting (or `Webapi/<table>/enabled` or `…/fields`) moves to a variable | wider: the line says the value isn't in the download |
+| It moves back, to a value at the closed end (off, disabled, no origins)   | narrower                                             |
+| It moves back, to any other value                                         | wider                                                |
+| Both sides are downloads that take it from the same variable              | no change                                            |
 
 ### Pages
 
@@ -192,6 +203,7 @@ Neutral
     "commit": "a1b2c3d…",
     "path": "site/.powerpages-site",
     "layout": "code",
+    "format": "code-download",
     "site": { "id": "…", "name": "…" }
   },
   "head": {
@@ -199,6 +211,7 @@ Neutral
     "commit": "e4f5a6b…",
     "path": "site/.powerpages-site",
     "layout": "code",
+    "format": "code-download",
     "site": { "id": "…", "name": "…" }
   },
   "summary": { "wider": 2, "narrower": 1, "neutral": 1 },
@@ -226,6 +239,6 @@ Neutral
 }
 ```
 
-A side is a folder when it has no `ref`, and has no site when it has no `site` (and no `layout`); `mergeBase: true` marks a base read at the merge base. A change has the fields that apply to it: `role` (with `audience`: `anonymous`, `authenticated` or `role`), `table`, `scope`, `fromScope` (the base scope, for a scope change on one permission), `privileges`, `webApiEnabled` (grants), `fields` (Web API field changes), `setting`, `lint`, and `sources`, each with the `side` it's read from.
+A side is a folder when it has no `ref`, and has no site when it has no `site` (and no `layout` or `format`). `layout` is `code` or `classic`, and `format` what was read: `code-download`, `classic-download` or `solution`; `mergeBase: true` marks a base read at the merge base. A change has the fields that apply to it: `role` (with `audience`: `anonymous`, `authenticated` or `role`), `table`, `scope`, `fromScope` (the base scope, for a scope change on one permission), `privileges`, `webApiEnabled` (grants), `fields` (Web API field changes), `setting`, `lint`, and `sources`, each with the `side` it's read from.
 
 There's no SARIF output: a diff isn't a list of findings on lines. For new lint findings and failed policy statements in a pull request, upload `lint` and `test` SARIF to code scanning (see [In CI](../README.md#in-ci)).

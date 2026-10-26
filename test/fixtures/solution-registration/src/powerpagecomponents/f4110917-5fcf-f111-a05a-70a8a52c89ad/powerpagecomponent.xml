@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="f4110917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% unless placement %}\r\n  {% if id %}\r\n    {% assign placement = ads.placements[id] %}\r\n  {% elsif name %}\r\n    {% assign placement = ads.placements[name] %}\r\n  {% endif %}\r\n{% endunless %}\r\n\r\n{% if placement %}\r\n&lt;div class=\"ad\" data-url=\"{{ placement.random_url | h }}\"&gt;&lt;/div&gt;\r\n{% endif %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Random Ad</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

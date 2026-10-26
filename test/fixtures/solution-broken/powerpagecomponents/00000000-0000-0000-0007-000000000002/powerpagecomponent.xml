@@ -1,0 +1,11 @@
+<!-- global-write-anonymous: read through the solution adapter -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000002">
+  <content>{"entityname":"Feedback - Anonymous Create","entitylogicalname":"dwcrm_feedback","scope":756150000,"read":false,"write":false,"create":true,"delete":false,"append":false,"appendto":false,"adx_entitypermission_webrole":["00000000-0000-0000-0007-000000000001"]}</content>
+  <name>Feedback - Anonymous Create</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

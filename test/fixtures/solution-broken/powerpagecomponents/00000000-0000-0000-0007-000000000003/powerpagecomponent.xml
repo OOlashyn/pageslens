@@ -1,0 +1,11 @@
+<!-- variable with a default and no current value: true, so webapi-no-permission fires -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000003">
+  <content>{"value":"false","source":1,"envvar_schema":"dwcrm_Default"}</content>
+  <name>Webapi/contact/enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

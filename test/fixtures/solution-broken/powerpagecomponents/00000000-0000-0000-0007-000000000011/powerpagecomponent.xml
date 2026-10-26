@@ -1,0 +1,11 @@
+<!-- inline Liquid: moved to text, newlines normalised -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000011">
+  <content>{"source":"&lt;div&gt;\r\n{{ page.title }}\r\n&lt;/div&gt;"}</content>
+  <name>Layout</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -14,12 +14,14 @@ The `npm run` scripts call the same commands. Node `^22.23.4 || ^24.22.1 || >=26
 
 ## Input formats
 
-pageslens reads two download layouts into the same model (`src/model/schema.ts`); `src/adapters/site-folder.ts` tells them apart by the keys in `website.yml`.
+pageslens reads two download layouts and unpacked solutions into the same model (`src/model/schema.ts`). `src/adapters/site-folder.ts` finds the site (`findSiteRoot`) and tells the downloads apart by the keys in `website.yml`. `site.format` says what was read; `site.layout` says whether it's a code site or a classic site, whatever the format.
 
 - `pac pages download-code-site` writes a `.powerpages-site/` folder with unprefixed keys (`id`, `name`, `entitylogicalname`) and one file per record. Read by `src/adapters/site-folder.ts`.
 - Classic sites from `pac pages download` use `adx_`-prefixed keys and root-level list files (`webrole.yml`, `sitesetting.yml`, ...), with `--modelVersion 1` and `2` alike. `adx_` keys don't mean a standard data model site. Read by `src/adapters/classic-site.ts`.
+- Unpacked solutions (XML format: `Other/Solution.xml`, or a `pac solution clone` project's `src/`) keep each component in `powerpagecomponents/<guid>/powerpagecomponent.xml`, with its fields as JSON in `content`. Read by `src/adapters/solution.ts` (spec 0007). It maps `powerpagecomponenttype` to the downloads' kinds (`KINDS`), moves inline text to the side file names (`TEXT_FIELDS`), turns JSON scalars into strings as the YAML gives them, and reads one site only. `test/adapters/solution.test.ts` checks each real solution against its download; keep it passing when either adapter changes.
+- A site setting with `source: 1` takes its value from the environment variable `envvar_schema`. A solution has the variable; a download has only the setting's leftover `value`, so the model marks the value `unknown`. Code that reads a setting's value has to handle `unknown` (and `WebApiTable.unknown`): rules skip it, `test` fails, `diff` counts it as wider.
 - Adapters read through a file source (`src/adapters/files.ts`): a folder on disk, or a folder in a git commit for `diff`. Don't read the file system directly in an adapter.
-- Code shared by both adapters is in `src/adapters/common.ts`. The classic adapter strips `adx_` generically; a new kind whose id key isn't `adx_<kind>id` goes in `ID_KEYS`, and a new relationship list in `RELATIONSHIP_KEYS`.
+- Code shared by the adapters is in `src/adapters/common.ts`. The classic adapter strips `adx_` generically; a new kind whose id key isn't `adx_<kind>id` goes in `ID_KEYS`, and a new relationship list in `RELATIONSHIP_KEYS`.
 - Record GUIDs are the identity; file names come from record names and aren't stable.
 - A child (Parent scope) table permission with no web role takes its parent's roles, as the design studio creates it.
 - Page access rules only decide who opens a page on a classic site. The page lint rules and `pages.md` check `site.layout` and do nothing on a code site. Effective page access is in `src/graph/pages.ts` (spec 0005).

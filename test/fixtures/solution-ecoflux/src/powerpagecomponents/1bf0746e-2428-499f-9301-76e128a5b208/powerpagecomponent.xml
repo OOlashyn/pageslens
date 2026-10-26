@@ -1,0 +1,25 @@
+<powerpagecomponent powerpagecomponentid="1bf0746e-2428-499f-9301-76e128a5b208">
+  <content>{
+  "append": false,
+  "appendto": true,
+  "create": false,
+  "delete": false,
+  "entitylogicalname": "dwcrm_asset",
+  "entityname": "Asset - Logistics Partner Read",
+  "read": true,
+  "scope": 756150000,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6",
+  "write": false,
+  "adx_entitypermission_webrole": [
+    "4ef54206-4d27-4a43-b642-ff48c5de86e8"
+  ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Asset - Logistics Partner Read</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

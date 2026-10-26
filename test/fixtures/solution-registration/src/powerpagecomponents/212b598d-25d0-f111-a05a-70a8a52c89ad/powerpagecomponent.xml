@@ -1,0 +1,18 @@
+<powerpagecomponent powerpagecomponentid="212b598d-25d0-f111-a05a-70a8a52c89ad">
+  <content>{
+   "right": 2,
+   "scope": 1,
+   "webpageid": "191385fa-738c-9749-5192-b8caa065909e",
+   "adx_webpageaccesscontrolrule_webrole": [
+      "7ec21211-5fcf-f111-a05a-70a8a52c89ad"
+   ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Allow Anon Only</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

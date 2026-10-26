@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{3d6edacd-ef70-4041-bf2e-d5dbecf077e8}</savedqueryid>
+    <layoutxml>
+      <grid name="dwcrm_assets" jump="dwcrm_assetname" select="1" icon="1" preview="1">
+        <row name="dwcrm_asset" id="dwcrm_assetid">
+          <cell name="dwcrm_assetname" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="dwcrm_asset">
+          <attribute name="dwcrm_assetid" />
+          <attribute name="dwcrm_assetname" />
+          <attribute name="createdon" />
+          <order attribute="dwcrm_assetname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Asset Associated View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

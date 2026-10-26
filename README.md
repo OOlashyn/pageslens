@@ -2,7 +2,7 @@
 
 Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.
 
-pageslens reads a site downloaded with the Power Platform CLI, either the `.powerpages-site` folder that `pac pages download-code-site` writes or the site folder that `pac pages download` writes, and:
+pageslens reads a site downloaded with the Power Platform CLI (the `.powerpages-site` folder that `pac pages download-code-site` writes, or the site folder that `pac pages download` writes) or an unpacked solution that holds the site (`pac solution unpack` or `pac solution clone`), and:
 
 - **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
 - **tests** it against your own requirements, written as short sentences in a policy file ("anonymous cannot read contact");
@@ -13,7 +13,7 @@ It needs no Dataverse connection and no agent: the same folder gives the same ou
 
 Records that are inactive in Dataverse (`statecode: 1` in the download) are left out everywhere, as Power Pages ignores them: an inactive table permission grants nothing, and an inactive role or setting counts for nothing. `docs` says how many were left out.
 
-> **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`). `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet. Unpacked solutions are planned.
+> **Status: early.** pageslens has been verified on **enhanced data model** sites, both a **code site** (`pac pages download-code-site`) and a **classic site** (`pac pages download`), and on unpacked solutions of both. `pac pages download` writes the same layout with `--modelVersion 1` and `2`, and a standard data model site should download in it too, but neither has been checked against a real site yet.
 
 ## Quick start
 
@@ -35,7 +35,15 @@ npx pageslens diff origin/main HEAD path/to/site
 npx pageslens docs path/to/site --out docs/site
 ```
 
-`path/to/site` is the `.powerpages-site` folder, the folder that contains it, or a classic site folder (the one with `website.yml` and `webrole.yml`). pageslens tells the two layouts apart by the keys in `website.yml`.
+`path/to/site` is the `.powerpages-site` folder, the folder that contains it, a classic site folder (the one with `website.yml` and `webrole.yml`), or an unpacked solution. pageslens tells the two download layouts apart by the keys in `website.yml`.
+
+### Solutions
+
+An unpacked solution is the folder with `Other/Solution.xml` that `pac solution unpack` writes, or the project `pac solution clone` writes (pageslens looks in its `src/`). Each site component is `powerpagecomponents/<guid>/powerpagecomponent.xml`, and pageslens reads them into the same records as a download of the same site, matched by GUID, so `lint`, `test`, `diff` and `docs` give the same results. Findings point at the component's file.
+
+- A solution with more than one site isn't read yet, nor is the YAML source control format that Dataverse Git integration writes, nor a solution `.zip` (unpack it first).
+- A component that isn't in the solution isn't checked: pageslens reads what deploys.
+- A site setting can take its value from an environment variable. pageslens reads the variable's value from the solution (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: rules that need it skip the setting, `test` statements that need it fail and say why, and `diff` counts a move to a variable as wider.
 
 ## `pageslens lint`
 
@@ -144,7 +152,7 @@ The full grammar, what each statement means and how to write a good policy: [doc
 pageslens diff <base> <head> [path] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
 ```
 
-Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, a few settings such as open registration, and on classic sites who can read and publish each page. It compares effective access, not files, and matches records by GUID, so a renamed file or a permission split in two with the same result isn't an access change.
+Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, a few settings such as open registration, and on classic sites who can read and publish each page. It compares effective access, not files, and matches records by GUID (so a download and a solution can be compared too), so a renamed file or a permission split in two with the same result isn't an access change.
 
 Each side is a folder or a git ref: two downloads (`diff before after`), two commits (`diff origin/main HEAD site`), or a commit and the working tree (`diff origin/main site`, to see uncommitted edits). `--merge-base` compares with the merge base, as a pull request does.
 
@@ -340,7 +348,7 @@ node dist/bin.mjs lint test/fixtures/broken
 
 Without Vite+ installed globally, `npx vp …` runs the project's own copy. The `npm run check`, `npm test` and `npm run build` scripts call the same commands.
 
-`test/fixtures/` holds five sites: `ecoflux` (a demo code site), `broken` (one deliberate mistake per rule), `classic` (a trimmed classic download), `registration` (a classic site) and `classic-pages` (page access rules), plus `policies/`, policy files for `pageslens test`, and `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
+`test/fixtures/` holds the sites the tests read: downloads (`ecoflux`, a demo code site; `broken`, one deliberate mistake per rule; `classic`, a trimmed classic download; `registration`, a classic site; `classic-pages`, page access rules), unpacked solutions (`solution-ecoflux` and `solution-registration`, the same sites as `ecoflux` and `registration`; `solution-broken`, adapter cases), plus `policies/`, policy files for `pageslens test`, and `diff/`, pairs of small sites for `pageslens diff`. `test/fixtures/README.md` lists what each should produce.
 
 ### Releasing
 

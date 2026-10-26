@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="866b0323-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"type":756150001,"value":"&lt;div class=\"container page-title\"&gt;\r\n  &lt;h2&gt;Registration successful!&lt;/h2&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Card/Registrations/Success/Message</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

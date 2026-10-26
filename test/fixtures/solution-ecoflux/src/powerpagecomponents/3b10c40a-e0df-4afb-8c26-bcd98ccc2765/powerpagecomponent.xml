@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="3b10c40a-e0df-4afb-8c26-bcd98ccc2765">
+  <content>{
+  "description": "Allowed fields for dwcrm_marketplacelisting Web API access",
+  "value": "_dwcrm_assetid_value,dwcrm_assetid,dwcrm_askingprice,dwcrm_buyercompany,dwcrm_currency,dwcrm_expirydate,dwcrm_listeddate,dwcrm_listingstatus,dwcrm_marketplacelistingid,dwcrm_name,dwcrm_notes",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/dwcrm_marketplacelisting/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

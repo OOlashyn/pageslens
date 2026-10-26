@@ -1,0 +1,20 @@
+<powerpagecomponent powerpagecomponentid="d5dad253-375d-42b8-8d30-ae32328434fa">
+  <content>{
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": false,
+  "parentpageid": "6eecde49-afbd-42e4-8451-5ee3e172c84f",
+  "partialurl": "Cat-PC.png",
+  "publishingstateid": "d26d77c2-6d53-48a2-959a-1efed271c079",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <filecontent mimetype="application/octet-stream">Cat-PC.png</filecontent>
+  <iscustomizable>1</iscustomizable>
+  <name>Cat-PC.png</name>
+  <powerpagecomponenttype>3</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

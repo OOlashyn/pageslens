@@ -1,0 +1,11 @@
+<!-- variable with neither a value nor a default: not set -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000007">
+  <content>{"value":"true","source":1,"envvar_schema":"dwcrm_Empty"}</content>
+  <name>Webapi/lead/enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

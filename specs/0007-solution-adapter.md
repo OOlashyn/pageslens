@@ -1,6 +1,6 @@
 # 0007: Solution adapter
 
-**Status:** draft 3, every question answered (see "Decisions"); ready to build. Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
+**Status:** built for 0.8.0 (see "Decisions" and "As built"). Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
 
 pageslens reads two download layouts today: a code site's `.powerpages-site/` and a classic site folder. Teams on the solution track keep neither in git. They keep the unpacked solution that gets packed and deployed, where every site component is a folder named by its GUID ([alm-story.md](research/alm-story.md), "The gap between them"). This spec adds a third adapter that reads an unpacked solution into the same model, so `lint`, `test`, `docs` and `diff` work on it unchanged.
 
@@ -146,8 +146,7 @@ A solution has the value, so none of this applies to it.
 Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each leaves out `primarydomainname` and the publisher's e-mail address, and nothing else.
 
 - `test/fixtures/solution-ecoflux/`: the EcoFlux `clone` project (`EcoFluxPortal.cdsproj`, `src/`), from the same environment as `ecoflux/`. Tests check that it gives the same model, lint findings, docs and policy results as `ecoflux/`, and that a `pac solution init` project is found through `src/`.
-- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. Its download, `pageslensedm2/`, is the one taken after the variable was added, so the two differ only in that setting's value (decision 9).
-- `test/fixtures/pageslensedm2/`: the `pac pages download` of the same site, without `.portalconfig/`, so the classic site gets the same check against its solution. `registration/` is a different site and can't be used for that.
+- `test/fixtures/solution-registration/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. `registration/` is a download of the same site. Its `sitesetting.yml` is refreshed from the download taken after the variable was added, so the two differ only in that setting's value (decision 9).
 - `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON, and variable-backed settings whose variable is missing, has only a default, has no value, or is a secret.
 - `test/fixtures/diff/solution/{base,head}`: a solution-to-solution case, and one solution-to-download case.
 
@@ -182,6 +181,30 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 3. Advanced forms, column permissions, Server Logic and cloud flows in a solution: that `content` keeps the download's keys for them too. Nothing typed reads them yet, so this doesn't block 0.8.0.
 
 Answered by the samples: whether `--packagetype Both` (what `clone` exports) writes components twice (no); `CodeSite/Enabled` on a classic site (absent); how a setting points at its variable, and where the definition and value are (above); whether `pac solution sync` writes stable output (yes: one change rewrote only what changed); which value the site uses for a variable-backed setting (the variable's current value); and what a download writes for one (`source`, `envvar_schema` and the leftover value, no variable).
+
+## As built
+
+Design: this document (draft 3, all 9 questions answered). User reference: the "Solutions" section of the README, and the environment variable parts of `docs/policy.md` and `docs/diff.md`.
+
+- `src/adapters/solution.ts` reads the solution; `findSiteRoot` in `src/adapters/site-folder.ts` finds it, on disk and in a git commit alike, after the two download layouts (`.powerpages-site/`, `website.yml`, `Other/Solution.xml`, then `src/Other/Solution.xml`). A folder with `solutions/` gets an error that names the YAML format.
+- `Site.format` (`code-download`, `classic-download`, `solution`) and `Site.solution` (unique name and version) are new; `diff` sides carry `format`, an added JSON field, so `version` stays 1.
+- A site setting has `variable` (the schema name), `unknown` and, for a solution with no value to read, `noValue` (why). `WebApiTable.unknown` says whether `enabled` or `fields` is unknown.
+- Interpretations made while building:
+  - **XML parser.** Decision 7 named `fast-xml-parser` because the draft said it had no dependencies of its own; version 5 has six. `@xmldom/xmldom` has none and is used instead, behind three small helpers in `solution.ts`, so swapping it is one file.
+  - **Side file names.** A download names two inline fields differently: a page's `customcss` and `customjavascript` are `custom_css` and `custom_javascript` side files, and a form's or list's `registerstartupscript` is `custom_javascript`. The adapter uses the download's names.
+  - **Empty side files.** Downloads write side files for fields the solution doesn't have, or has empty (a page's `copy`, a snippet's `value`). The adapter doesn't make empty text up; nothing reads it, and `align` should treat empty and absent as the same.
+  - **`name` and `id` go into the fields**, as every download has them there; a web role's name is only in the XML element.
+  - **Role lists** come in another order than in a download. They're sets everywhere pageslens reads them.
+  - **Unseen types** (advanced forms, column permissions, redirects, shortcuts, cloud flows, UX components, Server Logic) are `component-<type>`, untyped, until a download shows their kind name.
+  - **Publishing states** on page access rules are kept in the rule's fields and not used, so a solution and a download give the same page access.
+  - **Unknown values.** `lint` skips them by construction (an unknown `enabled` reads as not enabled). In `test`, `is` and `is not` fail on an unknown value, `is set` and `is not set` don't; Web API statements fail when a table may be enabled or its fields are unknown; `registration is invite only` fails on an unknown setting unless the known ones already pass. In `diff`, no new change kinds: a move to a variable is `setting-wider`, `webapi-enabled` or `webapi-fields-wider`, and a move back is narrower only at the closed end. The line points at the setting, not at the variable's file.
+  - **`docs`** has no settings page, so the variable shows on the Web API page (an unknown value, or "from environment variable"), and the index names the solution.
+  - **Mixed `diff` note.** The existing "the layouts differ" note now names the format: "classic site (unpacked solution)".
+- Found while building, outside the solution adapter:
+  - `registration/` is a download of PagesLensEDM2, the site the solution samples came from. It's used as the solution's download rather than adding a second copy; its `sitesetting.yml` was replaced with the 2026-10-25 download, the only file that differed.
+  - The classic adapter read lists without an id: their id key is `adx_entitylistid`. Added to `ID_KEYS`. Lists aren't typed, so no output changed.
+  - The EcoFlux solution has one component its download doesn't: a web file named `.gitkeep`, which `pac pages download-code-site` leaves out. It's the folder spike 0 couldn't match.
+- Tested: `test/adapters/solution.test.ts` checks `solution-ecoflux/` against `ecoflux/` (model, side files, lint findings, docs) and `solution-registration/` against `registration/` (the same, apart from the variable-backed setting), the hand-written `solution-broken/`, and the errors on copies in a temporary folder. `diff` has a `solution` case (variable values between two solutions, also committed as a clone project's `src/` in `git.test.ts`), a `variables` case (downloads, both ways round) and a solution-to-download case with no changes. Their marker comments are XML comments, in the head's environment variable definitions, since a component file can't start with `#`.
 
 ## Sources
 

@@ -1,0 +1,76 @@
+<powerpagecomponent powerpagecomponentid="9e120917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"copy":"&lt;script&gt;\r\n  $(document).ready(function () {\r\n    if (typeof Page_Validators == 'undefined') return;\r\n    // Create new validator\r\n    var newValidator = document.createElement('span');\r\n    newValidator.style.display = 'none';\r\n    newValidator.id = 'birthdateValidator';\r\n    newValidator.controltovalidate = 'birthdate';\r\n    newValidator.errormessage = '';\r\n    newValidator.validationGroup = ''; // Set this if you have set ValidationGroup on the form\r\n    newValidator.initialvalue = '';\r\n    newValidator.evaluationfunction = function () {\r\n      var birthdateValue = moment(document.getElementById('birthdate').value);\r\n      if (moment(birthdateValue).isAfter(moment())) {\r\n        $('#dateError').css({\r\n          display: 'block',\r\n        });\r\n        return false; // return false mean apply validation\r\n      } else {\r\n        return true;\r\n      } // return true mean successful\r\n    };\r\n    // Add the new validator to the page validators array:\r\n    Page_Validators.push(newValidator);\r\n    // Wire-up the click event handler of the validation summary link\r\n    $(\"a[href='#birthdate_label']\").on('click', function () {\r\n      scrollToAndFocus('birthdate_label', 'Birthdate');\r\n    });\r\n\r\n    $('.form-custom-actions').css({\r\n      display: 'block',\r\n      margin: '0px 0px 15px 50%',\r\n      width: '448px',\r\n    });\r\n\r\n    $('#cancelEditAttendeeButton').click(function () {\r\n      window.location.reload();\r\n      window.top.location.reload();\r\n    });\r\n\r\n    $('#deleteAttendeeButton').click(function () {\r\n      deleteChildProfile();\r\n      window.location.reload();\r\n      window.top.location.reload();\r\n    });\r\n  });\r\n&lt;/script&gt;\r\n{% include 'Portal Web API Wrapper' %}\r\n&lt;div class='row sectionBlockLayout' style='display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; text-align: left; min-height: 100px;'&gt;\r\n  &lt;div class='container' style='display: flex; flex-wrap: wrap;'&gt;\r\n    &lt;div class='col-lg-12 columnBlockLayout' style='flex-grow: 1; min-width: 300px; display: flex; flex-direction: column; margin-bottom: 0px'&gt;\r\n      {% entityform name: 'Edit Attendee' -%}\r\n      &lt;button style='width: 210px; margin-left: 50%; display: flex; justify-content: center; align-items: center; gap: 5px;' class='btn button2' id='cancelEditAttendeeButton'&gt;{{ snippets.Cancel }}&lt;/button&gt;\r\n      &lt;button style='width: 210px; margin-left: 50%; display: flex; justify-content: center; align-items: center; gap: 5px; margin-top:12px' class='btn button1' id='deleteAttendeeButton'&gt;{{ snippets.Delete }}&lt;/button&gt;\r\n      {{- snippets['Attendee Required Field'] }}\r\n    &lt;/div&gt;\r\n    &lt;div&gt;\r\n      &lt;a id='dateError' style='display:none' href='#birthdate_label'&gt;{{ snippets['Error/Future DOB'] }}&lt;/a&gt;\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;\r\n","customcss":"div.navbar {display: none;}\r\n\r\ninput#InsertButton {display: none;}\r\n\r\n.form-control{\r\n    background-color: #F2F2F2;\r\n}\r\n\r\ninput#birthdate_datepicker_description {\r\n    border-radius: 10px 0 0 10px;\r\n}\r\n.input-append.input-group.datetimepicker {\r\n    width: 100%;\r\n}","customjavascript":"function getAttendees() {\r\n  webapi.safeAjax({\r\n    type: 'GET',\r\n    url: \"/_api/contacts({{request.params['id']}})?$select=entityimage\",\r\n    contentType: 'application/json',\r\n    success: function (res, status) {\r\n      if (res &amp;&amp; res.entityimage) {\r\n        imgBaseString = res.entityimage;\r\n        $('.image-preview-area img').attr('src', 'data:image/png;base64,' + imgBaseString);\r\n      }\r\n    },\r\n  });\r\n}\r\n\r\nvar documentbodyContents;\r\nvar attendeeImageType;\r\nvar attendeeImageName = '';\r\n\r\n//File upload function called by the PCF\r\nwindow.uploadImagePCF = function (name, memetype, body) {\r\n  attendeeImageType = memetype;\r\n  attendeeImageName = name;\r\n  documentbodyContents = body.substring(body.indexOf(',') + 1);\r\n};\r\n\r\nfunction editChildProfile() {\r\n  let bDate = null;\r\n  if (document.getElementById('birthdate_datepicker_description').value) {\r\n    bDate = moment(Date.parse(document.getElementById('birthdate_datepicker_description').value)).format(\r\n      'YYYY-MM-DD'\r\n    );\r\n  }\r\n\r\n  //Create child data object\r\n  let firstName = '';\r\n  let lastName = '';\r\n  if (document.getElementById('firstname').value) firstName = document.getElementById('firstname').value;\r\n  if (document.getElementById('lastname').value) lastName = document.getElementById('lastname').value;\r\n  let dataObject = {\r\n    firstname: firstName,\r\n    lastname: lastName,\r\n    birthdate: bDate,\r\n    'parentcustomerid_contact@odata.bind': '/contacts({{user.contactid}})',\r\n  };\r\n\r\n  if (documentbodyContents) {\r\n    dataObject['entityimage'] = documentbodyContents;\r\n    dataObject['msdynce_entityimage_file_name'] = attendeeImageName;\r\n    dataObject['msdynce_entityimage_file_type'] = attendeeImageType.substring(\r\n      attendeeImageType.indexOf('/') + 1\r\n    );\r\n  }\r\n\r\n  //Call the API\r\n  webapi.safeAjax({\r\n    type: 'PATCH',\r\n    url: \"/_api/contacts({{request.params['id']}})\",\r\n    contentType: 'application/json',\r\n    data: JSON.stringify(dataObject),\r\n    success: function (res, status, xhr) {\r\n      window.top.location.reload();\r\n    },\r\n    error: function (res, status, xhr) {\r\n      console.log(res.responseText);\r\n    },\r\n  });\r\n}\r\n\r\nfunction deleteChildProfile() {\r\n  webapi.safeAjax({\r\n    type: 'DELETE',\r\n    url: \"/_api/contacts({{request.params['id']}})\",\r\n    contentType: 'application/json',\r\n    success: function (res, status, xhr) {\r\n      window.top.location.reload();\r\n    },\r\n    error: function (res, status, xhr) {\r\n      console.log(res.responseText);\r\n    },\r\n  });\r\n}\r\n","displayorder":15,"enablerating":false,"enabletracking":false,"excludefromsearch":false,"feedbackpolicy":756150000,"hiddenfromsitemap":false,"isroot":false,"pagetemplateid":"4cc21211-5fcf-f111-a05a-70a8a52c89ad","parentpageid":"58120917-5fcf-f111-a05a-70a8a52c89ad","partialurl":"edit-attendee","publishingstateid":"de110917-5fcf-f111-a05a-70a8a52c89ad","rootwebpageid":"50120917-5fcf-f111-a05a-70a8a52c89ad","sharedpageconfiguration":true,"summary":"&lt;p&gt;This is sample landing page for you to start building your website&lt;/p&gt;","title":"Edit Attendee Profile"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Edit Attendee Profile</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Edit Attendee Profile&lt;script&gt;
+  $(document).ready(function () {
+    if (typeof Page_Validators == 'undefined') return;
+    // Create new validator
+    var newValidator = document.createElement('span');
+    newValidator.style.display = 'none';
+    newValidator.id = 'birthdateValidator';
+    newValidator.controltovalidate = 'birthdate';
+    newValidator.errormessage = '';
+    newValidator.validationGroup = ''; // Set this if you have set ValidationGroup on the form
+    newValidator.initialvalue = '';
+    newValidator.evaluationfunction = function () {
+      var birthdateValue = moment(document.getElementById('birthdate').value);
+      if (moment(birthdateValue).isAfter(moment())) {
+        $('#dateError').css({
+          display: 'block',
+        });
+        return false; // return false mean apply validation
+      } else {
+        return true;
+      } // return true mean successful
+    };
+    // Add the new validator to the page validators array:
+    Page_Validators.push(newValidator);
+    // Wire-up the click event handler of the validation summary link
+    $("a[href='#birthdate_label']").on('click', function () {
+      scrollToAndFocus('birthdate_label', 'Birthdate');
+    });
+
+    $('.form-custom-actions').css({
+      display: 'block',
+      margin: '0px 0px 15px 50%',
+      width: '448px',
+    });
+
+    $('#cancelEditAttendeeButton').click(function () {
+      window.location.reload();
+      window.top.location.reload();
+    });
+
+    $('#deleteAttendeeButton').click(function () {
+      deleteChildProfile();
+      window.location.reload();
+      window.top.location.reload();
+    });
+  });
+&lt;/script&gt;
+{% include 'Portal Web API Wrapper' %}
+&lt;div class='row sectionBlockLayout' style='display: flex; flex-wrap: wrap; padding: 8px; margin: 0px; text-align: left; min-height: 100px;'&gt;
+  &lt;div class='container' style='display: flex; flex-wrap: wrap;'&gt;
+    &lt;div class='col-lg-12 columnBlockLayout' style='flex-grow: 1; min-width: 300px; display: flex; flex-direction: column; margin-bottom: 0px'&gt;
+      {% entityform name: 'Edit Attendee' -%}
+      &lt;button style='width: 210px; margin-left: 50%; display: flex; justify-content: center; align-items: center; gap: 5px;' class='btn button2' id='cancelEditAttendeeButton'&gt;{{ snippets.Cancel }}&lt;/button&gt;
+      &lt;button style='width: 210px; margin-left: 50%; display: flex; justify-content: center; align-items: center; gap: 5px; margin-top:12px' class='btn button1' id='deleteAttendeeButton'&gt;{{ snippets.Delete }}&lt;/button&gt;
+      {{- snippets['Attendee Required Field'] }}
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;a id='dateError' style='display:none' href='#birthdate_label'&gt;{{ snippets['Error/Future DOB'] }}&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+Edit Attendee Profile</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

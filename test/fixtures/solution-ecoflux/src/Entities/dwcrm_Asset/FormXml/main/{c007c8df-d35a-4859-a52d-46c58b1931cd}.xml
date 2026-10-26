@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{c007c8df-d35a-4859-a52d-46c58b1931cd}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{F9831C39-D83B-4224-BFED-E7539FF8AA6A}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{1124CBE7-E958-4FD1-B5A7-316A361949AB}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{BF3FC353-A87A-4ED1-BE33-CAD73F586DEF}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                        <control id="dwcrm_assetname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="dwcrm_AssetName" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5C5322F8-12F9-4B7E-AE9A-7F9282882FDA}">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ac6399cb-791b-45d5-92d5-8a8391ea8f7b}">
+                        <labels>
+                          <label description="Core Item" languagecode="1033" />
+                        </labels>
+                        <control id="dwcrm_coreitem" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="dwcrm_coreitem" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{77eee45f-3f9e-45dd-b264-177a4b59fa51}">
+                        <labels>
+                          <label description="Carbon Offset Value" languagecode="1033" />
+                        </labels>
+                        <control id="dwcrm_carbonoffsetvalue" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="dwcrm_carbonoffsetvalue" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{1ec97bc0-f620-471a-9be5-548461f6b6ee}">
+                        <labels>
+                          <label description="Initial Valuation" languagecode="1033" />
+                        </labels>
+                        <control id="dwcrm_initialvaluation" classid="{533b9e00-756b-4312-95a0-dc888637ac78}" datafieldname="dwcrm_initialvaluation" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{05122559-01b9-46f3-bba2-44767cb33444}">
+                        <labels>
+                          <label description="Owning Account" languagecode="1033" />
+                        </labels>
+                        <control id="dwcrm_owningaccount" classid="{270bd3db-d9af-4782-9025-509e298dec0a}" datafieldname="dwcrm_owningaccount" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

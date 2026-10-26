@@ -215,6 +215,49 @@ describe('evaluatePolicy', () => {
       message: 'Authentication/Registration/OpenRegistrationEnabled is "true"',
     });
   });
+
+  it("fails a statement on a value a download doesn't include, and says why", async () => {
+    const download = await loadSiteFolder('test/fixtures/diff/variables/head');
+    const policy = parsePolicy(
+      [
+        'webapi:',
+        '  - contact is not enabled # fail: may be enabled',
+        'settings:',
+        '  - setting "Webapi/error/innererror" is not "true" # fail: unknown',
+        '  - setting "Webapi/error/innererror" is set # pass: the setting is there',
+        '',
+      ].join('\n'),
+      'p.yaml',
+    );
+    const results = evaluatePolicy(policy, download).results;
+    expect(results.map((r) => [r.passed, r.evidence.map((e) => e.message)])).toEqual([
+      [
+        false,
+        [
+          "Webapi/contact/enabled comes from environment variable dwcrm_ContactApi, which a download doesn't include",
+        ],
+      ],
+      [
+        false,
+        [
+          "Webapi/error/innererror comes from environment variable dwcrm_InnerErrors, which a download doesn't include",
+        ],
+      ],
+      [true, []],
+    ]);
+  });
+
+  it('reads a variable-backed value from a solution', async () => {
+    const solution = await loadSiteFolder('test/fixtures/solution-registration');
+    const policy = parsePolicy(
+      'settings:\n  - setting "ASP/Pagination/CardsPerPage" is "18"\n',
+      'p.yaml',
+    );
+    const [result] = evaluatePolicy(policy, solution).results;
+    expect(result!.evidence.map((e) => e.message)).toEqual([
+      'ASP/Pagination/CardsPerPage is "20" from environment variable dwcrm_CardsPerPage',
+    ]);
+  });
 });
 
 describe('page statements', () => {

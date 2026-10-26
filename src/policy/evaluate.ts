@@ -1,6 +1,6 @@
 import { buildAccessGraph, type Grant, type Privilege } from '../graph/access.js';
 import { buildPageGraph, type PageGraph } from '../graph/pages.js';
-import { grantSentence, plain } from '../graph/describe.js';
+import { grantSentence, plain, settingValue, unknownValue } from '../graph/describe.js';
 import { buildWebApiSurface, type WebApiTable } from '../graph/webapi.js';
 import type { Site, SiteSetting, WebRole } from '../model/schema.js';
 import { closest } from '../util/closest.js';
@@ -180,19 +180,26 @@ class Context {
       case 'nobody':
         return this.matching(undefined, check).map((g) => grantEvidence(g, check.privileges));
       case 'fields-explicit':
-        return this.webApi
-          .filter((t) => t.enabled && t.wildcard)
-          .map((t) => ({
-            message: `Web API on ${t.table} exposes every column (fields = *)`,
-            ...settingRef(t.fieldsSetting),
-          }));
+        return this.webApi.filter(mayBeEnabled).flatMap((t) => {
+          if (t.unknown.fields) return [unknownEvidence(t.fieldsSetting)];
+          if (!t.wildcard) return [];
+          if (!t.enabled) return [unknownEvidence(t.enabledSetting)];
+          return [
+            {
+              message: `Web API on ${t.table} exposes every column (fields = *)`,
+              ...settingRef(t.fieldsSetting),
+            },
+          ];
+        });
       case 'only-enabled':
         return this.webApi
-          .filter((t) => t.enabled && !check.tables.includes(t.table))
+          .filter((t) => mayBeEnabled(t) && !check.tables.includes(t.table))
           .map(enabledEvidence);
       case 'not-enabled':
         return this.webApi
-          .filter((t) => t.enabled && (check.table.kind === 'any' || t.table === check.table.name))
+          .filter(
+            (t) => mayBeEnabled(t) && (check.table.kind === 'any' || t.table === check.table.name),
+          )
           .map(enabledEvidence);
       case 'call':
         return this.call(check.who, check.negated, check.table);
@@ -242,23 +249,26 @@ class Context {
   }
 
   private call(who: Who, negated: boolean, table: TableRef): Evidence[] {
-    const enabled = this.webApi.filter(
-      (t) => t.enabled && (table.kind === 'any' || t.table === table.name),
-    );
+    const tables = this.webApi.filter((t) => table.kind === 'any' || t.table === table.name);
+    const enabled = tables.filter((t) => t.enabled);
     const label = whoLabel(who);
     if (negated) {
       const ids = new Set(this.rolesOf(who, true).map((r) => r.id));
-      return enabled.flatMap((t) =>
+      return tables.filter(mayBeEnabled).flatMap((t) =>
         t.callers
           .filter((c) => ids.has(c.role.id))
           .map((c) => ({
-            message: `${c.role.name} can call the Web API on ${t.table} (${privilegeList(c.privileges)})`,
+            message: `${c.role.name} can call the Web API on ${t.table} (${privilegeList(c.privileges)})${t.enabled ? '' : ` if it's enabled: ${unknownValue(t.enabledSetting!)}`}`,
             ...settingRef(t.enabledSetting),
           })),
       );
     }
     const ids = new Set(this.rolesOf(who, false).map((r) => r.id));
     if (enabled.some((t) => t.callers.some((c) => ids.has(c.role.id)))) return [];
+    const unknown = tables.filter(
+      (t) => t.unknown.enabled && t.callers.some((c) => ids.has(c.role.id)),
+    );
+    if (unknown.length > 0) return unknown.map((t) => unknownEvidence(t.enabledSetting));
     if (table.kind === 'table' && enabled.length === 0) {
       return [{ message: `the Web API isn't enabled on ${table.name}` }];
     }
@@ -281,13 +291,15 @@ class Context {
     const invitation = effective('invitation');
     if (enabled.value === 'false' || open.value === 'false' || invitation.value === 'true')
       return [];
+    const unknown = [enabled, open, invitation].filter((found) => found.setting?.unknown);
+    if (unknown.length > 0) return unknown.map((found) => unknownEvidence(found.setting));
     const describe = (
       key: keyof typeof REGISTRATION,
       found: { setting: SiteSetting | undefined; value: string },
     ) =>
       found.setting
         ? {
-            message: `${REGISTRATION[key].name} is "${found.setting.value ?? ''}"`,
+            message: `${REGISTRATION[key].name} is ${settingValue(found.setting)}`,
             ...settingRef(found.setting),
           }
         : {
@@ -304,19 +316,22 @@ class Context {
     const { setting, value } = this.value(check.name);
     const present = setting !== undefined;
     const fail = (message: string): Evidence[] => [{ message, ...settingRef(setting) }];
+    if (setting?.unknown && (check.op === 'is' || check.op === 'is-not')) {
+      return fail(unknownValue(setting));
+    }
     switch (check.op) {
       case 'is-set':
         return present ? [] : fail(`${check.name} isn't set`);
       case 'is-not-set':
-        return present ? fail(`${check.name} is set to "${setting.value ?? ''}"`) : [];
+        return present ? fail(`${check.name} is set to ${settingValue(setting)}`) : [];
       case 'is':
         if (!present) return fail(`${check.name} isn't set`);
         return sameValue(value!, check.value!)
           ? []
-          : fail(`${check.name} is "${setting.value ?? ''}"`);
+          : fail(`${check.name} is ${settingValue(setting)}`);
       case 'is-not':
         return present && sameValue(value!, check.value!)
-          ? fail(`${check.name} is "${setting.value ?? ''}"`)
+          ? fail(`${check.name} is ${settingValue(setting)}`)
           : [];
     }
   }
@@ -347,9 +362,22 @@ function grantEvidence(grant: Grant, privileges: Privilege[]): Evidence {
 }
 
 function enabledEvidence(table: WebApiTable): Evidence {
+  if (!table.enabled) return unknownEvidence(table.enabledSetting);
   return {
     message: `the Web API is enabled on ${table.table}`,
     ...settingRef(table.enabledSetting),
+  };
+}
+
+/** Enabled, or enabled by an environment variable whose value a download doesn't include. */
+function mayBeEnabled(table: WebApiTable): boolean {
+  return table.enabled || table.unknown.enabled;
+}
+
+function unknownEvidence(setting: SiteSetting | undefined): Evidence {
+  return {
+    message: setting ? unknownValue(setting) : 'a setting is unknown',
+    ...settingRef(setting),
   };
 }
 

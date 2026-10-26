@@ -1,0 +1,6 @@
+# wider webapi-enabled: from a variable a download does not include
+envvar_schema: dwcrm_ContactApi
+id: 00000000-0000-0000-0009-000000000002
+name: Webapi/contact/enabled
+source: 1
+value: true

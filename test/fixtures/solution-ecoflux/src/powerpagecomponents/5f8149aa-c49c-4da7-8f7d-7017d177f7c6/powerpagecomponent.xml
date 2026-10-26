@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="5f8149aa-c49c-4da7-8f7d-7017d177f7c6">
+  <content>{
+  "description": "Allowed fields for dwcrm_chainofcustody Web API access",
+  "value": "_dwcrm_assetid_value,_dwcrm_frompartnerid_value,_dwcrm_topartnerid_value,dwcrm_assetid,dwcrm_carrierinfo,dwcrm_chainofcustodyid,dwcrm_expecteddelivery,dwcrm_frompartnerid,dwcrm_name,dwcrm_notes,dwcrm_progress,dwcrm_topartnerid,dwcrm_trackingnumber,dwcrm_transferdate,dwcrm_transferstatus",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/dwcrm_chainofcustody/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

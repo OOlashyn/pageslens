@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="e3bf1211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"value":"msdynce_registrationid,msdynce_name,msdynce_coursestartdate,msdynce_courseenddate,msdynce_courseid,msdynce_attendeename,msdynce_parent,msdynce_AttendeeName,msdynce_registration,msdynce_Parent"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/msdynce_registration/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

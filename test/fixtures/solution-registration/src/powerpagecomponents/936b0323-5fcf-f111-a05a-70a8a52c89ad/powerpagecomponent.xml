@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="936b0323-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"&lt;div class=\"wrapper-body\"&gt;\r\n  &lt;div class=\"container\" role=\"main\"&gt;\r\n    {% editable page 'adx_copy' %}\r\n  &lt;/div&gt;\r\n  &lt;div class=\"push\"&gt;&lt;/div&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Blank Page</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

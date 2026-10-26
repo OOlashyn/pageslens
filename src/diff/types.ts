@@ -1,4 +1,4 @@
-import type { SiteLayout } from '../adapters/site-folder.js';
+import type { SiteFormat, SiteLayout } from '../model/schema.js';
 import type { Privilege } from '../graph/access.js';
 import type { Part } from '../graph/describe.js';
 import type { Scope } from '../model/kinds.js';
@@ -87,6 +87,8 @@ export interface DiffSide {
   path: string;
   /** Absent when there's no site at `path` on this side. */
   layout?: SiteLayout;
+  /** Absent when there's no site at `path` on this side. */
+  format?: SiteFormat;
   site?: { id: string; name: string };
 }
 

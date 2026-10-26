@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0008-000000000002">
+  <content>{"entityname":"Contact - Anonymous Read","entitylogicalname":"contact","scope":756150000,"read":true,"adx_entitypermission_webrole":["00000000-0000-0000-0008-000000000001"]}</content>
+  <name>Contact - Anonymous Read</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000008</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

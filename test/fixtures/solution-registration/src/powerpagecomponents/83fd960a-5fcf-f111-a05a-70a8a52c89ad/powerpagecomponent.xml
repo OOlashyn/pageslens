@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="83fd960a-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Modal/Sign In","type":756150001,"value":"&lt;div class=\"modal fade\" id=\"signInPopup\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"signInModalLabel\" aria-hidden=\"true\"&gt;\r\n    &lt;div class=\"modal-dialog modal-dialog-centered\" role=\"document\"&gt;\r\n      &lt;div class=\"modal-content\" style=\"border-radius:16px;\"&gt;\r\n        &lt;div class=\"modal-header\"&gt;\r\n          &lt;h5 class=\"modal-title\" id=\"signInModalLabel\"&gt;Sign in / Sign up to register for an event&lt;/h5&gt;\r\n          &lt;button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"&gt;\r\n          &lt;span aria-hidden=\"true\"&gt;×&lt;/span&gt;\r\n          &lt;/button&gt;\r\n        &lt;/div&gt;\r\n        &lt;div class=\"modal-body\"&gt;\r\n          Please sign in or sign up to register yourself or your children to an event.\r\n        &lt;/div&gt;\r\n        &lt;div class=\"modal-footer\"&gt;\r\n          &lt;button type=\"button\" onclick=\"window.location.href='/SignIn{{returnUrl}}'\" class=\"button2\"&gt;Sign In&lt;/a&gt;&lt;/button&gt;\r\n          &lt;button type=\"button\" onclick=\"window.location.href='/Account/Login/Register{{returnUrl}}'\" class=\"button1\"&gt;Sign Up&lt;/a&gt;&lt;/button&gt;\r\n        &lt;/div&gt;\r\n      &lt;/div&gt;\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Modal/Sign In</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

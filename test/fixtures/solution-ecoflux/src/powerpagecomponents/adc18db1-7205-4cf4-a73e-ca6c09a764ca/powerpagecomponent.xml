@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="adc18db1-7205-4cf4-a73e-ca6c09a764ca">
+  <content>{
+  "pageid": "cc8a4179-98f2-4399-9dcf-63d63adc195a",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Search</name>
+  <powerpagecomponenttype>13</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

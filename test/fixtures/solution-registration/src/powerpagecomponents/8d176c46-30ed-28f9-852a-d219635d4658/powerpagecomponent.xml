@@ -1,0 +1,21 @@
+<powerpagecomponent powerpagecomponentid="8d176c46-30ed-28f9-852a-d219635d4658">
+  <content>{
+  "displayorder": 21,
+  "weblinksetid": "ea120917-5fcf-f111-a05a-70a8a52c89ad",
+  "pageid": "191385fa-738c-9749-5192-b8caa065909e",
+  "publishingstateid": "de110917-5fcf-f111-a05a-70a8a52c89ad",
+  "displaypagevalidation": false,
+  "displayimageonly": false,
+  "displaypagechildlinks": false,
+  "openinnewwindow": false,
+  "robotsfollowlink": true
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>vAnon</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="ee100b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"value":"msdynce_courseid,msdynce_coursename,msdynce_coursecategory,msdynce_coursedescription,msdynce_coursetype,msdynce_coursedays,msdynce_coursegradelevel,msdynce_coursestartdateandtime,msdynce_courseenddateandtime,msdynce_registerationdeadline,msdynce_registerationmaxcapacity,msdynce_registeredparticipants,msdynce_filledpercent,msdynce_frequency,msdynce_instructorname,msdynce_entityimage,msdynce_entityimage_file_name,msdynce_entityimage_file_type"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/msdynce_course/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

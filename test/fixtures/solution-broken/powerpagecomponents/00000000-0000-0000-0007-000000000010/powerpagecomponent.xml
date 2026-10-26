@@ -1,0 +1,11 @@
+<!-- type 35 (Server Logic): no download kind yet, kept untyped -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000010">
+  <content>{"description":"Server Logic"}</content>
+  <name>Hello</name>
+  <powerpagecomponenttype>35</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

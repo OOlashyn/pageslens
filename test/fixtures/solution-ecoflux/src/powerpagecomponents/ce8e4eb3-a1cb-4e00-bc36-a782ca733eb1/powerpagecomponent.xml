@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="ce8e4eb3-a1cb-4e00-bc36-a782ca733eb1">
+  <content>{
+  "pageid": "17192905-6ce2-4403-b4f8-c27b29ef54f6",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Profile</name>
+  <powerpagecomponenttype>13</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

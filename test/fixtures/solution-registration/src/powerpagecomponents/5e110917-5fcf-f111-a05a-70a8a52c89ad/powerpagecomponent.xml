@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="5e110917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Modal/CourseCancel","type":756150001,"value":"&lt;div id=\"cancelledModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelledModalLabel\" aria-hidden=\"true\" class=\"modal fade\"&gt;\r\n  &lt;div role=\"document\" class=\"modal-dialog modal-dialog-centered\"&gt;\r\n    &lt;div class=\"modal-content\" style=\"border-radius: 16px;\"&gt;\r\n      &lt;div class=\"modal-header\"&gt;\r\n        &lt;h5 id=\"editedModalLabel\" class=\"modal-title\" style=\"font-weight:bold\"&gt;Course Canceled!&lt;/h5&gt;&lt;button type=\"button\" data-dismiss=\"modal\" aria-label=\"Close\" class=\"close\"&gt;&lt;span aria-hidden=\"true\"&gt;×&lt;/span&gt;&lt;/button&gt;\r\n      &lt;/div&gt;\r\n      &lt;div class=\"modal-body\"&gt;\r\n        '{{currentcourse.results.entities[0].coursename}}' is no longer available for registration.\r\n      &lt;/div&gt;\r\n      &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Modal/CourseCancel</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

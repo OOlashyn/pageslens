@@ -1,0 +1,5 @@
+<environmentvariabledefinition schemaname="dwcrm_InnerErrors">
+  <defaultvalue>false</defaultvalue>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

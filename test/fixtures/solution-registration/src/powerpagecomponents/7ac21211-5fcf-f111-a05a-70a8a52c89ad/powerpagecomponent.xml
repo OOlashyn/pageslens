@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="7ac21211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"EntityList/View Not Available Message","type":756150001,"value":"&lt;div class=\"alert alert-block alert-warning\"&gt;&lt;p&gt;&lt;span class=\"fa fa-exclamation-triangle\" aria-hidden=\"true\"&gt;&lt;/span&gt;The view is not available.&lt;/p&gt;&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>EntityList/ViewNotAvailableMessage</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

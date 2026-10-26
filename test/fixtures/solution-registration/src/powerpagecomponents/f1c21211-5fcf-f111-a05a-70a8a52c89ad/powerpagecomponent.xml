@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="f1c21211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% fetchxml attendees %}\r\n&lt;fetch distinct=\"false\" mapping=\"logical\" output-format=\"xml-platform\" version=\"1.0\"&gt;\r\n  &lt;entity name=\"contact\" &gt;\r\n    &lt;attribute name=\"fullname\" /&gt;\r\n    &lt;attribute name=\"contactid\" /&gt;\r\n    &lt;attribute name=\"firstname\" /&gt;\r\n    &lt;attribute name=\"lastname\" /&gt;\r\n    &lt;attribute name=\"parentcustomerid\" /&gt; \r\n    &lt;filter&gt;\r\n      &lt;condition attribute=\"statecode\" operator=\"eq\" value=\"0\" /&gt;\r\n      &lt;condition attribute=\"parentcustomerid\" operator=\"eq\" value=\"{{user.contactid}}\" /&gt;\r\n    &lt;/filter&gt;\r\n  &lt;/entity&gt;\r\n&lt;/fetch&gt;\r\n{% endfetchxml %}\r\n\r\n{% if attendees.results and attendees.results.entities %}\r\n  {% assign attendeeResults = attendees.results.entities %}\r\n  {% assign totalCount = attendees.results.total_record_count %}\r\n\r\n\r\n  {% for attendee in attendeeResults %}\r\n    &lt;li&gt;\r\n      &lt;span class=\"child-my-registration-card\"&gt;\r\n          &lt;label class=\"checkbox-container-vertical\"&gt;\r\n              &lt;input type=\"checkbox\" id=\"child{{attendee.contactid}}\" class=\"checkAttendee\" name=\"child\" value=\"{{attendee.contactid}}\"&gt;\r\n              &lt;span class=\"checkmark-registration\"&gt;&lt;/span&gt;\r\n              &lt;label for=\"child{{attendee.contactid}}\"&gt;&lt;/label&gt;\r\n              &lt;img id=\"img{{attendee.contactid}}\" data-contact=\"{{attendee.contactid}}\" src=\"/child-placeholder.svg\" alt=\"{{attendee.fullname}} profile photo\"&gt;\r\n              &lt;p class=\"card-text-xsmall text-center\"&gt;{{attendee.fullname}}&lt;/p&gt;\r\n          &lt;/label&gt;\r\n      &lt;/span&gt;\r\n    &lt;/li&gt;\r\n  {% endfor %}\r\n\r\n{% endif %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Attendee Filter</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

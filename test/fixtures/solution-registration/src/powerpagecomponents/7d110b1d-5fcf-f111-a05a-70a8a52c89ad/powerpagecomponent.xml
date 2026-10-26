@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="7d110b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% assign poll_name = poll_name %}\r{% assign poll_placement_name = poll_placement_name %}\r\r{% if poll_name %}\r  {% assign poll_by_name = polls[poll_name] %}\r  &lt;div class=\"poll\" data-url=\"{{ poll_by_name.poll_url }}\" data-submit-url=\"{{ poll_by_name.submit_url }}\"&gt;&lt;/div&gt;\r{% elseif poll_placement_name %}\r  {% assign placement = polls.placements[poll_placement_name] %}\r  {% include \"Random Poll\" placement:placement %}\r{% endif %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Poll</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

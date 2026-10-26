@@ -1,7 +1,12 @@
 import { isAbsolute, relative, resolve } from 'node:path';
-import { WEBSITE_FILE } from '../adapters/common.js';
 import { folderSource, treeSource } from '../adapters/files.js';
-import { loadSite, resolveSiteRoot, SITE_FOLDER, SiteLoadError } from '../adapters/site-folder.js';
+import {
+  findSiteRoot,
+  loadSite,
+  noSiteMessage,
+  resolveSiteRoot,
+  SiteLoadError,
+} from '../adapters/site-folder.js';
 import type { Site } from '../model/schema.js';
 import { toPosixPath } from '../model/normalize.js';
 import { isDirectory } from '../util/fs.js';
@@ -106,8 +111,8 @@ async function classify(arg: string, cwd: string): Promise<Arg> {
 
 async function loadFolder(path: string, cwd: string): Promise<LoadedSide> {
   const { root } = await resolveSiteRoot(resolve(cwd, path));
-  const { site, layout } = await loadSite(folderSource(root));
-  return { side: { path: displayPath(root, cwd), layout, site: siteRef(site) }, site };
+  const site = await loadSite(folderSource(root));
+  return { side: { path: displayPath(root, cwd), ...sideKind(site), site: siteRef(site) }, site };
 }
 
 async function loadAtCommit(
@@ -126,26 +131,28 @@ async function loadAtCommit(
   };
   if (tree.length === 0) return { side };
 
-  const has = (file: string) => tree.some((f) => f.path === file);
-  const nested = join(repoPath, SITE_FOLDER);
-  const prefix = has(join(nested, WEBSITE_FILE))
-    ? nested
-    : has(join(repoPath, WEBSITE_FILE))
-      ? repoPath
-      : undefined;
-  if (prefix === undefined) {
-    throw new SiteLoadError(
-      `No ${SITE_FOLDER} folder or ${WEBSITE_FILE} found at ${repoPath || '.'} in ${arg.ref}`,
-    );
+  const paths = new Set(tree.map((f) => f.path));
+  const found = await findSiteRoot((file) => Promise.resolve(paths.has(join(repoPath, file))));
+  if (found === undefined) {
+    const yaml = tree.some((f) => f.path.startsWith(join(repoPath, 'solutions/')));
+    throw new SiteLoadError(noSiteMessage(`${repoPath || '.'} in ${arg.ref}`, yaml));
   }
+  const prefix = join(repoPath, found);
   const root = resolve(top, prefix);
   const label = `${prefix || '.'} at ${arg.ref}`;
-  const { site, layout } = await loadSite(treeSource(root, label, prefix, tree, blobs));
-  return { side: { ...side, path: displayPath(root, cwd), layout, site: siteRef(site) }, site };
+  const site = await loadSite(treeSource(root, label, prefix, tree, blobs));
+  return {
+    side: { ...side, path: displayPath(root, cwd), ...sideKind(site), site: siteRef(site) },
+    site,
+  };
 }
 
 function displayPath(path: string, cwd: string): string {
   return toPosixPath(relative(cwd, path)) || '.';
+}
+
+function sideKind(site: Site): Pick<DiffSide, 'layout' | 'format'> {
+  return { layout: site.layout, format: site.format };
 }
 
 function siteRef(site: Site): NonNullable<DiffSide['site']> {

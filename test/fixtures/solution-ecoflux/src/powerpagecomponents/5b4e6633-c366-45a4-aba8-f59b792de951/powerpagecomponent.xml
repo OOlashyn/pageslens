@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="5b4e6633-c366-45a4-aba8-f59b792de951">
+  <content>{
+  "description": "Allowed fields for dwcrm_asset Web API access",
+  "value": "dwcrm_assetid,dwcrm_assetname,dwcrm_assetstatus,dwcrm_description,dwcrm_location,dwcrm_materialtypecode,dwcrm_quantityunit,dwcrm_quantityvalue",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/dwcrm_asset/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

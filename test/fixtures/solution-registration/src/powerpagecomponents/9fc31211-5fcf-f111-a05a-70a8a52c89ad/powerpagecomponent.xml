@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="9fc31211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"disablepagevalidation":false,"displayimageonly":false,"displayorder":14,"displaypagechildlinks":false,"openinnewwindow":false,"pageid":"72100917-5fcf-f111-a05a-70a8a52c89ad","publishingstateid":"de110917-5fcf-f111-a05a-70a8a52c89ad","robotsfollowlink":true,"weblinksetid":"ea120917-5fcf-f111-a05a-70a8a52c89ad"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Add Attendee Profile</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

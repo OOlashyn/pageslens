@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="cb442268-8c89-4c1d-983a-187dd503f73c">
+  <content>{
+  "pageid": "6eecde49-afbd-42e4-8451-5ee3e172c84f",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Home</name>
+  <powerpagecomponenttype>13</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

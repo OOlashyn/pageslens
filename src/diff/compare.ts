@@ -1,5 +1,5 @@
 import { PRIVILEGES, type PermissionNode, type Privilege } from '../graph/access.js';
-import { grantSentence, plain, type Part } from '../graph/describe.js';
+import { grantSentence, plain, settingValue, unknownValue, type Part } from '../graph/describe.js';
 import {
   buildPageGraph,
   describeAudience,
@@ -655,6 +655,48 @@ function webApiChanges(sides: Sides): Ranked[] {
       changes.push(rank(change, mostExposed(about), otherOrder(kind, table)));
     };
 
+    // A download doesn't include an environment variable's value: a change to or from an unknown
+    // value is wider unless it's shown narrower (specs/0007)
+    if (before?.unknown.enabled || after?.unknown.enabled) {
+      const was = before?.enabledSetting;
+      const now = after?.enabledSetting;
+      if (before?.unknown.enabled && after?.unknown.enabled && sameVariable(was, now)) continue;
+      if (after?.unknown.enabled) {
+        if (!before?.enabled) {
+          add(
+            'wider',
+            'webapi-enabled',
+            ['the Web API may now be enabled on ', { code: table }, `: ${unknownValue(now!)}`],
+            after,
+            now,
+          );
+        }
+      } else if (after?.enabled) {
+        add(
+          'wider',
+          'webapi-enabled',
+          [
+            'the Web API is now enabled on ',
+            { code: table },
+            `: ${wasUnknown(was!)}`,
+            fieldsNote(after),
+            callersNote(after),
+          ],
+          after,
+          now,
+        );
+      } else {
+        add(
+          'narrower',
+          'webapi-disabled',
+          ['the Web API is no longer enabled on ', { code: table }, `: ${wasUnknown(was!)}`],
+          before!,
+          now ?? was,
+        );
+      }
+      continue;
+    }
+
     if (!before?.enabled && after?.enabled) {
       add(
         'wider',
@@ -674,7 +716,34 @@ function webApiChanges(sides: Sides): Ranked[] {
     } else if (before?.enabled && after?.enabled) {
       const setting = after.fieldsSetting ?? before.fieldsSetting;
       const on: Part[] = ['the Web API on ', { code: table }];
-      if (!before.wildcard && after.wildcard) {
+      if (before.unknown.fields || after.unknown.fields) {
+        const was = before.fieldsSetting;
+        const now = after.fieldsSetting;
+        if (before.unknown.fields && after.unknown.fields && sameVariable(was, now)) continue;
+        if (after.unknown.fields) {
+          add(
+            'wider',
+            'webapi-fields-wider',
+            [...on, ` may now expose other columns: ${unknownValue(now!)}`],
+            after,
+            now,
+          );
+        } else {
+          const exposed = after.wildcard ? 'every column (fields = *)' : after.fields.join(', ');
+          const narrower = after.fields.length === 0;
+          add(
+            narrower ? 'narrower' : 'wider',
+            narrower ? 'webapi-fields-narrower' : 'webapi-fields-wider',
+            [
+              ...on,
+              narrower ? ' now exposes no columns' : ` now exposes ${exposed}`,
+              `: ${wasUnknown(was!)}`,
+            ],
+            after,
+            now ?? was,
+          );
+        }
+      } else if (!before.wildcard && after.wildcard) {
         add(
           'wider',
           'webapi-fields-wider',
@@ -780,27 +849,32 @@ function settingChanges(sides: Sides): Ranked[] {
       changes.push(rank(change, undefined, otherOrder(kind, rule.name)));
     };
 
+    if (before?.unknown || after?.unknown) {
+      if (before?.unknown && after?.unknown && sameVariable(before, after)) continue;
+      if (after?.unknown) {
+        add('wider', `${unknownValue(after)}: was ${describeSetting(rule, before)}`);
+      } else {
+        // Narrower only when the known value is the closed end: off where on widens, no origins
+        const closed =
+          rule.type === 'flag'
+            ? flagOn(rule, after) !== (rule.widerWhen === 'on')
+            : origins(after).length === 0;
+        add(
+          closed ? 'narrower' : 'wider',
+          `${rule.name} is now ${describeSetting(rule, after)}: ${wasUnknown(before!)}`,
+        );
+      }
+      continue;
+    }
+
     if (rule.type === 'flag') {
-      const on = (setting: SiteSetting | undefined) => {
-        const value = (
-          setting ? (setting.value?.trim() ?? '') : String(rule.default)
-        ).toLowerCase();
-        return rule.default ? value !== 'false' : value === 'true';
-      };
-      if (on(before) === on(after)) continue;
-      const describe = (setting: SiteSetting | undefined) =>
-        setting ? `"${setting.value ?? ''}"` : `not set (defaults to ${rule.default})`;
-      const turned = on(after) ? 'on' : 'off';
+      if (flagOn(rule, before) === flagOn(rule, after)) continue;
+      const turned = flagOn(rule, after) ? 'on' : 'off';
       add(
         turned === rule.widerWhen ? 'wider' : 'narrower',
-        `${rule.name} turned ${turned}: was ${describe(before)}, now ${describe(after)}`,
+        `${rule.name} turned ${turned}: was ${describeSetting(rule, before)}, now ${describeSetting(rule, after)}`,
       );
     } else {
-      const origins = (setting: SiteSetting | undefined) =>
-        (setting?.value ?? '')
-          .split(',')
-          .map((o) => o.trim().toLowerCase())
-          .filter(Boolean);
       const b = origins(before);
       const a = origins(after);
       if (!b.includes('*') && a.includes('*')) {
@@ -817,6 +891,36 @@ function settingChanges(sides: Sides): Ranked[] {
     }
   }
   return changes;
+}
+
+function flagOn(
+  rule: Extract<SettingRule, { type: 'flag' }>,
+  setting: SiteSetting | undefined,
+): boolean {
+  const value = (setting ? (setting.value?.trim() ?? '') : String(rule.default)).toLowerCase();
+  return rule.default ? value !== 'false' : value === 'true';
+}
+
+function origins(setting: SiteSetting | undefined): string[] {
+  return (setting?.value ?? '')
+    .split(',')
+    .map((o) => o.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function describeSetting(rule: SettingRule, setting: SiteSetting | undefined): string {
+  if (setting) return settingValue(setting);
+  return rule.type === 'flag' ? `not set (defaults to ${rule.default})` : 'not set';
+}
+
+/** What base had: `it came from environment variable V, which a download doesn't include`. */
+function wasUnknown(setting: SiteSetting): string {
+  return `it came from environment variable ${setting.variable ?? ''}, which a download doesn't include`;
+}
+
+/** Both settings take their value from the same environment variable. */
+function sameVariable(a: SiteSetting | undefined, b: SiteSetting | undefined): boolean {
+  return (a?.variable ?? '').toLowerCase() === (b?.variable ?? '').toLowerCase();
 }
 
 // --- Pages ---------------------------------------------------------------------------------

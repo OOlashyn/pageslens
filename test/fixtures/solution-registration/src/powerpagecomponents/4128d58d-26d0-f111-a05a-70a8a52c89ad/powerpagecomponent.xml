@@ -1,0 +1,18 @@
+<powerpagecomponent powerpagecomponentid="4128d58d-26d0-f111-a05a-70a8a52c89ad">
+  <content>{
+   "right": 2,
+   "scope": 1,
+   "webpageid": "37cf1b89-1487-73d2-ed12-7894d0604470",
+   "adx_webpageaccesscontrolrule_webrole": [
+      "75c31211-5fcf-f111-a05a-70a8a52c89ad"
+   ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Admin Only</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>
