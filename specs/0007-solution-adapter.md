@@ -1,6 +1,6 @@
 # 0007: Solution adapter
 
-**Status:** built for 0.8.0 (see "Decisions" and "As built"). Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
+**Status:** shipped in 0.8.0 (see "Decisions" and "As built"), with the `webapi-inner-errors` rule and the unused ignore entries.
 
 pageslens reads two download layouts today: a code site's `.powerpages-site/` and a classic site folder. Teams on the solution track keep neither in git. They keep the unpacked solution that gets packed and deployed, where every site component is a folder named by its GUID ([alm-story.md](research/alm-story.md), "The gap between them"). This spec adds a third adapter that reads an unpacked solution into the same model, so `lint`, `test`, `docs` and `diff` work on it unchanged.
 
