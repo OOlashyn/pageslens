@@ -45,7 +45,12 @@ Results:
 - **Types in the classic site:** 1 to 13, 15, 16, 17, 18, 24, 26 and 27. Still unseen: advanced forms, column permissions, Server Logic, cloud flows.
 - **Code site or classic.** EcoFlux has `CodeSite/Enabled = true`. PagesLensEDM2 has no `CodeSite/Enabled` setting.
 - **`websiteid` in `content`** is on every EcoFlux component and on none of PagesLensEDM2's.
-- **`source` on site settings.** EcoFlux's `CodeSite/Enabled` has `"source": 0` in the solution and `source: 0` in its download. It's probably the setting's value source (its own value, or an environment variable). Neither site has a setting backed by an environment variable, so that's still to see (verification 2).
+- **`source` on site settings.** EcoFlux's `CodeSite/Enabled` has `"source": 0` in the solution and `source: 0` in its download: the setting's own value.
+- **A setting backed by an environment variable.** Oleksandr then created the variable `dwcrm_CardsPerPage` in PagesLensEDM2, pointed `ASP/Pagination/CardsPerPage` at it, and ran `pac solution sync` into the `clone` folder:
+  - The setting's `content` became `{"value": "18", "source": 1, "envvar_schema": "dwcrm_CardsPerPage"}`. `source: 1` means the value comes from the variable named by `envvar_schema`. The setting keeps its own old `value`.
+  - The variable is `environmentvariabledefinitions/dwcrm_CardsPerPage/environmentvariabledefinition.xml` (`schemaname`, `defaultvalue` 18, `type` 100000001, `secretstore` 0), with its current value, 20, in `environmentvariablevalues.json` next to it.
+  - `Solution.xml` doesn't list the variable, as it doesn't list site components: the folder being there is what puts it in the solution.
+  - Nothing else changed: the sync rewrote only that setting and added the variable's folder. Some components' `content` is pretty-printed JSON (21 of 475) and the rest compact, before and after, so the adapter parses it and never compares it as text.
 - **What a public fixture must leave out:** `primarydomainname` in `Assets/powerpagesites.xml` (the site's host name) and the publisher's e-mail address in `Other/Solution.xml`.
 
 ## Design rules
@@ -95,9 +100,20 @@ A page access rule read from a solution has its publishing states. The model kee
 
 ### Environment variables
 
-A site setting backed by an environment variable has no value of its own in the solution. pageslens reads it as having the variable's value in the solution: the current value if the solution has one, or else the definition's default. It's shown as coming from that variable: `docs` names it, a `test` failure says "from environment variable X", and `diff` reports a change to the variable's value as a change to the setting (decision 5). With no value at all, the setting is treated as not set, and `docs` says so.
+A site setting with `source: 1` takes its value from the variable named by `envvar_schema`, not from its own `value`, which is left over from before (decision 5). pageslens reads the variable from `environmentvariabledefinitions/<schema>/`:
 
-How the setting points at its variable, and where definitions and values are in the XML format, is verification 2. Until a sample has one, this part is built from that sample, not guessed. Per-stage values (a deployment settings file) are out of scope here; `align` or a later `--settings` option can take them.
+- its current value from `environmentvariablevalues.json`, if there is one;
+- or else the definition's `defaultvalue`.
+
+That value becomes the setting's value in the model, and the setting records the variable's schema name. `docs` names the variable next to the value, a `test` failure says "from environment variable dwcrm_CardsPerPage", and `diff` reports a change to the variable's value, or a setting switched to or from a variable, as a change to the setting.
+
+When there's no value to read, the setting is treated as not set, and `docs` says why:
+
+- the variable's folder isn't in the solution (`align` will report that as an error: the import needs it);
+- the definition has neither a current value nor a default;
+- it's a secret (`secretstore` 1, or the Secret type), whose value is in Azure Key Vault, not in the solution.
+
+Per-stage values (a deployment settings file) are out of scope here; `align` or a later `--settings` option can take them.
 
 ### Commands
 
@@ -115,9 +131,9 @@ How the setting points at its variable, and where definitions and values are in 
 Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each leaves out `primarydomainname` and the publisher's e-mail address, and nothing else.
 
 - `test/fixtures/solution-ecoflux/`: the EcoFlux `clone` project (`EcoFluxPortal.cdsproj`, `src/`), from the same environment as `ecoflux/`. Tests check that it gives the same model, lint findings, docs and policy results as `ecoflux/`, and that a `pac solution init` project is found through `src/`.
-- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `unpack` folder, a classic site with page rules, forms and lists.
+- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. The download predates the variable, so the comparison with it leaves that one setting out, until the site is downloaded again (verification 2).
 - `test/fixtures/pageslensedm2/`: the `pac pages download` of the same site, without `.portalconfig/`, so the classic site gets the same check against its solution. `registration/` is a different site and can't be used for that.
-- `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON. A setting backed by an environment variable goes in once verification 2 shows its shape.
+- `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON, and variable-backed settings whose variable is missing, has only a default, has no value, or is a secret.
 - `test/fixtures/diff/solution/{base,head}`: a solution-to-solution case, and one solution-to-download case.
 
 ## Decisions (Oleksandr, 2026-10-25)
@@ -145,11 +161,10 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 ## Verification owed (needs a sample or an environment)
 
 1. **The YAML source control format** (later, decision 1): what a Power Pages component looks like in it, from a `pac` that writes it and from Git integration.
-2. **A site setting backed by an environment variable**: how the component points at its variable (`source` and a lookup?), and where the definition and its value are in the XML format. Needed before the environment variable part is built.
+2. **A variable-backed setting at runtime and in a download.** That the site uses the variable's current value (20), not the default (18) or the setting's own leftover `value` (18): set `ASP/Pagination/CardsPerPage` somewhere visible, or read it with Liquid (`{{ settings['ASP/Pagination/CardsPerPage'] }}`). And what `pac pages download` writes for the setting now (`source`, `envvar_schema`, which value), so a download and a solution of the same site give the same model.
 3. Advanced forms, column permissions, Server Logic and cloud flows in a solution: that `content` keeps the download's keys for them too. Nothing typed reads them yet, so this doesn't block 0.8.0.
-4. Carried over from spike 0: whether `pac solution sync` writes stable output between runs, so `diff` and pull request diffs stay quiet.
 
-Answered by the samples: whether `--packagetype Both` (what `clone` exports) writes components twice (no), and `CodeSite/Enabled` on a classic site (absent).
+Answered by the samples: whether `--packagetype Both` (what `clone` exports) writes components twice (no); `CodeSite/Enabled` on a classic site (absent); how a setting points at its variable, and where the definition and value are (above); and whether `pac solution sync` writes stable output (yes: one change rewrote only what changed).
 
 ## Sources
 
