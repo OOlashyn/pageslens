@@ -12,7 +12,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Solution adapter** (spec [0007](0007-solution-adapter.md), decisions recorded; build next). Read an unpacked solution in the XML format (`powerpagecomponents/<guid>`, from `pac solution unpack` or `clone`) with one site into the same model, so `lint`, `test`, `docs` and `diff` work on it.
+1. **Solution adapter** (spec [0007](0007-solution-adapter.md), every question answered; build next). Read an unpacked solution in the XML format (`powerpagecomponents/<guid>`, from `pac solution unpack` or `clone`) with one site into the same model, so `lint`, `test`, `docs` and `diff` work on it.
 2. **Release `0.8.0`** with the solution adapter, the `webapi-inner-errors` rule and the unused ignore entries. Notes so far: [releases/0.8.0.md](releases/0.8.0.md).
 3. **`align`** (M3, its own spec): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed ([alm-story.md](research/alm-story.md)).
 4. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.

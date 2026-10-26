@@ -1,6 +1,6 @@
 # 0007: Solution adapter
 
-**Status:** draft 3, decisions 1 to 8 recorded (see "Decisions"); one new open question (9) about downloads. Ready to build, apart from question 9. Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
+**Status:** draft 3, every question answered (see "Decisions"); ready to build. Goes out in 0.8.0 with the `webapi-inner-errors` rule and the unused ignore entries.
 
 pageslens reads two download layouts today: a code site's `.powerpages-site/` and a classic site folder. Teams on the solution track keep neither in git. They keep the unpacked solution that gets packed and deployed, where every site component is a folder named by its GUID ([alm-story.md](research/alm-story.md), "The gap between them"). This spec adds a third adapter that reads an unpacked solution into the same model, so `lint`, `test`, `docs` and `diff` work on it unchanged.
 
@@ -121,7 +121,7 @@ Per-stage values (a deployment settings file) are out of scope here; `align` or 
 
 A download has the setting's `source: 1` and `envvar_schema`, but only its leftover `value`. Every release so far reads that leftover value, which the site doesn't use. For `ASP/Pagination/CardsPerPage` that's 18 where the site shows 20, and for `Webapi/<table>/enabled` or `Authentication/Registration/Enabled` it can be the opposite of what the site does.
 
-Proposed fix, in both download adapters (question 9): a setting with `source: 1` has an **unknown** value, named as coming from the variable.
+The fix, in both download adapters (decision 9): a setting with `source: 1` has an **unknown** value, named as coming from the variable.
 
 - `lint`: a rule that reads the value skips the setting. No finding either way, since pageslens can't tell.
 - `test`: a statement that depends on the value fails and says why ("ASP/Pagination/CardsPerPage comes from environment variable dwcrm_CardsPerPage, which a download doesn't include"), as an unknown page does in 0006.
@@ -146,7 +146,7 @@ A solution has the value, so none of this applies to it.
 Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each leaves out `primarydomainname` and the publisher's e-mail address, and nothing else.
 
 - `test/fixtures/solution-ecoflux/`: the EcoFlux `clone` project (`EcoFluxPortal.cdsproj`, `src/`), from the same environment as `ecoflux/`. Tests check that it gives the same model, lint findings, docs and policy results as `ecoflux/`, and that a `pac solution init` project is found through `src/`.
-- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. Its download, `pageslensedm2/`, is the one taken after the variable was added, so the two differ only in that setting's value (question 9).
+- `test/fixtures/solution-pageslensedm2/`: the PagesLensEDM2 `clone` project after the sync, a classic site with page rules, forms, lists and the `dwcrm_CardsPerPage` variable. Its download, `pageslensedm2/`, is the one taken after the variable was added, so the two differ only in that setting's value (decision 9).
 - `test/fixtures/pageslensedm2/`: the `pac pages download` of the same site, without `.portalconfig/`, so the classic site gets the same check against its solution. `registration/` is a different site and can't be used for that.
 - `test/fixtures/solution-broken/`: hand-written, small: two sites, a component of another site, an inactive component, an unknown component type, a component whose folder name and id differ, invalid `content` JSON, and variable-backed settings whose variable is missing, has only a default, has no value, or is a secret.
 - `test/fixtures/diff/solution/{base,head}`: a solution-to-solution case, and one solution-to-download case.
@@ -161,10 +161,7 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 6. `diff` allows a solution on one side and a download on the other, with the note, as recommended.
 7. `fast-xml-parser` is added as a dependency, as recommended.
 8. Fixtures from the samples above. No standard `unpack` of EcoFlux is needed: PagesLensEDM2 shows that `clone` and `unpack` give the same components.
-
-## Open question for Oleksandr
-
-9. **Variable-backed settings in a download.** Read a download's setting with `source: 1` as having an unknown value, as above, instead of its leftover `value`? Recommended: yes, in 0.8.0, listed under "Fixed" in the release notes. The leftover value is wrong as soon as the variable's value changes, and pageslens would pass a policy or miss a wider change on a value the site doesn't use. The cost: a site that backs `Webapi/<table>/enabled` with a variable loses that table's Web API checks in a download, and `test` fails on it until the policy is run against the solution.
+9. **Variable-backed settings in a download** have an unknown value, as recommended (2026-10-25, after the samples). It's a fix in 0.8.0, listed under "Fixed" in the release notes.
 
 ## Open questions for Oleksandr (answered, see Decisions)
 
@@ -176,6 +173,7 @@ Copies of real sites are read-only, like `ecoflux/` and `registration/`. Each le
 6. **Mixed `diff`.** Allow a solution on one side and a download on the other? Recommended: yes, with the note. GUIDs match, so it works, and it's a quick look at drift before `align` exists.
 7. **XML parser.** Add `fast-xml-parser` as a fourth dependency? Recommended: yes. A hand-written parser for escaped JSON inside XML is the kind of code that breaks on the one site with a `]]>` in a snippet.
 8. **Fixtures.** Can you provide the EcoFlux and Registration solutions, unpacked? Recommended: yes, both. Without real copies the adapter is tested only against what we expect the format to be.
+9. **Variable-backed settings in a download.** Read a download's setting with `source: 1` as having an unknown value, as above, instead of its leftover `value`? Recommended: yes, in 0.8.0, listed under "Fixed" in the release notes. The leftover value is wrong as soon as the variable's value changes, and pageslens would pass a policy or miss a wider change on a value the site doesn't use. The cost: a site that backs `Webapi/<table>/enabled` with a variable loses that table's Web API checks in a download, and `test` fails on it until the policy is run against the solution.
 
 ## Verification owed (needs a sample or an environment)
 
