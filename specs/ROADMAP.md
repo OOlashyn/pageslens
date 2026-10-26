@@ -12,7 +12,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Solution adapter** (spec [0007](0007-solution-adapter.md), draft 1: open questions for Oleksandr). Read an unpacked solution (`powerpagecomponents/<guid>`) into the same model, so `lint`, `test`, `docs` and `diff` work on it. Unpacked only: most teams pack from the repository, and a `.zip` is one `pac solution unpack` away. Needs sample solutions first (questions 1 and 8).
+1. **Solution adapter** (spec [0007](0007-solution-adapter.md), decisions recorded; build next). Read an unpacked solution in the XML format (`powerpagecomponents/<guid>`, from `pac solution unpack` or `clone`) with one site into the same model, so `lint`, `test`, `docs` and `diff` work on it. Before the environment variable part: a sample with a site setting backed by an environment variable (0007, verification 2).
 2. **Release `0.8.0`** with the solution adapter, the `webapi-inner-errors` rule and the unused ignore entries. Notes so far: [releases/0.8.0.md](releases/0.8.0.md).
 3. **`align`** (M3, its own spec): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed ([alm-story.md](research/alm-story.md)).
 4. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
@@ -40,4 +40,6 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 - Server Logic and cloud flows in docs.
 - Azure DevOps: a template or Marketplace task that does what the GitHub Action does (pull request comment, SARIF with GitHub Advanced Security for Azure DevOps). Not a priority: a pipeline can already run `npx pageslens` in a script step.
 - Solution `.zip` files, read without unpacking.
+- The solution YAML source control format (Dataverse Git integration; `pac solution clone` from PAC CLI 2.4.1, as Learn says). Getting it out of `pac` didn't work on 2026-10-25: to investigate (0007, verification 1).
+- Solutions with more than one site (`--site`).
 - Web files in effective access: who can download them, in `docs`, `test` and `diff` (left out by 0005, decision 9; `diff` already shows a rule's scope change). On hold: not a common enough case yet.
