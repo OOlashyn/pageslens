@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="45c01211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"value":"true"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>WebAPI/enableReadOperationPreview</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

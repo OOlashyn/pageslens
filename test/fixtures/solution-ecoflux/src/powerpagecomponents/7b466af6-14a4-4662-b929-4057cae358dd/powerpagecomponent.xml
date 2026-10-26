@@ -1,0 +1,21 @@
+<powerpagecomponent powerpagecomponentid="7b466af6-14a4-4662-b929-4057cae358dd">
+  <content>{
+  "displayorder": 10,
+  "enabletracking": false,
+  "excludefromsearch": true,
+  "hiddenfromsitemap": false,
+  "parentpageid": "6eecde49-afbd-42e4-8451-5ee3e172c84f",
+  "partialurl": "portalbasictheme.css",
+  "publishingstateid": "d26d77c2-6d53-48a2-959a-1efed271c079",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <filecontent mimetype="application/octet-stream">portalbasictheme.css</filecontent>
+  <iscustomizable>1</iscustomizable>
+  <name>portalbasictheme.css</name>
+  <powerpagecomponenttype>3</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

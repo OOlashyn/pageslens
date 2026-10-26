@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="bac21211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% extends \"Layout 3 Column\" %}\r\r{% block left_aside %}\r  &lt;div class=\"hidden-xs hidden-print\"&gt;\r    {% include \"Side Navigation\" depth_offset: 1 %}\r  &lt;/div&gt;\r{% endblock %}\r\r{% block right_aside %}\r  &lt;div class=\"hidden-print\"&gt;\r    {% include \"Weblink List Group\" weblink_set_name: \"Secondary Navigation\" showdescriptions: true %}\r    {% include \"poll\" poll_placement_name: \"Sidebar\" %}\r    {% include \"poll\" poll_placement_name: \"Sidebar2\" %}\r    {% include \"ad\" ad_placement_name: \"Sidebar Bottom\" %}\r  &lt;/div&gt;\r{% endblock %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Page with Side Navigation and Sidebar (3 columns)</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

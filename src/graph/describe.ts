@@ -1,3 +1,4 @@
+import type { SiteSetting } from '../model/schema.js';
 import type { Grant, Privilege } from './access.js';
 
 // The sentences `test` and `diff` use for grants, so both say the same thing:
@@ -37,4 +38,25 @@ export function grantSentence(
 /** `, under "<top parent>"` for a parent-scope grant, so the chain it hangs from is named. */
 export function underParent(ancestors: Grant['ancestors']): string {
   return ancestors.length > 0 ? `, under "${ancestors.at(-1)!.name}"` : '';
+}
+
+/**
+ * Why a setting's value can't be read: `ASP/Pagination/CardsPerPage comes from environment
+ * variable dwcrm_CardsPerPage, which a download doesn't include`.
+ */
+export function unknownValue(setting: SiteSetting): string {
+  return `${setting.name} comes from environment variable ${setting.variable ?? ''}, which a download doesn't include`;
+}
+
+/**
+ * A setting's value as written in a message: `"20"`, or `"20" from environment variable
+ * dwcrm_CardsPerPage`, or why a solution has none.
+ */
+export function settingValue(setting: SiteSetting): string {
+  if (setting.variable === undefined) return `"${setting.value ?? ''}"`;
+  if (setting.unknown) return `from environment variable ${setting.variable} (not in the download)`;
+  if (setting.value === undefined) {
+    return `not set: environment variable ${setting.variable} has no value to read (${setting.noValue ?? ''})`;
+  }
+  return `"${setting.value}" from environment variable ${setting.variable}`;
 }

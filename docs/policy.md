@@ -114,6 +114,8 @@ The grants are the ones `pageslens docs` shows in the access matrix: permissions
 
 Setting names don't depend on case. Values are compared as written, except `true` and `false`, which don't depend on case.
 
+A setting can take its value from an environment variable. In an unpacked solution, pageslens reads the variable's value (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: a statement that depends on it fails and says so, and the same goes for a Web API statement on a table whose `enabled` or `fields` setting comes from a variable. `is set` and `is not set` still pass or fail as usual. Run the policy against the solution to check those values.
+
 ## Page statements
 
 Classic sites only (`pac pages download`): page access rules decide who can open a page there. On a code site the browser routes pages, so a `pages` statement is an error.

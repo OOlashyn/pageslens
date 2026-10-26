@@ -1,0 +1,25 @@
+<powerpagecomponent powerpagecomponentid="dc52286b-05a5-46b6-86ce-f8ed0ee0982a">
+  <content>{
+  "append": false,
+  "appendto": false,
+  "create": false,
+  "delete": false,
+  "entitylogicalname": "dwcrm_chainofcustody",
+  "entityname": "Chain of Custody - Authenticated Users Read",
+  "read": true,
+  "scope": 756150000,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6",
+  "write": false,
+  "adx_entitypermission_webrole": [
+    "8d3ee430-c7bb-4f7f-a78d-0dfa33902898"
+  ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Chain of Custody - Authenticated Users Read</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

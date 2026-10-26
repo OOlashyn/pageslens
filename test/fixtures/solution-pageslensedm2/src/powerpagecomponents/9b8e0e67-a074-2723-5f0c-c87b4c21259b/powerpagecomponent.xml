@@ -1,0 +1,38 @@
+<powerpagecomponent powerpagecomponentid="9b8e0e67-a074-2723-5f0c-c87b4c21259b">
+  <content>{
+  "displayorder": 2,
+  "customcss": "",
+  "customjavascript": "",
+  "pagetemplateid": "4cc21211-5fcf-f111-a05a-70a8a52c89ad",
+  "parentpageid": "520ab6fa-7b87-2201-c1cb-fa36ca8afe70",
+  "partialurl": "v2",
+  "isroot": false,
+  "rootwebpageid": "37cf1b89-1487-73d2-ed12-7894d0604470",
+  "title": "v2",
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "copy": "&lt;div class=\"row sectionBlockLayout text-start\" style=\"min-height: auto; padding: 8px;\"&gt;\n    &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\n      &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"padding: 16px; margin: 60px 0px; min-height: 200px;\"&gt;&lt;/div&gt;\n    &lt;/div&gt;\n  &lt;/div&gt;\n  ",
+  "publishingstateid": "de110917-5fcf-f111-a05a-70a8a52c89ad",
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "sharedpageconfiguration": false
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>v2</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>v2&lt;div class="row sectionBlockLayout text-start" style="min-height: auto; padding: 8px;"&gt;
+    &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+      &lt;div class="col-lg-12 columnBlockLayout" style="padding: 16px; margin: 60px 0px; min-height: 200px;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  v2</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

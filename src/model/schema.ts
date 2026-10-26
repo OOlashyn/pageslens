@@ -88,11 +88,41 @@ export const tablePermissionSchema = z
     parentRelationship: p.parentrelationship,
   }));
 
-export const siteSettingSchema = z.object({
-  id: guid,
-  name: z.string().min(1),
-  value: optionalText,
-});
+const optionalInteger = z.union([z.literal('').transform(() => undefined), integer]).optional();
+
+/** `source` on a site setting: its value comes from the environment variable `envvar_schema`. */
+const FROM_VARIABLE = 1;
+
+// A setting backed by an environment variable keeps a leftover `value` that Power Pages doesn't
+// use (specs/0007). A download has nothing of the variable, so its value is unknown. The solution
+// adapter reads the variable and hands over `envvar_value`, or `envvar_none` saying why there's
+// no value to read.
+export const siteSettingSchema = z
+  .object({
+    id: guid,
+    name: z.string().min(1),
+    value: optionalText,
+    source: optionalInteger,
+    envvar_schema: optionalText,
+    envvar_value: optionalText,
+    envvar_none: optionalText,
+  })
+  .transform((s) => {
+    if (s.source !== FROM_VARIABLE)
+      return { id: s.id, name: s.name, value: s.value, unknown: false };
+    const fromSolution = s.envvar_value !== undefined || s.envvar_none !== undefined;
+    return {
+      id: s.id,
+      name: s.name,
+      value: s.envvar_value,
+      /** The environment variable's schema name. */
+      variable: s.envvar_schema ?? '',
+      /** True when the value can't be read: a download doesn't include the variable. */
+      unknown: !fromSolution,
+      /** Why a solution has no value for the variable. */
+      noValue: s.envvar_none,
+    };
+  });
 
 export const webPageRuleSchema = z
   .object({
@@ -181,15 +211,29 @@ export interface TypedRecords {
 }
 
 /**
- * `code`: the `.powerpages-site` folder `pac pages download-code-site` writes, with unprefixed keys.
- * `classic`: the site folder `pac pages download` writes, with `adx_` keys and single-file lists.
+ * Whether page access rules decide who opens a page. `code`: a code site, whose pages the browser
+ * routes. `classic`: a site whose pages Power Pages serves.
  */
 export type SiteLayout = 'code' | 'classic';
 
+/**
+ * What was read. `code-download`: the `.powerpages-site` folder `pac pages download-code-site`
+ * writes, with unprefixed keys. `classic-download`: the site folder `pac pages download` writes,
+ * with `adx_` keys and single-file lists. `solution`: an unpacked solution (XML format), one
+ * `powerpagecomponents/<guid>/` folder per record.
+ */
+export type SiteFormat = 'code-download' | 'classic-download' | 'solution';
+
 export interface Site {
-  /** Absolute path of the site folder: the `.powerpages-site` folder, or a classic site's folder. */
+  /**
+   * Absolute path of the site folder: the `.powerpages-site` folder, a classic site's folder, or
+   * the unpacked solution's folder (the one with `Other/Solution.xml`).
+   */
   root: string;
   layout: SiteLayout;
+  format: SiteFormat;
+  /** The solution's unique name and version, when the site was read from one. */
+  solution?: { name: string; version: string } | undefined;
   website: Website;
   /** Every record, sorted by source file, inactive ones included. */
   records: SiteRecord[];

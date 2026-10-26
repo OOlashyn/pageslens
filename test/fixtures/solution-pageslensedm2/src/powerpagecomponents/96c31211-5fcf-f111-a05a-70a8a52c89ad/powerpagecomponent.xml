@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="96c31211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% assign title = title | default: page.title %}\r\n\r\n&lt;ul class=\"breadcrumb\"&gt;\r\n {% for crumb in page.breadcrumbs -%}\r\n &lt;li class=\"breadcrumb-item\"&gt;\r\n  &lt;a href=\"{{ crumb.url | h }}\" title=\"{{ crumb.title | h }}\"&gt;{{ crumb.title | truncate: 24 | h }}&lt;/a&gt;\r\n &lt;/li&gt;\r\n {% endfor -%}\r\n &lt;li class=\"breadcrumb-item active\"&gt;{% block activebreadcrumb %}{{ title | h }}{% endblock %}&lt;/li&gt;\r\n&lt;/ul&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Breadcrumbs</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

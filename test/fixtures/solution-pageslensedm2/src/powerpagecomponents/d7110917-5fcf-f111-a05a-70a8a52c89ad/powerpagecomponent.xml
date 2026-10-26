@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="d7110917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"value":"Start time"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>ASP/Course/Form/Validation/Field/StartTime</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

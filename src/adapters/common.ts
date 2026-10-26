@@ -12,6 +12,7 @@ import {
   websiteAccessSchema,
   websiteSchema,
   type Site,
+  type SiteFormat,
   type SiteLayout,
   type SiteRecord,
   type SourceRef,
@@ -183,9 +184,19 @@ export async function readRecordFiles(
   return records;
 }
 
-/** Types the records into a site, or throws every problem found while reading and typing. */
+/** What an adapter read, beyond its records. */
+export interface SiteKind {
+  layout: SiteLayout;
+  format: SiteFormat;
+  solution?: Site['solution'] | undefined;
+}
+
+/**
+ * Types the records into a site, or throws every problem found while reading and typing. `files`
+ * not in `claimed` are listed as unrecognized.
+ */
 export function buildSite(
-  layout: SiteLayout,
+  kind: SiteKind,
   source: FileSource,
   files: string[],
   records: SiteRecord[],
@@ -217,7 +228,7 @@ export function buildSite(
   const website = typed(websiteSchema, websiteRecord)[0];
   const site = {
     root: source.root,
-    layout,
+    ...kind,
     records,
     ...typedRecords(true),
     inactive: typedRecords(false),

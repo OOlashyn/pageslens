@@ -1,0 +1,13 @@
+adx_append: true
+adx_appendto: true
+adx_contactrelationship: contact_customer_contacts
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: contact
+adx_entityname: ASP C1 Contact
+adx_entitypermission_webrole:
+- b56b0323-5fcf-f111-a05a-70a8a52c89ad
+adx_entitypermissionid: 4f110917-5fcf-f111-a05a-70a8a52c89ad
+adx_read: true
+adx_scope: 756150000
+adx_write: false

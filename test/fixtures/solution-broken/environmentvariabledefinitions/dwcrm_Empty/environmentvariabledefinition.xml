@@ -1,0 +1,4 @@
+<environmentvariabledefinition schemaname="dwcrm_Empty">
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

@@ -1,0 +1,29 @@
+<powerpagecomponent powerpagecomponentid="dc100b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"copy":"&lt;div class=\"row sectionBlockLayout\" data-component-theme=\"portalThemeColor2\" style=\"height: 15px; min-height: 15px;\"&gt;\r\n&lt;/div&gt;\r\n&lt;div class=\"row sectionBlockLayout\" style=\"display: flex; flex-wrap: wrap; text-align: left; min-height: 541px; padding: 8px; margin: 0px; background: url('/error-illustration.png');\"&gt;\r\n  &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\r\n    &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 300px; margin-left: 0px; margin-right: 0px;\"&gt;&lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;\r\n&lt;div class=\"row sectionBlockLayout\" style=\"display: flex; flex-wrap: wrap; text-align: center; min-height: 100px; padding: 8px; margin: 0px;\"&gt;\r\n  &lt;div class=\"container\" style=\"flex-wrap: wrap;\"&gt;\r\n    &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 300px; margin-left: 0px; margin-right: 0px;\"&gt;\r\n      &lt;h2&gt;You don&amp;#8217;t have access to this&lt;/h2&gt;\r\n      &lt;h5&gt;Check your credentials or ask your admin to request access&lt;/h5&gt;\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;","enablerating":false,"enabletracking":false,"excludefromsearch":true,"feedbackpolicy":756150000,"hiddenfromsitemap":true,"isroot":false,"pagetemplateid":"4cc21211-5fcf-f111-a05a-70a8a52c89ad","parentpageid":"58120917-5fcf-f111-a05a-70a8a52c89ad","partialurl":"access-denied","publishingstateid":"de110917-5fcf-f111-a05a-70a8a52c89ad","rootwebpageid":"ac100917-5fcf-f111-a05a-70a8a52c89ad","sharedpageconfiguration":false}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Access Denied</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>&lt;div class="row sectionBlockLayout" data-component-theme="portalThemeColor2" style="height: 15px; min-height: 15px;"&gt;
+&lt;/div&gt;
+&lt;div class="row sectionBlockLayout" style="display: flex; flex-wrap: wrap; text-align: left; min-height: 541px; padding: 8px; margin: 0px; background: url('/error-illustration.png');"&gt;
+  &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+    &lt;div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 300px; margin-left: 0px; margin-right: 0px;"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="row sectionBlockLayout" style="display: flex; flex-wrap: wrap; text-align: center; min-height: 100px; padding: 8px; margin: 0px;"&gt;
+  &lt;div class="container" style="flex-wrap: wrap;"&gt;
+    &lt;div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 300px; margin-left: 0px; margin-right: 0px;"&gt;
+      &lt;h2&gt;You don&amp;#8217;t have access to this&lt;/h2&gt;
+      &lt;h5&gt;Check your credentials or ask your admin to request access&lt;/h5&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;Access Denied</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

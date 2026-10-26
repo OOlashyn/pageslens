@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="39120917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Account/Conversion/Page Copy","type":756150001,"value":"&lt;p&gt;You have signed in with an account that is no longer supported. To continue using this portal, you must migrate to a different account. Select the button below to sign in with a new or existing supported account.&lt;/p&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Account/Conversion/PageCopy</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

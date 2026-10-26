@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="65c21211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"adx_webpageaccesscontrolrule_webrole":["75c31211-5fcf-f111-a05a-70a8a52c89ad","b56b0323-5fcf-f111-a05a-70a8a52c89ad"],"right":2,"scope":2,"webpageid":"58120917-5fcf-f111-a05a-70a8a52c89ad"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Restrict Read on Home</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="0b110b1d-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% if request.params['id'] | xml_escape %}\r\n{% assign courseid = request.params['id'] | xml_escape %}\r\n{% else %}\r\n{% assign courseid = \"\" %}\r\n{% endif %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>C1_ASP_Delete_Course</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26094.160" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26094.160" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26094.00160">
+  <SolutionManifest>
+    <UniqueName>PagesLensEDM2Sol</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="PagesLensEDM2Sol" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.0.0.0</Version>
+    <Managed>2</Managed>
+    <Publisher>
+      <UniqueName>dancingwithcrm</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="dancingwithcrm" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="dancingwithcrm" languagecode="1033" />
+      </Descriptions>
+      <SupportingWebsiteUrl>https://www.dancingwithcrm.com/</SupportingWebsiteUrl>
+      <CustomizationPrefix>dwcrm</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>86015</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents />
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_kbattachment" displayName="Knowledge Article Attachment" solution="msdynce_KnowledgeManagementFeatures (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchEntity" id="{7b93993d-bb92-43b3-9491-d25b1298dead}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="powerpagecomponent" displayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVFileSearchEntity" id="{1c041659-5fcf-f111-a05a-70a8a52c89ad}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="powerpagecomponent" displayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVTableSearchEntity" id="{69e3155f-5fcf-f111-a05a-70a8a52c89ad}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_contentstore" displayName="File storage content reference" parentSchemaName="knowledgearticle" parentDisplayName="Knowledge Article" solution="msdynce_KnowledgeManagementPatch (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_356e1395-8eae-4f88-9657-9086178a0412.msdyn_contentstore" id.uniquename="ppages_356e1395-8eae-4f88-9657-9086178a0412.msdyn_contentstore" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_fileattachment" displayName="File Attachment" parentSchemaName="msdyn_kbattachment" parentDisplayName="Knowledge Article Attachment" solution="msdynce_KnowledgeManagementFeatures (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_e037db08-02c5-4d5c-abb0-17e180f30366.msdyn_fileattachment" id.uniquename="ppages_e037db08-02c5-4d5c-abb0-17e180f30366.msdyn_fileattachment" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_a7120f29-5fcf-f111-a05a-70a8a52c89ad.powerpagecomponent.name" id.uniquename="ppages_a7120f29-5fcf-f111-a05a-70a8a52c89ad.powerpagecomponent.name" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVTableSearchAttribute" id="{6ce3155f-5fcf-f111-a05a-70a8a52c89ad}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="searchcontent" displayName="Search Content" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_a7120f29-5fcf-f111-a05a-70a8a52c89ad.powerpagecomponent.searchcontent" id.uniquename="ppages_a7120f29-5fcf-f111-a05a-70a8a52c89ad.powerpagecomponent.searchcontent" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="searchcontent" displayName="Search Content" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2610.6)">
+          <package appName="Power Pages Core Package" version="1.1.2610.280">PowerPages_Core (1.1.2610.280)</package>
+        </Required>
+        <Dependent type="DVTableSearchAttribute" id="{72e3155f-5fcf-f111-a05a-70a8a52c89ad}" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

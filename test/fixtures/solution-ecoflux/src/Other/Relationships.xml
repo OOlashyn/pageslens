@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="account_dwcrm_chainofcustody_frompartner" />
+  <EntityRelationship Name="account_dwcrm_chainofcustody_topartner" />
+  <EntityRelationship Name="business_unit_dwcrm_asset" />
+  <EntityRelationship Name="business_unit_dwcrm_chainofcustody" />
+  <EntityRelationship Name="business_unit_dwcrm_conditionlog" />
+  <EntityRelationship Name="business_unit_dwcrm_marketplacelisting" />
+  <EntityRelationship Name="dwcrm_asset_chainofcustody" />
+  <EntityRelationship Name="dwcrm_asset_conditionlog" />
+  <EntityRelationship Name="dwcrm_asset_marketplacelisting" />
+  <EntityRelationship Name="dwcrm_asset_OwningAccount_account" />
+  <EntityRelationship Name="lk_dwcrm_asset_createdby" />
+  <EntityRelationship Name="lk_dwcrm_asset_modifiedby" />
+  <EntityRelationship Name="lk_dwcrm_chainofcustody_createdby" />
+  <EntityRelationship Name="lk_dwcrm_chainofcustody_modifiedby" />
+  <EntityRelationship Name="lk_dwcrm_conditionlog_createdby" />
+  <EntityRelationship Name="lk_dwcrm_conditionlog_modifiedby" />
+  <EntityRelationship Name="lk_dwcrm_marketplacelisting_createdby" />
+  <EntityRelationship Name="lk_dwcrm_marketplacelisting_modifiedby" />
+  <EntityRelationship Name="owner_dwcrm_asset" />
+  <EntityRelationship Name="owner_dwcrm_chainofcustody" />
+  <EntityRelationship Name="owner_dwcrm_conditionlog" />
+  <EntityRelationship Name="owner_dwcrm_marketplacelisting" />
+  <EntityRelationship Name="team_dwcrm_asset" />
+  <EntityRelationship Name="team_dwcrm_chainofcustody" />
+  <EntityRelationship Name="team_dwcrm_conditionlog" />
+  <EntityRelationship Name="team_dwcrm_marketplacelisting" />
+  <EntityRelationship Name="TransactionCurrency_dwcrm_Asset" />
+  <EntityRelationship Name="user_dwcrm_asset" />
+  <EntityRelationship Name="user_dwcrm_chainofcustody" />
+  <EntityRelationship Name="user_dwcrm_conditionlog" />
+  <EntityRelationship Name="user_dwcrm_marketplacelisting" />
+</EntityRelationships>

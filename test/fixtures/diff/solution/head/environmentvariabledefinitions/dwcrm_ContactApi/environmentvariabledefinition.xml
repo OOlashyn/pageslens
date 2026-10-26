@@ -1,0 +1,6 @@
+<!-- narrower webapi-disabled: the current value turns the Web API off -->
+<environmentvariabledefinition schemaname="dwcrm_ContactApi">
+  <defaultvalue>true</defaultvalue>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

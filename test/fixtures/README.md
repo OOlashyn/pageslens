@@ -1,6 +1,6 @@
 # Test fixtures
 
-`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys).
+`ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/`, `pageslensedm2/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys). `solution-ecoflux/`, `solution-pageslensedm2/` and `solution-broken/` are unpacked solutions (XML format, spec 0007).
 
 ## `ecoflux/`
 
@@ -95,6 +95,22 @@ Hand-written in the classic layout, for the page access cases the real site does
 
 Employees Only, Managers Only, Writers Publish Docs and Signed-in Only are clean, as are Lost Child (below the break, not reported again) and Home's content page.
 
+## `pageslensedm2/` and `solution-pageslensedm2/`
+
+PagesLensEDM2, a Registration template site on the enhanced data model, downloaded with `pac pages download` (2026-10-25, without `.portalconfig/`) and its solution synced with `pac solution sync` into a `pac solution clone` project the same day. Read-only copies of a real site. The solution leaves out `primarydomainname` in `Assets/powerpagesites.xml` and the publisher's e-mail address in `Other/Solution.xml`.
+
+The two read into the same records, model, side files and lint findings (`test/adapters/solution.test.ts`), apart from `ASP/Pagination/CardsPerPage`. It takes its value from the environment variable `dwcrm_CardsPerPage` (current value 20, default 18): the solution has the variable, and the download has only the setting's leftover `adx_value: 18`, so its value is unknown there.
+
+Expected lint findings, on both: the same as `registration/`, a copy of the same template.
+
+## `solution-ecoflux/`
+
+The EcoFlux solution, a `pac solution clone` project (`EcoFluxPortal.cdsproj`, `src/`) from the same environment as `ecoflux/`, without `primarydomainname` and the publisher's e-mail address. Read-only. It reads into the same model, side files, lint findings and docs as `ecoflux/` (the docs index adds the solution's name). It has one record the download doesn't: a web file named `.gitkeep`, which `pac pages download-code-site` leaves out.
+
+## `solution-broken/`
+
+Hand-written, small, and loadable: each component file starts with an XML comment saying what it tests. Expected lint findings: `global-write-anonymous` (Feedback - Anonymous Create), `webapi-no-permission` (`Webapi/contact/enabled`, from a variable's default), `webapi-inner-errors` (`Webapi/error/innererror`, from a variable's current value over its default). Variable-backed settings whose variable is missing, a secret, or has no value are read as not set. `Search/Enabled` is inactive, `Hello` (type 35, Server Logic) stays untyped, and `Layout`'s inline Liquid becomes text with its CRLF line endings normalised. The errors (two sites, a component of another site, an id that isn't its folder name, invalid `content` JSON, no `Assets/powerpagesites.xml`, the YAML format) are tested on copies in a temporary folder.
+
 ## `policies/`
 
 Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, and `registration.policy.yaml` for page statements against `registration/`.
@@ -113,6 +129,8 @@ Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `
 | `layouts` | classic base, code head | 1 wider (write added to Assets - Manager); every other record is the same in the other layout and must cause nothing |
 | `classic` | classic | 1 wider, 1 narrower, 1 neutral: the Web API enabled in `sitesetting.yml`, Anonymous Users taken off Feedback, a role renamed in `webrole.yml` |
 | `inactive` | code | 1 wider, 1 narrower, 1 neutral: a permission activated (wider, `(activated)`), one deactivated (narrower, `(deactivated)`), a role deactivated (neutral) |
+| `solution` | solution (XML) | 1 wider, 1 narrower, only environment variable values change: `dwcrm_InnerErrors` turns `Webapi/error/innererror` on, `dwcrm_ContactApi` turns the Web API off on `contact`. The comments are in the head's `environmentvariabledefinition.xml` files |
+| `variables` | code | 2 wider: head moves `Webapi/contact/enabled` and `Webapi/error/innererror` to environment variables, whose values a download doesn't include. The other way round, both are narrower |
 | `pages` | classic | 8 wider, 2 narrower, 3 neutral, page access only. Base is `classic-pages/` without its comments, plus an Archive page under `/internal/`. Head removes Employees Only (anyone can now read `/internal/` and the Archive page below it, one line; Partners can now read `/internal/reports/`; `/internal/team/` has the same readers from other rules), adds Partners to Docs Readers, takes Authenticated Users off Members and Admins, adds a Grant Change for Managers on `/members/`, adds a public News page, removes Locked, moves Account to `/my-account/`, renames Signed-in Only, sets Shared A's scope to exclude web files, and fixes Lost's parent (readers known again for Lost and Lost Child) |
 
-`test/diff/git.test.ts` commits the `grants` and `classic` pairs to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.
+`test/diff/git.test.ts` commits the `grants`, `classic` and `solution` pairs (the last as a `pac solution clone` project's `src/`) to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.

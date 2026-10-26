@@ -1,0 +1,10 @@
+<powerpagesites>
+  <powerpagesite powerpagesiteid="8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6">
+    <content>{"defaultlanguage":"4df9ac67-73ec-4bc8-951e-f4ae49ff4cc4","footerwebtemplateid":"7b435408-5cd1-4a58-872c-dea39779bde0","headerwebtemplateid":"97fb5101-6595-46af-bd08-3b63c57f2125","website_language":1033,"defaultbotconsumerid":"bc5fe300-59b5-f111-aaac-70a8a52c89ad"}</content>
+    <datamodelversion>2.0</datamodelversion>
+    <iscustomizable>1</iscustomizable>
+    <name>EcoFlux</name>
+    <statecode>0</statecode>
+    <statuscode>1</statuscode>
+  </powerpagesite>
+</powerpagesites>

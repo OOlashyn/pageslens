@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="94100917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% if request.params['id'] | xml_escape %}\r\n{% assign courseid = request.params['id'] | xml_escape %}\r\n{% endif %}\r\n\r\n{% if request.IsPreview == false %}\r\n{%endif%}\r\n\r\n{% fetchxml currentcourse %}\r\n&lt;fetch&gt;\r\n  &lt;entity name=\"msdynce_course\"&gt;\r\n    &lt;attribute name=\"msdynce_coursename\" alias=\"coursename\" /&gt;\r\n    &lt;filter&gt;\r\n      &lt;condition attribute=\"msdynce_courseid\" operator=\"eq\" uitype=\"msdynce_course\" value=\"{{courseid}}\" /&gt;\r\n    &lt;/filter&gt;\r\n  &lt;/entity&gt;\r\n&lt;/fetch&gt;\r\n{% endfetchxml %}\r\n\r\n&lt;!-- START CREATED MODAL --&gt;\r\n{% editable snippets 'Modal/CourseCreate' type: 'html' %}\r\n&lt;!-- END MODAL --&gt;\r\n\r\n&lt;!-- START EDITED MODAL --&gt;\r\n{% editable snippets 'Modal/CourseEdit' type: 'html' %}\r\n&lt;!-- END MODAL --&gt;\r\n\r\n&lt;!-- START CANCELLED MODAL --&gt;\r\n{% editable snippets 'Modal/CourseCancel' type: 'html' %}\r\n&lt;!-- END MODAL --&gt;\r\n"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>C1HomeLiquidTemplate</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

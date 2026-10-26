@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="71070103-20fa-4731-923e-627af891de82">
+  <content>{
+  "description": "Enable Web API access for dwcrm_conditionlog table",
+  "value": "true",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/dwcrm_conditionlog/enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

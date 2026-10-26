@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="066632a6-589f-4beb-ac4d-fadc6bc41ffc">
+  <content>{
+  "description": "Enable Web API access for dwcrm_asset table",
+  "value": "true",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/dwcrm_asset/enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

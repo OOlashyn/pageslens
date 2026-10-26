@@ -247,6 +247,59 @@ describe('diff: layouts', () => {
   });
 });
 
+describe('diff: solutions and environment variables', () => {
+  it('reads changes in variable values between two solutions', async () => {
+    const result = await diffCase('solution');
+    expect(messages(result)).toEqual([
+      'Webapi/error/innererror turned on: was "false" from environment variable dwcrm_InnerErrors, now "true" from environment variable dwcrm_InnerErrors (also reported by lint: webapi-inner-errors)',
+      'the Web API is no longer enabled on contact',
+    ]);
+    expect([result.base.format, result.head.format]).toEqual(['solution', 'solution']);
+    expect(result.summary).toEqual({ wider: 1, narrower: 1, neutral: 0 });
+  });
+
+  it("counts a setting moved to a variable a download doesn't include as wider", async () => {
+    const result = await diffCase('variables');
+    expect(messages(result)).toEqual([
+      "the Web API may now be enabled on contact: Webapi/contact/enabled comes from environment variable dwcrm_ContactApi, which a download doesn't include",
+      'Webapi/error/innererror comes from environment variable dwcrm_InnerErrors, which a download doesn\'t include: was "false"',
+    ]);
+    expect(result.summary).toEqual({ wider: 2, narrower: 0, neutral: 0 });
+  });
+
+  it('counts a known value at the closed end as narrower', async () => {
+    const result = await diffCase('variables', true);
+    expect(messages(result)).toEqual([
+      "the Web API is no longer enabled on contact: it came from environment variable dwcrm_ContactApi, which a download doesn't include",
+      'Webapi/error/innererror is now "false": it came from environment variable dwcrm_InnerErrors, which a download doesn\'t include',
+    ]);
+    expect(result.summary).toEqual({ wider: 0, narrower: 2, neutral: 0 });
+  });
+
+  it('finds no change between a download and a solution of the same site', async () => {
+    const sides = await loadSides({
+      base: 'test/fixtures/solution-pageslensedm2',
+      head: 'test/fixtures/pageslensedm2',
+      cwd: process.cwd(),
+    });
+    const changes = diffSites(sides.base.site, sides.head.site);
+    const result = {
+      base: sides.base.side,
+      head: sides.head.side,
+      changes,
+      summary: summarize(changes),
+    };
+    expect(changes).toEqual([]);
+    expect(formatText(result)).toContain(
+      'Note: the layouts differ: base is a classic site (unpacked solution), head is a classic site (pac pages download).',
+    );
+    expect(JSON.parse(formatJson(result)).base).toMatchObject({
+      layout: 'classic',
+      format: 'solution',
+    });
+  });
+});
+
 describe('diff: pages', async () => {
   const result = await diffCase('pages');
 
@@ -439,6 +492,6 @@ describe('cli diff', () => {
     expect(mergeBase.err).toBe('error: --merge-base needs a git ref for both base and head\n');
     const notSite = await cli('diff', 'test/fixtures', 'test/fixtures/broken');
     expect(notSite.code).toBe(ExitCode.Usage);
-    expect(notSite.err).toMatch(/No \.powerpages-site folder or website\.yml found/);
+    expect(notSite.err).toMatch(/No \.powerpages-site folder, website\.yml or unpacked solution/);
   });
 });

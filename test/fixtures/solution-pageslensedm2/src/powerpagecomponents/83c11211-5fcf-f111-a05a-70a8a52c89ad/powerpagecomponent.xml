@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="83c11211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% assign ad_name = ad_name %}\r{% assign ad_placement_name = ad_placement_name %}\r\r{% if ad_name %}\r {% assign ad_by_name = ads[ad_name] %}\r {% if ad_by_name %}\r  &lt;div&gt;\r   {% if ad_by_name.redirect_url %}&lt;a class=\"ad-link\" href=\"{{ ad_by_name.redirect_url | h }}\"&gt;{% endif %}\r   {% if ad_by_name.title %}\r    &lt;h5 class=\"ad-title\" style=\"text-align:center\"&gt;{{ ad_by_name.title | h }}&lt;/h5&gt;\r   {% endif %}\r   {% if ad_by_name.image.url %}\r    &lt;img class=\"ad-link-image mx-auto\" src=\"{{ ad_by_name.image.url | h }}\" alt=\"{{ ad_by_name.image.alternate_text | h }}\" {% if ad_by_name.image.height %} height=\"{{ ad_by_name.image.height }}\" {% endif %}{% if ad_by_name.image.width %} width=\"{{ ad_by_name.image.width }}\" {% endif %} style=\"{% if ad_by_name.image.height %}height:{{ ad_by_name.image.height }}px;{% endif %}{% if ad_by_name.image.width %}width:{{ ad_by_name.image.width }}px;{% endif %}\"&gt;\r   {% endif %}\r   {% if ad_by_name.redirect_url %}&lt;/a&gt;{% endif %}\r   {% if ad_by_name.copy %}\r    &lt;div class=\"ad-copy\"&gt;{{ ad_by_name.copy }}&lt;/div&gt;\r   {% endif %}\r  &lt;/div&gt;\r {% endif %}\r{% elseif ad_placement_name %}\r &lt;div class=\"ad\" data-url=\"{{ ads.placements[ad_placement_name].random_url }}\"&gt;&lt;/div&gt;\r{% endif %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Ad</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

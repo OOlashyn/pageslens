@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="0d110917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"&lt;script&gt;\r\n(function(webapi, $){\r\n\t\tfunction safeAjax(ajaxOptions) {\r\n\t\t\tvar deferredAjax = $.Deferred();\r\n\t\r\n\t\t\tshell.getTokenDeferred().done(function (token) {\r\n\t\t\t\t// add headers for AJAX\r\n\t\t\t\tif (!ajaxOptions.headers) {\r\n\t\t\t\t\t$.extend(ajaxOptions, {\r\n\t\t\t\t\t\theaders: {\r\n\t\t\t\t\t\t\t\"__RequestVerificationToken\": token\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t}); \r\n\t\t\t\t} else {\r\n\t\t\t\t\tajaxOptions.headers[\"__RequestVerificationToken\"] = token;\r\n\t\t\t\t}\r\n\t\t\t\t$.ajax(ajaxOptions)\r\n\t\t\t\t\t.done(function(data, textStatus, jqXHR) {\r\n\t\t\t\t\t\tvalidateLoginSession(data, textStatus, jqXHR, deferredAjax.resolve);\r\n\t\t\t\t\t}).fail(deferredAjax.reject); //AJAX\r\n\t\t\t}).fail(function () {\r\n\t\t\t\tdeferredAjax.rejectWith(this, arguments); // on token failure pass the token AJAX and args\r\n\t\t\t});\r\n\t\r\n\t\t\treturn deferredAjax.promise();\t\r\n\t\t}\r\n\t\twebapi.safeAjax = safeAjax;\r\n\t})(window.webapi = window.webapi || {}, jQuery)\r\n&lt;/script&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Portal Web API Wrapper</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

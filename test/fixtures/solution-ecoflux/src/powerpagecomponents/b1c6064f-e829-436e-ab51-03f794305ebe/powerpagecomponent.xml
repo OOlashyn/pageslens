@@ -1,0 +1,25 @@
+<powerpagecomponent powerpagecomponentid="b1c6064f-e829-436e-ab51-03f794305ebe">
+  <content>{
+  "append": true,
+  "appendto": false,
+  "create": false,
+  "delete": false,
+  "entitylogicalname": "dwcrm_chainofcustody",
+  "entityname": "Chain of Custody - Logistics Partner ReadWrite",
+  "read": true,
+  "scope": 756150002,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6",
+  "write": true,
+  "adx_entitypermission_webrole": [
+    "4ef54206-4d27-4a43-b642-ff48c5de86e8"
+  ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Chain of Custody - Logistics Partner ReadWrite</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

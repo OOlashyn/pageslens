@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="ec120917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"adx_webpageaccesscontrolrule_webrole":["02110b1d-5fcf-f111-a05a-70a8a52c89ad"],"right":2,"scope":1,"webpageid":"bc120917-5fcf-f111-a05a-70a8a52c89ad"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Restrict Read on My Registrations</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

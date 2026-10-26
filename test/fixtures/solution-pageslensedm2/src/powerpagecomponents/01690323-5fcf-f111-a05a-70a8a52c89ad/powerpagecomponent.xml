@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="01690323-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Modal/CourseEdit","type":756150001,"value":"&lt;div id=\"editedModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"editedModalLabel\" aria-hidden=\"true\" class=\"modal fade\"&gt;\r\n  &lt;div role=\"document\" class=\"modal-dialog modal-dialog-centered\"&gt;\r\n    &lt;div class=\"modal-content\" style=\"border-radius: 16px;\"&gt;\r\n      &lt;div class=\"modal-header\"&gt;\r\n        &lt;h5 id=\"editedModalLabel\" class=\"modal-title\"&gt;Course update successful&lt;/h5&gt;&lt;button type=\"button\" data-dismiss=\"modal\" aria-label=\"Close\" class=\"close\"&gt;&lt;span aria-hidden=\"true\"&gt;×&lt;/span&gt;&lt;/button&gt;\r\n      &lt;/div&gt;\r\n      &lt;div class=\"modal-body\"&gt;\r\n        Your course has successfully been updated. You can now view your course in 'My courses'.\r\n      &lt;/div&gt;\r\n      &lt;div class=\"modal-footer\"&gt;&lt;button type=\"button\" onclick=\"window.location.href='/course-details?id={{courseid}}'\" class=\"button2\"&gt;View course detail&lt;/a&gt;&lt;/div&gt;\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Modal/CourseEdit</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

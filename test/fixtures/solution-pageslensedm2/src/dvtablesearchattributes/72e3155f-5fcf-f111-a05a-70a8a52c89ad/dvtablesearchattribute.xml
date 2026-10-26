@@ -1,0 +1,16 @@
+<dvtablesearchattribute dvtablesearchattributeid="72e3155f-5fcf-f111-a05a-70a8a52c89ad">
+  <attribute>
+    <entityid.logicalname>powerpagecomponent</entityid.logicalname>
+    <logicalname>searchcontent</logicalname>
+  </attribute>
+  <dvtablesearchentity>
+    <dvtablesearchentityid>69e3155f-5fcf-f111-a05a-70a8a52c89ad</dvtablesearchentityid>
+  </dvtablesearchentity>
+  <isattributeenabledforvectorsearch>0</isattributeenabledforvectorsearch>
+  <iscustomizable>1</iscustomizable>
+  <isretrievable>1</isretrievable>
+  <issearchable>1</issearchable>
+  <name>a7120f29-5fcf-f111-a05a-70a8a52c89ad.searchcontent</name>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</dvtablesearchattribute>

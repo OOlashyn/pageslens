@@ -32,6 +32,9 @@ export function renderSiteDocs(site: Site): Map<string, string> {
     '',
     GENERATED_NOTE,
     '',
+    ...(site.solution
+      ? [`- Read from the solution \`${site.solution.name}\` ${site.solution.version}`]
+      : []),
     `- ${site.webRoles.length} web roles, ${site.tablePermissions.length} table permissions ` +
       `(${effective.length} grant access) on ${tables.size} tables`,
     `- Web API enabled on ${webApi.filter((t) => t.enabled).length} tables`,

@@ -119,6 +119,11 @@ describe('rules on the fixtures', () => {
     );
   });
 
+  it("skips a setting whose value a download doesn't include", async () => {
+    const download = await loadSiteFolder('test/fixtures/diff/variables/head');
+    expect(lint(download).findings).toEqual([]);
+  });
+
   it('runs no page rule on a code site', () => {
     const pageRules = ruleIds.filter((id) => id.startsWith('page-') || id.startsWith('grant-'));
     for (const site of [ecoflux, broken]) {

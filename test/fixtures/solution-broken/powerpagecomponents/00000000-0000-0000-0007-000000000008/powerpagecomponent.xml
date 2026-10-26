@@ -1,0 +1,11 @@
+<!-- webapi-inner-errors: the current value (true) wins over the default (false) -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000008">
+  <content>{"value":"false","source":1,"envvar_schema":"dwcrm_Current"}</content>
+  <name>Webapi/error/innererror</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

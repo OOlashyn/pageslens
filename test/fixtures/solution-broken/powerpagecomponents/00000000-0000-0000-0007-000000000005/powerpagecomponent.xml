@@ -1,0 +1,11 @@
+<!-- variable not in the solution: not set, not the leftover value -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-0007-000000000005">
+  <content>{"value":"true","source":1,"envvar_schema":"dwcrm_Missing"}</content>
+  <name>Webapi/account/enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-0000-000000000007</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,6 @@
+# wider setting-wider: from a variable a download does not include
+envvar_schema: dwcrm_InnerErrors
+id: 00000000-0000-0000-0009-000000000003
+name: Webapi/error/innererror
+source: 1
+value: true

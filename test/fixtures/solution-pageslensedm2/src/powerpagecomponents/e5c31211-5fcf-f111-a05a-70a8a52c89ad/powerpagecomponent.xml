@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="e5c31211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"source":"{% extends 'Layout 2 Column Wide Left' %}\r\r{% block main %}\r  {% include 'Page Copy' %}\r  {% include 'Child Navigation' showdescriptions: true %}\r{% endblock %}\r\r{% block aside %}\r  {% include \"Weblink List Group\" weblink_set_name: \"Secondary Navigation\" showdescriptions: true %}\r  {% include \"poll\" poll_placement_name: \"Sidebar\" %}\r  {% include \"ad\" ad_placement_name: \"Sidebar Bottom\" %}\r{% endblock %}"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Listing</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

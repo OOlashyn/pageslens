@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="e5c21211-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"type":756150001,"value":"&lt;span class=\"child-filter-card\"&gt;\r\n    &lt;label class=\"checkbox-container\"&gt;\r\n        &lt;input type=\"checkbox\" id=\"child{{attendee.contactid}}\" class=\"checkAttendee\" name=\"child\" value=\"{{attendee.contactid}}\"&gt;\r\n        &lt;span class=\"checkmark\"&gt;&lt;/span&gt;\r\n        &lt;label for=\"child{{attendee.contactid}}\"&gt;&lt;/label&gt;\r\n        &lt;img id=\"img{{attendee.contactid}}\" data-contact=\"{{attendee.contactid}}\" src=\"/child-placeholder.svg\" alt=\"{{attendee.fullname}} profile photo\"&gt;\r\n        &lt;p class=\"card-text-xsmall text-center\"&gt;{{attendee.fullname}}&lt;/p&gt;\r\n    &lt;/label&gt;\r\n&lt;/span&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Filter/Attendees</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,14 @@
+adx_append: false
+adx_appendto: false
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: stringmap
+adx_entityname: ASP Stringmap
+adx_entitypermission_webrole:
+- 02110b1d-5fcf-f111-a05a-70a8a52c89ad
+- 7ec21211-5fcf-f111-a05a-70a8a52c89ad
+- b56b0323-5fcf-f111-a05a-70a8a52c89ad
+adx_entitypermissionid: c8100b1d-5fcf-f111-a05a-70a8a52c89ad
+adx_read: true
+adx_scope: 756150000
+adx_write: false

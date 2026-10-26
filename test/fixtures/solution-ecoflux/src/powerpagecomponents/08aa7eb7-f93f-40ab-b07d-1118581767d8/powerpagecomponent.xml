@@ -1,0 +1,25 @@
+<powerpagecomponent powerpagecomponentid="08aa7eb7-f93f-40ab-b07d-1118581767d8">
+  <content>{
+  "append": false,
+  "appendto": true,
+  "create": true,
+  "delete": true,
+  "entitylogicalname": "dwcrm_asset",
+  "entityname": "Asset - Asset Manager CRUD",
+  "read": true,
+  "scope": 756150002,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6",
+  "write": true,
+  "adx_entitypermission_webrole": [
+    "323f94e6-c646-4832-bd7f-daa1572b20fe"
+  ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Asset - Asset Manager CRUD</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,5 +1,5 @@
 import { join, resolve } from 'node:path';
-import type { Site, SiteLayout } from '../model/schema.js';
+import type { Site } from '../model/schema.js';
 import { isDirectory, isFile } from '../util/fs.js';
 import { isClassicWebsite, readClassicSite } from './classic-site.js';
 import {
@@ -13,6 +13,7 @@ import {
   type Problem,
 } from './common.js';
 import { folderSource, type FileSource } from './files.js';
+import { isSolution, readSolution, SOLUTION_FILE } from './solution.js';
 
 export { SiteLoadError, type Problem } from './common.js';
 export type { SiteLayout } from '../model/schema.js';
@@ -30,39 +31,56 @@ const CODE_FIELDS: FieldMapping = {
   lists: false,
 };
 
+/** A `pac solution init` project (what `pac solution clone` writes) keeps the solution in `src/`. */
+const PROJECT_SOURCE = 'src';
+
 /**
- * The site folder for `path` and its layout: a `.powerpages-site` inside `path`, or `path` itself
- * when it has a `website.yml`. The keys in `website.yml` tell the layouts apart.
+ * Where the site is under a folder, given which files it has (paths relative to the folder): a
+ * `.powerpages-site` inside it, the folder itself when it has a `website.yml` or is an unpacked
+ * solution, or a solution project's `src/`. `''` is the folder itself; undefined when none.
  */
-export async function resolveSiteRoot(path: string): Promise<{ root: string; layout: SiteLayout }> {
+export async function findSiteRoot(
+  has: (file: string) => Promise<boolean>,
+): Promise<string | undefined> {
+  if (await has(`${SITE_FOLDER}/${WEBSITE_FILE}`)) return SITE_FOLDER;
+  if ((await has(WEBSITE_FILE)) || (await has(SOLUTION_FILE))) return '';
+  if (await has(`${PROJECT_SOURCE}/${SOLUTION_FILE}`)) return PROJECT_SOURCE;
+  return undefined;
+}
+
+/** Why there's no site where one was looked for. */
+export function noSiteMessage(where: string, yamlSolution: boolean): string {
+  return yamlSolution
+    ? `${where} is a solution in the YAML source control format, which pageslens doesn't read yet; unpack it with pac solution unpack (XML format)`
+    : `No ${SITE_FOLDER} folder, ${WEBSITE_FILE} or unpacked solution (${SOLUTION_FILE}) found at ${where}`;
+}
+
+/** The site folder for `path`: see `findSiteRoot`. */
+export async function resolveSiteRoot(path: string): Promise<{ root: string }> {
   const absolute = resolve(path);
-  const nested = join(absolute, SITE_FOLDER);
-  const root = (await isDirectory(nested)) ? nested : absolute;
-  if (!(await isFile(join(root, WEBSITE_FILE)))) {
+  const found = await findSiteRoot((file) => isFile(join(absolute, file)));
+  if (found === undefined) {
+    if (await isDirectory(join(absolute, SITE_FOLDER))) {
+      throw new SiteLoadError(`No ${WEBSITE_FILE} found in ${join(absolute, SITE_FOLDER)}`);
+    }
     throw new SiteLoadError(
-      root === nested
-        ? `No ${WEBSITE_FILE} found in ${root}`
-        : `No ${SITE_FOLDER} folder or ${WEBSITE_FILE} found at ${absolute}`,
+      noSiteMessage(absolute, await isDirectory(join(absolute, 'solutions'))),
     );
   }
-  return { root, layout: await siteLayout(folderSource(root)) };
+  return { root: join(absolute, found) };
 }
 
-/** Reads a downloaded site, in either layout, into a site model. */
+/** Reads a downloaded site or an unpacked solution into a site model. */
 export async function loadSiteFolder(path: string): Promise<Site> {
   const { root } = await resolveSiteRoot(path);
-  return (await loadSite(folderSource(root))).site;
+  return loadSite(folderSource(root));
 }
 
-async function siteLayout(source: FileSource): Promise<SiteLayout> {
-  return isClassicWebsite(await readYaml(source, WEBSITE_FILE, [])) ? 'classic' : 'code';
-}
-
-/** Reads a site folder that has a `website.yml`, on disk or in a commit, in either layout. */
-export async function loadSite(source: FileSource): Promise<{ site: Site; layout: SiteLayout }> {
-  const layout = await siteLayout(source);
-  const site = layout === 'classic' ? await readClassicSite(source) : await readCodeSite(source);
-  return { site, layout };
+/** Reads a site folder (a download, or an unpacked solution), on disk or in a commit. */
+export async function loadSite(source: FileSource): Promise<Site> {
+  if (isSolution(await source.list())) return readSolution(source);
+  const website = await readYaml(source, WEBSITE_FILE, []);
+  return isClassicWebsite(website) ? readClassicSite(source) : readCodeSite(source);
 }
 
 /** Reads a `.powerpages-site` folder: one `<name>.<kind>.yml` file per record. */
@@ -71,5 +89,13 @@ async function readCodeSite(source: FileSource): Promise<Site> {
   const files = await listFiles(source);
   const claimed = new Set<string>();
   const records = await readRecordFiles(source, files, CODE_FIELDS, problems, claimed);
-  return buildSite('code', source, files, records, claimed, CODE_FIELDS, problems);
+  return buildSite(
+    { layout: 'code', format: 'code-download' },
+    source,
+    files,
+    records,
+    claimed,
+    CODE_FIELDS,
+    problems,
+  );
 }

@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="1776c70a-1820-481d-be4a-a59a4222234b">
+  <content>{
+  "pageid": "270775af-673f-4510-813b-02947a6e0024",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Page Not Found</name>
+  <powerpagecomponenttype>13</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

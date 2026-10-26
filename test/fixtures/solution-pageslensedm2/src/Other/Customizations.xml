@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26094.160" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26094.00160">
+  <Entities />
+  <Roles />
+  <Workflows />
+  <FieldSecurityProfiles />
+  <Templates />
+  <EntityMaps />
+  <EntityRelationships />
+  <OrganizationSettings />
+  <optionsets />
+  <CustomControls />
+  <EntityDataProviders />
+  <powerpagesite_dvfilesearchset>
+    <powerpagesite_dvfilesearch dvfilesearchid.dvfilesearchid="1a041659-5fcf-f111-a05a-70a8a52c89ad" powerpagesiteid.powerpagesiteid="a7120f29-5fcf-f111-a05a-70a8a52c89ad">
+      <iscustomizable>1</iscustomizable>
+    </powerpagesite_dvfilesearch>
+  </powerpagesite_dvfilesearchset>
+  <powerpagesite_dvtablesearchset>
+    <powerpagesite_dvtablesearch dvtablesearchid.dvtablesearchid="26041659-5fcf-f111-a05a-70a8a52c89ad" powerpagesiteid.powerpagesiteid="a7120f29-5fcf-f111-a05a-70a8a52c89ad">
+      <iscustomizable>1</iscustomizable>
+    </powerpagesite_dvtablesearch>
+  </powerpagesite_dvtablesearchset>
+  <Languages>
+    <Language>1033</Language>
+    <Language>1058</Language>
+  </Languages>
+</ImportExportXml>

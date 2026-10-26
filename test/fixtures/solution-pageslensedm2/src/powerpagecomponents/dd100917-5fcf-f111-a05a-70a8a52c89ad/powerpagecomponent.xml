@@ -1,0 +1,11 @@
+<powerpagecomponent powerpagecomponentid="dd100917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"type":756150001,"value":"&lt;div class=\"alert alert-danger validation-alert course-alert\" role=\"alert\"&gt;\r\n    &lt;img src=\"{{ settings['ASP/Icon/Validation/Error'] }}\" alt=\"validation alert icon\"&gt;\r\n    &lt;b&gt;Please fix the following: &lt;/b&gt;\r\n    &lt;br&gt;\r\n&lt;/div&gt;"}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>ASP/Error/CourseForm/Validation</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

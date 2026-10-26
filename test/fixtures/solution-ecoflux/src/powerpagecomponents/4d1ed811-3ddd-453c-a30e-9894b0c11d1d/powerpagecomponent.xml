@@ -1,0 +1,25 @@
+<powerpagecomponent powerpagecomponentid="4d1ed811-3ddd-453c-a30e-9894b0c11d1d">
+  <content>{
+  "append": true,
+  "appendto": false,
+  "create": true,
+  "delete": true,
+  "entitylogicalname": "dwcrm_marketplacelisting",
+  "entityname": "Marketplace Listing - Asset Manager CRUD",
+  "read": true,
+  "scope": 756150002,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6",
+  "write": true,
+  "adx_entitypermission_webrole": [
+    "323f94e6-c646-4832-bd7f-daa1572b20fe"
+  ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Marketplace Listing - Asset Manager CRUD</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

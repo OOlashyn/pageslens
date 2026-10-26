@@ -1,0 +1,16 @@
+<powerpagecomponent powerpagecomponentid="e626e378-951d-4bcd-b51a-3d38e44d842b">
+  <content>{
+  "contentsnippetlanguageid": "4df9ac67-73ec-4bc8-951e-f4ae49ff4cc4",
+  "display_name": "Search/Results Title",
+  "value": "Results for {{ request.params.q }}",
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Search/ResultsTitle</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

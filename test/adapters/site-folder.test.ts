@@ -135,16 +135,17 @@ describe('loadSiteFolder: broken', async () => {
 
 describe('resolveSiteRoot', () => {
   it('accepts the .powerpages-site folder or the folder that contains it', async () => {
-    const { root, layout } = await resolveSiteRoot(ECOFLUX);
+    const { root } = await resolveSiteRoot(ECOFLUX);
     expect(root.replaceAll('\\', '/')).toMatch(/test\/fixtures\/ecoflux\/\.powerpages-site$/);
-    expect(layout).toBe('code');
-    expect(await resolveSiteRoot(root)).toEqual({ root, layout });
+    expect(await resolveSiteRoot(root)).toEqual({ root });
+    expect((await loadSiteFolder(root)).layout).toBe('code');
   });
 
   it('tells a classic site folder by the adx_ keys in website.yml', async () => {
-    const { root, layout } = await resolveSiteRoot('test/fixtures/classic');
+    const { root } = await resolveSiteRoot('test/fixtures/classic');
     expect(root.replaceAll('\\', '/')).toMatch(/test\/fixtures\/classic$/);
-    expect(layout).toBe('classic');
+    const site = await loadSiteFolder(root);
+    expect([site.layout, site.format]).toEqual(['classic', 'classic-download']);
   });
 });
 
@@ -176,7 +177,7 @@ describe('loadSiteFolder: errors', () => {
   it('fails when there is no site folder', async () => {
     temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
     expect((await problems(temp)).message).toMatch(
-      /No \.powerpages-site folder or website\.yml found/,
+      /No \.powerpages-site folder, website\.yml or unpacked solution/,
     );
   });
 

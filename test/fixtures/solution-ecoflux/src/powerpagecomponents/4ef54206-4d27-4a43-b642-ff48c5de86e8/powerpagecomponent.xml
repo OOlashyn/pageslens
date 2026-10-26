@@ -1,0 +1,15 @@
+<powerpagecomponent powerpagecomponentid="4ef54206-4d27-4a43-b642-ff48c5de86e8">
+  <content>{
+  "anonymoususersrole": false,
+  "authenticatedusersrole": false,
+  "websiteid": "8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Logistics Partner</name>
+  <powerpagecomponenttype>11</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

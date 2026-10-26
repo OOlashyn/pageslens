@@ -39,6 +39,7 @@ function side(s: DiffSide) {
     ...(s.mergeBase && { mergeBase: true }),
     path: s.path,
     ...(s.layout && { layout: s.layout }),
+    ...(s.format && { format: s.format }),
     ...(s.site && { site: s.site }),
   };
 }

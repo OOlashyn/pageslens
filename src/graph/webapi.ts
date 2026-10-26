@@ -21,6 +21,12 @@ export interface WebApiTable {
   wildcard: boolean;
   enabledSetting?: SiteSetting;
   fieldsSetting?: SiteSetting;
+  /**
+   * Settings whose value a download doesn't include (from an environment variable). An unknown
+   * `enabled` leaves `enabled` false and unknown fields leave `fields` empty: rules and checks
+   * that depend on them look here.
+   */
+  unknown: { enabled: boolean; fields: boolean };
   /** Roles with a table permission on this table, sorted by name. */
   callers: WebApiCaller[];
 }
@@ -38,12 +44,15 @@ export function buildWebApiSurface(site: Site, graph: AccessGraph): WebApiTable[
       enabled: false,
       fields: [],
       wildcard: false,
+      unknown: { enabled: false, fields: false },
       callers: [],
     };
     if (match.groups.key!.toLowerCase() === 'enabled') {
       entry.enabled = setting.value?.trim().toLowerCase() === 'true';
       entry.enabledSetting = setting;
+      entry.unknown.enabled = setting.unknown;
     } else {
+      entry.unknown.fields = setting.unknown;
       entry.fields = (setting.value ?? '')
         .split(',')
         .map((field) => field.trim())

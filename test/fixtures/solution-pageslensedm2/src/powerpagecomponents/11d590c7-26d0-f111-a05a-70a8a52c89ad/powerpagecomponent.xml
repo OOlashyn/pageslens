@@ -1,0 +1,18 @@
+<powerpagecomponent powerpagecomponentid="11d590c7-26d0-f111-a05a-70a8a52c89ad">
+  <content>{
+   "right": 1,
+   "scope": 1,
+   "webpageid": "520ab6fa-7b87-2201-c1cb-fa36ca8afe70",
+   "adx_webpageaccesscontrolrule_webrole": [
+      "b56b0323-5fcf-f111-a05a-70a8a52c89ad"
+   ]
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Grant Change</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

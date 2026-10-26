@@ -24,6 +24,7 @@ const ID_KEYS: Record<string, string> = {
   webpagerule: 'adx_webpageaccesscontrolruleid',
   basicform: 'adx_entityformid',
   basicformmetadata: 'adx_entityformmetadataid',
+  list: 'adx_entitylistid',
 };
 
 /** Relationship lists keep their names in both layouts, so they keep the prefix. */
@@ -72,7 +73,15 @@ export async function readClassicSite(source: FileSource): Promise<Site> {
   const claimed = new Set<string>();
   const records = await readRecordFiles(source, files, CLASSIC_FIELDS, problems, claimed);
   records.push(...(await readRootLists(source, files, problems, claimed)));
-  return buildSite('classic', source, files, records, claimed, CLASSIC_FIELDS, problems);
+  return buildSite(
+    { layout: 'classic', format: 'classic-download' },
+    source,
+    files,
+    records,
+    claimed,
+    CLASSIC_FIELDS,
+    problems,
+  );
 }
 
 /** `webrole.yml` at the root is a list of web roles: kind `webrole`, one record per item. */

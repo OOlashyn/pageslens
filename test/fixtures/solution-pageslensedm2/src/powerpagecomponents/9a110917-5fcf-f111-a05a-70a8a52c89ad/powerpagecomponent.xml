@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="9a110917-5fcf-f111-a05a-70a8a52c89ad">
+  <content>{"display_name":"Portal Generic Error","type":756150000,"value":"We are sorry, but seems something went wrong. Please try again, and if this persists, contact the website administrator."}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Portal Generic Error</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>a7120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>a9120f29-5fcf-f111-a05a-70a8a52c89ad</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>
