@@ -2,19 +2,17 @@
 
 Where pageslens stands and what comes next. Keep this file short and current: update it in the same change that finishes or starts a piece of work. History lives in the feature specs and in [archive/m1-plan.md](archive/m1-plan.md).
 
-## Status (2026-10-25)
+## Status (2026-10-26)
 
-|                         |                                                                                                                                                                                                                                                                                                 |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`)     | `0.7.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic layouts, config ignores, inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
-| On `main`, not released | unpacked solutions (spec [0007](0007-solution-adapter.md)), settings from environment variables, the `webapi-inner-errors` lint rule, and unused ignore entries listed by `lint`. Goes out with `0.8.0`                                                                                         |
-| Milestones              | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3: the solution adapter is built; `align` is next                                                                                                                                                                             |
+|                     |                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`) | `0.8.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic downloads and unpacked solutions (spec [0007](0007-solution-adapter.md)), settings from environment variables, config ignores (unused ones listed), inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
+| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3: the solution adapter shipped in 0.8.0; `align` is specified and next to build                                                                                                                                                                                                                                                                         |
 
 ## Next
 
-1. **Release `0.8.0`** with the solution adapter, settings from environment variables, the `webapi-inner-errors` rule and the unused ignore entries. Notes: [releases/0.8.0.md](releases/0.8.0.md).
-2. **`align`** (M3, spec 0008): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed ([alm-story.md](research/alm-story.md)).
-3. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
+1. **`align`** (M3, spec [0008](0008-align.md), every question answered): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed. With it, or on its own, the `setting-secret-value` lint rule (0008, decision 6).
+2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed
 
@@ -41,4 +39,6 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 - Solution `.zip` files, read without unpacking.
 - The solution YAML source control format (Dataverse Git integration; `pac solution clone` from PAC CLI 2.4.1, as Learn says). Getting it out of `pac` didn't work on 2026-10-25: to investigate (0007, verification 1).
 - Solutions with more than one site (`--site`).
+- `align --fix`: print the `pac solution add-solution-component` commands for what the solution is missing. Needs investigation first: site component type numbers per environment, and whether `pac pages upload` keeps GUIDs (0008, decision 1).
+- `align --target`: a download of test or prod against the solution, to show edits made in the target. Needs environments to deploy to and a sample download from a managed target (0008, decision 2).
 - Web files in effective access: who can download them, in `docs`, `test` and `diff` (left out by 0005, decision 9; `diff` already shows a rule's scope change). On hold: not a common enough case yet.

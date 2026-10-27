@@ -212,7 +212,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # the merge base needs the history of both branches
-      - uses: OOlashyn/pageslens@v0.7.0
+      - uses: OOlashyn/pageslens@v0.8.0
         with:
           path: site
 ```
@@ -222,7 +222,7 @@ jobs:
 - **The job fails** when lint finds errors, a policy statement fails, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
 - **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
 - **Permissions:** without `security-events: write`, or with code scanning not available for the repository, the upload is skipped with a notice. Without `pull-requests: write`, the comment is.
-- **Version:** `v0.7.0` runs exactly pageslens 0.7.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
+- **Version:** `v0.8.0` runs exactly pageslens 0.8.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
 
 | Input          | Default                 | What                                                                                                    |
 | -------------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |

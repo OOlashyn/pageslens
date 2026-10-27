@@ -70,11 +70,9 @@ describe('solution adapter: EcoFlux, a code site', () => {
 
   it('reads the same model as the download', () => {
     expect(model(solutionEcoflux)).toEqual(model(ecoflux));
-    // The solution also has a web file named .gitkeep, which download-code-site leaves out
-    const ids = new Set(ecoflux.records.map((r) => r.id));
-    const extra = solutionEcoflux.records.filter((r) => !ids.has(r.id));
-    expect(extra.map((r) => [r.kind, r.name])).toEqual([['webfile', '.gitkeep']]);
-    expect(solutionEcoflux.records).toHaveLength(ecoflux.records.length + 1);
+    const ids = (site: Site) => new Set(site.records.map((r) => r.id));
+    expect(ids(solutionEcoflux)).toEqual(ids(ecoflux));
+    expect(solutionEcoflux.records).toHaveLength(ecoflux.records.length);
     expect(texts(solutionEcoflux)).toEqual(texts(ecoflux));
   });
 
