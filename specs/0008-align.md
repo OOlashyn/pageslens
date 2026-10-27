@@ -231,7 +231,7 @@ The research has two extensions. Neither is in the first version (decisions 1 an
 
 ## As built
 
-Built to draft 2 with every decision as recorded; `--fix`, `--target`, the table check and the `setting-secret-value` lint rule are left out. The user reference is [docs/align.md](../docs/align.md). Where the code needed an interpretation the spec doesn't give:
+Built to draft 2 with every decision as recorded, with the `setting-secret-value` lint rule (decision 6) in the same release; `--fix`, `--target` and the table check are left out. The user reference is [docs/align.md](../docs/align.md). Where the code needed an interpretation the spec doesn't give:
 
 1. **What `field-one-side` means.** "A field on one side only that isn't on the known list" is read as: a field with a value on one side, where no record of that kind on the other side has the field at all, empty or not. That's what a new `pac` field looks like. A value on one side where the other side's format does write the field (a setting value cleared in the solution) is `content-differs`. One-sided fields on a record that also has `content-differs` go into that finding, so a record has one.
 2. **`source` defaults to `0`.** A setting with no `source` takes its own value, so a setting moved to a variable on one side only differs in `source`, as the spec asks, rather than having `source` on one side only.
@@ -244,7 +244,8 @@ Built to draft 2 with every decision as recorded; `--fix`, `--target`, the table
 9. **JSON.** Each finding has `siteFile` and `solutionFile` (whichever exist), `fields` on `content-differs` and `field-one-side`, and `inactive: true` on an inactive record missing from the solution. `summary` has the counts, `matched` and `ignored`.
 10. **Markdown** is capped at 20,000 characters, a third of GitHub's limit, since it shares the comment with the access changes.
 11. **The Action.** With `solution` set, `run` runs `align` on pull requests and pushes alike. The comment is the align Markdown above the access changes, under the diff's marker, so it's the same comment with or without `solution`; if both don't fit in 65,000 characters, the access changes are left to the job summary with a note. A comment is created when there are access changes or align findings. The align Markdown also goes to the job summary. CI runs it on the EcoFlux pair and expects `align-errors` to be `0`.
-12. **Fixtures.** `test/fixtures/align/` has the six pairs from "Tests and fixtures": `classic` and `code` are clean pairs that go through every rule in "What isn't a difference"; `content` also has a `field-one-side` case.
+12. **`setting-secret-value`** fires on an active setting whose name ends in `ClientSecret`, `AppSecret` or `ConsumerSecret` (any case) with a non-blank value of its own. A setting backed by an environment variable is skipped, even with a leftover `value` in a download: the spec says "a value of its own", and the leftover isn't what the site uses. The real sites have these settings, all empty, so they don't fire. The case is in `test/fixtures/broken/`, with a variable-backed one that must not fire.
+13. **Fixtures.** `test/fixtures/align/` has the six pairs from "Tests and fixtures": `classic` and `code` are clean pairs that go through every rule in "What isn't a difference"; `content` also has a `field-one-side` case.
 
 ## Verification owed
 

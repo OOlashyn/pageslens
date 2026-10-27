@@ -45,6 +45,7 @@ Hand-written, one deliberate case per rule. Each file with a case starts with a 
 | `webapi-wildcard-fields` | `Webapi/contact/fields` = `*` |
 | `webapi-no-permission` | `Webapi/dwcrm_invoice/enabled` |
 | `webapi-inner-errors` | `Webapi/error/innererror` = `True` |
+| `setting-secret-value` | `Authentication/OpenIdConnect/Contoso/ClientSecret` with a value |
 | `permission-no-role` | Order - Inactive Role (its only role, Retired Role, is inactive) |
 | `parent-chain-broken` | Survey Answer - Inactive Parent (parent is inactive) |
 | `role-unused` | Unused Role |

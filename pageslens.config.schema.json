@@ -38,6 +38,15 @@
           ],
           "description": "Web API error responses include the inner error (`Webapi/error/innererror = true`). Default: warning."
         },
+        "setting-secret-value": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A secret site setting (`ClientSecret`, `AppSecret`, `ConsumerSecret`) with a value of its own. Default: error."
+        },
         "permission-no-role": {
           "enum": [
             "off",
@@ -202,6 +211,7 @@
                 "webapi-wildcard-fields",
                 "webapi-no-permission",
                 "webapi-inner-errors",
+                "setting-secret-value",
                 "permission-no-role",
                 "global-write-anonymous",
                 "global-write-authenticated",

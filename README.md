@@ -4,7 +4,7 @@ Offline lint, policy tests, access diffs and docs for Power Pages site configura
 
 pageslens reads a site downloaded with the Power Platform CLI (the `.powerpages-site` folder that `pac pages download-code-site` writes, or the site folder that `pac pages download` writes) or an unpacked solution that holds the site (`pac solution unpack` or `pac solution clone`), and:
 
-- **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
+- **lints** it: table permissions, web roles, Web API settings and secrets typed into settings, with stable rule ids, severities and exit codes for CI;
 - **tests** it against your own requirements, written as short sentences in a policy file ("anonymous cannot read contact");
 - **diffs** two versions of it: what a change does to who can see and change what, for a pull request comment;
 - **aligns** a download with the solution that deploys it: components left out of the solution, or different in it, before the import;
@@ -85,6 +85,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | [`webapi-wildcard-fields`](rules/webapi-wildcard-fields.md)             | error   | Web API enabled with `*` as the fields list                            |
 | [`webapi-no-permission`](rules/webapi-no-permission.md)                 | warning | Web API enabled on a table no table permission covers                  |
 | [`webapi-inner-errors`](rules/webapi-inner-errors.md)                   | warning | Web API errors that include the inner error                            |
+| [`setting-secret-value`](rules/setting-secret-value.md)                 | error   | Secret site setting (`ClientSecret`, ...) with a value of its own      |
 | [`permission-no-role`](rules/permission-no-role.md)                     | warning | Table permission with no web role                                      |
 | [`global-write-anonymous`](rules/global-write-anonymous.md)             | warning | Global create, write or delete for Anonymous Users                     |
 | [`global-write-authenticated`](rules/global-write-authenticated.md)     | warning | Global create, write or delete for Authenticated Users                 |
