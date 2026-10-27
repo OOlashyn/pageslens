@@ -1,0 +1,11 @@
+# clean: the annotation fields are the download's own
+annotationid: 00000000-0000-0000-c0de-000000000099
+filename: logo.png
+id: 00000000-0000-0000-c0de-000000000010
+isdocument: false
+mimetype: image/png
+name: logo.png
+objectid: 00000000-0000-0000-c0de-000000000010
+objecttypecode: powerpagecomponent
+partialurl: logo.png
+publishingstateid: 00000000-0000-0000-c0de-000000000002

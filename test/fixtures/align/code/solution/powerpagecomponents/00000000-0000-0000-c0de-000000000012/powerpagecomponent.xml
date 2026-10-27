@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c0de-000000000012">
+  <content>{"displaypagevalidation":false,"pageid":"00000000-0000-0000-c0de-000000000008","weblinksetid":"00000000-0000-0000-c0de-000000000011"}</content>
+  <name>Home</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c0de-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

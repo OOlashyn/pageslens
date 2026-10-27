@@ -2,6 +2,19 @@
 
 `ecoflux/` and `broken/` are `.powerpages-site/` folders (the code site layout). `classic/`, `registration/` and `classic-pages/` are classic site folders (`pac pages download`, `adx_` keys). `solution-ecoflux/`, `solution-registration/` and `solution-broken/` are unpacked solutions (XML format, spec 0007).
 
+## `align/`
+
+Hand-written pairs for `pageslens align` (spec 0008), each `<case>/site` (a download) and `<case>/solution` (an unpacked solution). A file with a case starts with a comment naming the check (`#` in YAML, `<!-- -->` in a component), or `clean:` for what must not be reported.
+
+| Case        | Layout  | What                                                                                                                                                                                                    |
+| ----------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `code`      | code    | Clean: empty fields and side files, role order, inline text with `\r\n`, JSON with `$type`/`Type`, the language element, web file note fields, `websiteid`, `displaypagevalidation`                      |
+| `classic`   | classic | Clean: `adx_` keys, list keys (`adx_adplacement_ad`), an inactive role, a variable-backed setting, publishing states on a rule, a permission's `name`, site language ids, localized labels written differently |
+| `missing`   | code    | A web role and a table permission in the download only (errors), an inactive page in the download only and a page in the solution only (warnings)                                                       |
+| `content`   | classic | A setting value, a template's text, a web file's bytes and a form's settings JSON that differ, a role active on one side only, a field only the solution writes (warning); a form and a role list that don't differ |
+| `variables` | classic | A setting moved to a variable in the solution only, a variable missing from the solution, one with no value (warning), and a secret (not reported)                                                       |
+| `mismatch`  | code    | Two different sites                                                                                                                                                                                      |
+
 ## `ecoflux/`
 
 A copy of the EcoFlux demo code site (`pac pages download-code-site`), unchanged except that `.portalconfig/<org>-manifest.yml` was removed (it holds the source environment's host name and sync checksums, not site configuration). Used as the realistic smoke test and for docs snapshots.

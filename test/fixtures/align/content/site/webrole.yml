@@ -1,0 +1,10 @@
+# state-differs: Partners is active in the download, inactive in the solution
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Partners
+  adx_webroleid: 00000000-0000-0000-c047-000000000001
+# field-one-side (warning): the solution has a field the download's format doesn't write
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Staff
+  adx_webroleid: 00000000-0000-0000-c047-000000000002

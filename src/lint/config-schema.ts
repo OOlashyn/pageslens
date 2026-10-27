@@ -1,3 +1,4 @@
+import { CHECK_INFO, CHECKS } from '../align/types.js';
 import type { Rule } from './types.js';
 
 export const CONFIG_SCHEMA_URL =
@@ -22,7 +23,8 @@ export function configJsonSchema(rules: readonly Rule[]): object {
     $schema: 'http://json-schema.org/draft-07/schema#',
     $id: CONFIG_SCHEMA_URL,
     title: 'pageslens config',
-    description: 'Configuration for `pageslens lint`: rule severities and ignored findings.',
+    description:
+      'Configuration for `pageslens lint` and `pageslens align`: severities and ignored findings.',
     type: 'object',
     additionalProperties: false,
     properties: {
@@ -61,6 +63,49 @@ export function configJsonSchema(rules: readonly Rule[]): object {
             reason: {
               description: 'Why these findings are ignored, for reviewers.',
               type: 'string',
+            },
+          },
+        },
+      },
+      align: {
+        description: 'Configuration for `pageslens align`: check severities and ignored findings.',
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          checks: {
+            description: 'Severity per check; `off` turns the check off.',
+            type: 'object',
+            additionalProperties: false,
+            properties: Object.fromEntries(
+              CHECKS.map((check) => [
+                check,
+                {
+                  ...severity,
+                  description: `${CHECK_INFO[check].description} Default: ${CHECK_INFO[check].defaultSeverity}.`,
+                },
+              ]),
+            ),
+          },
+          ignore: {
+            description:
+              'Findings to leave out: those on any of the records, from the listed checks only when `checks` is given.',
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['records'],
+              properties: {
+                checks: nonEmptyList('Checks this entry applies to; every check when left out.', {
+                  enum: [...CHECKS],
+                }),
+                records: nonEmptyList(
+                  'Record GUIDs, as align prints them in JSON output (`recordId`).',
+                ),
+                reason: {
+                  description: 'Why these findings are ignored, for reviewers.',
+                  type: 'string',
+                },
+              },
             },
           },
         },

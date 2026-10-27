@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c0de-000000000009">
+  <content>{"copy":"&lt;p&gt;Welcome&lt;/p&gt;\n","isroot":false,"partialurl":"/","publishingstateid":"00000000-0000-0000-c0de-000000000002","rootwebpageid":"00000000-0000-0000-c0de-000000000008"}</content>
+  <name>Home</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c0de-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>00000000-0000-0000-c0de-000000000001</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

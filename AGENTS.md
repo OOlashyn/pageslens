@@ -60,9 +60,13 @@ A rule touches all of these. The tests check that every rule has a page listed i
 
 Grant sentences are shared with `test` in `src/graph/describe.ts`, so both say the same thing. Git runs with argument arrays and `--end-of-options` (`src/util/git.ts`): refs come from pull requests.
 
+## Changing align
+
+`pageslens align` compares a download with a solution of the same site, record by record (spec 0008, user reference `docs/align.md`). The checks are closed (`CHECKS` in `src/align/types.ts`), and so is the list of what isn't a difference (`src/align/normalize.ts`, with `ALIGN_IGNORED`). Both real pairs must give no findings (`test/align/align.test.ts`): when an adapter or a new `pac` makes them differ, find out why before adding a rule. A new check or rule touches `types.ts`, `normalize.ts` or `compare.ts`, `docs/align.md`, a case in `test/fixtures/align/` (listed in `test/fixtures/README.md`), and the snapshots (`vp test -u`; a new check also changes `pageslens.config.schema.json`).
+
 ## The GitHub Action
 
-`action.yml` (composite) runs `action/main.ts` in three steps: `run` (lint, test and diff; never fails, writes what failed to a file), `comment` and `finish` (fails the job). Spec: [specs/0004-github-action.md](specs/0004-github-action.md).
+`action.yml` (composite) runs `action/main.ts` in three steps: `run` (lint, test, align with `solution` set, and diff; never fails, writes what failed to a file), `comment` and `finish` (fails the job). Spec: [specs/0004-github-action.md](specs/0004-github-action.md).
 
 - Node.js runs `action/main.ts` directly, without a build: erasable TypeScript only (no enums, no parameter properties), Node built-ins only, no imports from `src/`.
 - It installs exactly the `package.json` version from npm, so the tag `v<x.y.z>` runs `pageslens@<x.y.z>`. Don't add a version input.

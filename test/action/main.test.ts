@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vite-plus/test';
 import {
   baseRef,
   commentAction,
+  commentBody,
+  COMMENT_MAX_LENGTH,
   findComment,
   findPolicy,
   headRef,
@@ -93,5 +95,21 @@ describe('action', () => {
     expect(commentAction(existing, false)).toBe('update');
     expect(commentAction(undefined, true)).toBe('create');
     expect(commentAction(undefined, false)).toBe('none');
+  });
+
+  it("puts the alignment above the access changes, under the diff's marker", () => {
+    const diff = '<!-- pageslens:diff site=site -->\n### Access changes\n\nNo access changes.\n';
+    const align =
+      '<!-- pageslens:align site=site -->\n### Download and solution\n\n**No differences.**\n';
+    expect(commentBody(undefined, undefined)).toBeUndefined();
+    expect(commentBody(diff, undefined)).toBe(diff);
+    expect(commentBody(undefined, align)).toBe(align);
+    expect(commentBody(diff, align)).toBe(
+      '<!-- pageslens:diff site=site -->\n### Download and solution\n\n**No differences.**\n\n### Access changes\n\nNo access changes.\n',
+    );
+    const long = commentBody(`${diff}${'x'.repeat(COMMENT_MAX_LENGTH)}`, align)!;
+    expect(long.length).toBeLessThanOrEqual(COMMENT_MAX_LENGTH);
+    expect(long).toMatch(/^<!-- pageslens:diff site=site -->\n### Download and solution/);
+    expect(long).toContain('Too long to add to this comment');
   });
 });

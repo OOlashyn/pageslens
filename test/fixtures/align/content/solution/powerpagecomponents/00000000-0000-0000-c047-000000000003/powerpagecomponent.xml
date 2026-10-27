@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c047-000000000003">
+  <content>{"value":"false"}</content>
+  <name>Search/Enabled</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c047-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

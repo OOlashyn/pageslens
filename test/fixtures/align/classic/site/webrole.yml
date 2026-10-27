@@ -1,0 +1,11 @@
+# clean: adx_ keys and the id key are the solution's keys
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: true
+  adx_name: Authenticated Users
+  adx_webroleid: 00000000-0000-0000-c1a5-000000000003
+- adx_anonymoususersrole: false
+  adx_authenticatedusersrole: false
+  adx_name: Retired
+  adx_webroleid: 00000000-0000-0000-c1a5-000000000004
+  statecode: 1
+  statuscode: 2

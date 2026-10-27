@@ -12,6 +12,9 @@ inputs:
   policy:
     description: The policy file. Default is the nearest pageslens.policy.yaml; with none, policy tests are skipped.
     default: ''
+  solution:
+    description: The unpacked solution to compare `path` with, as for `pageslens align`. Empty (the default) skips align.
+    default: ''
   lint:
     description: Run `pageslens lint`.
     default: 'true'
@@ -22,10 +25,10 @@ inputs:
     description: Run `pageslens diff` on pull requests.
     default: 'true'
   sarif:
-    description: Upload lint and test results to code scanning (needs `security-events` write).
+    description: Upload lint, test and align results to code scanning (needs `security-events` write).
     default: 'true'
   comment:
-    description: Post the access changes as one pull request comment, edited on each run (needs `pull-requests` write).
+    description: Post the access changes (and the alignment, with `solution`) as one pull request comment, edited on each run (needs `pull-requests` write).
     default: 'true'
   fail-on:
     description: Fail when the diff has `wider` changes, or `any` change. Default is to never fail on the diff.
@@ -56,6 +59,9 @@ outputs:
   policy-failures:
     description: Number of failed policy statements.
     value: ${{ steps.run.outputs.policy-failures }}
+  align-errors:
+    description: Number of align findings at error level, when `solution` is set.
+    value: ${{ steps.run.outputs.align-errors }}
   comment-url:
     description: The access-changes comment, when one was posted or updated.
     value: ${{ steps.comment.outputs.comment-url }}
@@ -74,6 +80,7 @@ runs:
       env:
         INPUT_PATH: ${{ inputs.path }}
         INPUT_POLICY: ${{ inputs.policy }}
+        INPUT_SOLUTION: ${{ inputs.solution }}
         INPUT_LINT: ${{ inputs.lint }}
         INPUT_TEST: ${{ inputs.test }}
         INPUT_DIFF: ${{ inputs.diff }}
@@ -95,12 +102,12 @@ runs:
         echo "::notice title=pageslens::SARIF upload failed. Code scanning needs to be available for the repository, and the job needs \`security-events: write\`."
 
     - id: comment
-      if: ${{ !cancelled() && inputs.comment == 'true' && steps.run.outputs.diff-file != '' && steps.run.outputs.fork == 'false' }}
+      if: ${{ !cancelled() && inputs.comment == 'true' && steps.run.outputs.comment-file != '' && steps.run.outputs.fork == 'false' }}
       shell: bash
       run: node "$GITHUB_ACTION_PATH/action/main.ts" comment
       env:
         INPUT_TOKEN: ${{ inputs.token }}
-        DIFF_FILE: ${{ steps.run.outputs.diff-file }}
+        COMMENT_FILE: ${{ steps.run.outputs.comment-file }}
         HAS_CHANGES: ${{ steps.run.outputs.has-changes }}
 
     - if: ${{ !cancelled() }}

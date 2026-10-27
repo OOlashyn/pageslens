@@ -1,0 +1,11 @@
+<!-- missing-from-download (warning): deleted in dev, still in the solution -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-a155-000000000005">
+  <content>{"isroot":true,"partialurl":"old-promo"}</content>
+  <name>Old Promo</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-a155-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

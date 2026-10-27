@@ -1,0 +1,11 @@
+<!-- clean: websiteid in content is dropped -->
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c0de-000000000002">
+  <content>{"isdefault":true,"isvisible":true,"websiteid":"00000000-0000-0000-c0de-000000000000"}</content>
+  <name>Published</name>
+  <powerpagecomponenttype>1</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c0de-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c1a5-000000000010">
+  <content>{"adx_entitypermission_webrole":["00000000-0000-0000-c1a5-000000000003"],"append":false,"appendto":false,"create":false,"delete":false,"entitylogicalname":"contact","entityname":"Contact Self","read":true,"scope":756150004,"write":false}</content>
+  <name>Contact Self</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c1a5-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,15 @@
+# clean: role lists are sets
+adx_entitypermission_webrole:
+- 00000000-0000-0000-c0de-000000000004
+- 00000000-0000-0000-c0de-000000000003
+append: false
+appendto: false
+contactrelationship: ''
+create: false
+delete: false
+entitylogicalname: contact
+entityname: Contact Self
+id: 00000000-0000-0000-c0de-000000000005
+read: true
+scope: 756150004
+write: true

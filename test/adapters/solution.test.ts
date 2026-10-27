@@ -131,6 +131,26 @@ describe('solution adapter: Registration, a classic site', () => {
     expect(setting(registration)?.value).toBeUndefined();
   });
 
+  it("reads a record's language element into the download's field", () => {
+    const languages = (site: Site) =>
+      site.records
+        .filter((r) => ['webpage', 'contentsnippet', 'weblinkset'].includes(r.kind))
+        .map((r) => {
+          const fields = r.fields as Record<string, unknown>;
+          const language =
+            fields.webpagelanguageid ??
+            fields.adx_webpagelanguageid ??
+            fields.contentsnippetlanguageid ??
+            fields.adx_contentsnippetlanguageid ??
+            fields.websitelanguageid ??
+            fields.adx_websitelanguageid;
+          return `${r.id} ${typeof language === 'string' ? language : '-'}`;
+        })
+        .sort();
+    expect(languages(solutionRegistration)).toEqual(languages(registration));
+    expect(languages(solutionRegistration).filter((l) => !l.endsWith(' -'))).toHaveLength(179);
+  });
+
   it("keeps a page rule's publishing states, which the download leaves out", () => {
     const rule = (site: Site) =>
       site.records.find(

@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c047-000000000001">
+  <content>{"anonymoususersrole":false,"authenticatedusersrole":false}</content>
+  <name>Partners</name>
+  <powerpagecomponenttype>11</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c047-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

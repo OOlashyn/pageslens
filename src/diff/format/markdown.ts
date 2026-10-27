@@ -132,11 +132,11 @@ function inline(parts: Part[]): string {
  * Names come from the site, so Markdown and HTML characters in them are shown as written. A
  * zero-width space after `@` keeps a name like `@org/team` from mentioning anyone in a comment.
  */
-function escape(text: string): string {
+export function escape(text: string): string {
   return text.replace(/[\\`*_[\]<>|~#]/g, (c) => `\\${c}`).replaceAll('@', '@&#8203;');
 }
 
-function code(text: string): string {
+export function code(text: string): string {
   return text.includes('`') ? `\`\` ${text} \`\`` : `\`${text}\``;
 }
 

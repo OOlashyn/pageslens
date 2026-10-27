@@ -1,0 +1,6 @@
+# clean: lists keep their adx_ names
+- adx_adplacement_ad:
+  - 00000000-0000-0000-c1a5-000000000021
+  - 00000000-0000-0000-c1a5-000000000020
+  adx_adplacementid: 00000000-0000-0000-c1a5-000000000009
+  adx_name: Sidebar

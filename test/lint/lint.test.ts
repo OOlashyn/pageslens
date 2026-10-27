@@ -328,7 +328,11 @@ describe('loadConfig', () => {
   }
 
   it('uses defaults when there is no config file', async () => {
-    expect(await loadConfig(await folder(), ruleIds)).toEqual({ rules: {}, ignore: [] });
+    expect(await loadConfig(await folder(), ruleIds)).toEqual({
+      rules: {},
+      ignore: [],
+      align: { checks: {}, ignore: [] },
+    });
   });
 
   it('finds the nearest config in a folder above', async () => {

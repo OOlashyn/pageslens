@@ -61,17 +61,20 @@ jobs:
         with:
           path: test/fixtures/ecoflux
           policy: test/fixtures/policies/ecoflux.policy.yaml
+          solution: test/fixtures/solution-ecoflux
           sarif: false # fixture findings don't belong in this repository's code scanning
       - name: Check the outputs
         env:
           OUTCOME: ${{ steps.pageslens.outcome }}
           LINT_ERRORS: ${{ steps.pageslens.outputs.lint-errors }}
           POLICY_FAILURES: ${{ steps.pageslens.outputs.policy-failures }}
+          ALIGN_ERRORS: ${{ steps.pageslens.outputs.align-errors }}
           WIDER: ${{ steps.pageslens.outputs.wider }}
           EVENT: ${{ github.event_name }}
         run: |
-          echo "outcome=$OUTCOME lint-errors=$LINT_ERRORS policy-failures=$POLICY_FAILURES wider=$WIDER"
+          echo "outcome=$OUTCOME lint-errors=$LINT_ERRORS policy-failures=$POLICY_FAILURES align-errors=$ALIGN_ERRORS wider=$WIDER"
           test "$OUTCOME" = failure
           test "$LINT_ERRORS" = 4
           test "$POLICY_FAILURES" = 0
+          test "$ALIGN_ERRORS" = 0
           if [ "$EVENT" = pull_request ]; then test -n "$WIDER"; fi

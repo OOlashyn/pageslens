@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c1a5-000000000012">
+  <content>{"type":756150000,"value":"Footer\n"}</content>
+  <name>Footer</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c1a5-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>00000000-0000-0000-c1a5-000000000001</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

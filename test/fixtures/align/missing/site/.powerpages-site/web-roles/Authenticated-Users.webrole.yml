@@ -1,0 +1,5 @@
+# clean: in both
+anonymoususersrole: false
+authenticatedusersrole: true
+id: 00000000-0000-0000-a155-000000000001
+name: Authenticated Users

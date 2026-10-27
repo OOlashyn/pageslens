@@ -1,0 +1,12 @@
+align test/fixtures/align/missing/site/.powerpages-site (code site download) with test/fixtures/align/missing/solution (AlignSolution 1.0.0.0)
+
+✗ missing from the solution: won't be in test or prod
+    table permission "Course Admins - Courses"  table-permissions/Course-Admins-Courses.tablepermission.yml
+    web role "Course Admins"                    web-roles/Course-Admins.webrole.yml
+⚠ missing from the solution: won't be in test or prod
+    web page "Draft" (inactive)  web-pages/draft/Draft.webpage.yml
+⚠ in the solution, not in the download
+    web page "Old Promo"  powerpagecomponents/00000000-0000-0000-a155-000000000005/powerpagecomponent.xml
+
+2 errors, 2 warnings. 2 records match.
+Access components differ: pageslens diff test/fixtures/align/missing/site/.powerpages-site test/fixtures/align/missing/solution shows what the solution changes about who can see what.

@@ -1,6 +1,6 @@
 # 0008: `pageslens align`
 
-**Status:** draft 2, every open question answered (see "Decisions"). Ready to build; nothing is built yet.
+**Status:** built (see "As built"), not yet released. Draft 2, every open question answered (see "Decisions").
 
 Teams on the solution track can keep two snapshots of the same site in git ([alm-story.md](research/alm-story.md), "The dev process"): a `pac pages download` that reviewers can read, and the unpacked solution that gets packed and deployed. `align` answers one question about them: **do the download and the solution describe the same site?**
 
@@ -228,6 +228,23 @@ The research has two extensions. Neither is in the first version (decisions 1 an
 7. **Configuration.** An `align` section in `pageslens.config.yaml` with severities and `ignore` by record? Recommended: yes, the same file and the same shape as lint's, so a component left out on purpose doesn't fail every build. No file globs: a record has a file on each side.
 8. **The Action.** A `solution` input in the first version, off by default? Recommended: yes. The pull request check is where `align` is meant to run, and teams on the two-snapshot process already use the Action. Off by default, since a git-first team's `site/` is ahead of `solution/` on purpose.
 9. **Inactive records missing from the solution**: a warning, as above, or an error like active ones? Recommended: a warning. In the target an inactive record does nothing, so the build shouldn't fail on it; the warning still says it'll be missing when someone activates it in dev.
+
+## As built
+
+Built to draft 2 with every decision as recorded; `--fix`, `--target`, the table check and the `setting-secret-value` lint rule are left out. The user reference is [docs/align.md](../docs/align.md). Where the code needed an interpretation the spec doesn't give:
+
+1. **What `field-one-side` means.** "A field on one side only that isn't on the known list" is read as: a field with a value on one side, where no record of that kind on the other side has the field at all, empty or not. That's what a new `pac` field looks like. A value on one side where the other side's format does write the field (a setting value cleared in the solution) is `content-differs`. One-sided fields on a record that also has `content-differs` go into that finding, so a record has one.
+2. **`source` defaults to `0`.** A setting with no `source` takes its own value, so a setting moved to a variable on one side only differs in `source`, as the spec asks, rather than having `source` on one side only.
+3. **The language element** is read by the solution adapter into the download's field for three kinds: `webpagelanguageid`, `contentsnippetlanguageid`, `websitelanguageid` (web link sets). Those 179 records in Registration compare equal. Another kind with the element would show as `field-one-side`; none was seen.
+4. **List keys.** The classic adapter's mapping (`classicModelFields`, exported) now keeps the name of every list-valued key, not only the three in `RELATIONSHIP_KEYS`. The typed schemas don't read the other lists, so nothing else changed.
+5. **Values.** GUIDs are lower-cased; a string is compared as JSON only when it's an object or array; booleans and numbers compare as the strings both adapters already give.
+6. **Order and wording.** Findings are sorted by severity, then check in the order of `CHECKS` (`site-mismatch`, `missing-from-solution`, `state-differs`, `content-differs`, `variable-missing`, `missing-from-download`, `field-one-side`, `variable-no-value`), then kind and name. Messages say "the download" and "the solution" rather than repeating the paths, which the header gives. "N records match" counts the records on both sides with no difference, before the config; it's left out after `site-mismatch`.
+7. **Variable checks** cover active and inactive settings, and point at the download's file when it has the setting, with the component's file next to it.
+8. **Config.** The `align` section is read from the config `lint` would use for `<site>`. An `align.ignore` entry needs `records`; `checks: { <check>: off }` is how a whole check is turned off. A record that matches no finding is an unused ignore, as for lint.
+9. **JSON.** Each finding has `siteFile` and `solutionFile` (whichever exist), `fields` on `content-differs` and `field-one-side`, and `inactive: true` on an inactive record missing from the solution. `summary` has the counts, `matched` and `ignored`.
+10. **Markdown** is capped at 20,000 characters, a third of GitHub's limit, since it shares the comment with the access changes.
+11. **The Action.** With `solution` set, `run` runs `align` on pull requests and pushes alike. The comment is the align Markdown above the access changes, under the diff's marker, so it's the same comment with or without `solution`; if both don't fit in 65,000 characters, the access changes are left to the job summary with a note. A comment is created when there are access changes or align findings. The align Markdown also goes to the job summary. CI runs it on the EcoFlux pair and expects `align-errors` to be `0`.
+12. **Fixtures.** `test/fixtures/align/` has the six pairs from "Tests and fixtures": `classic` and `code` are clean pairs that go through every rule in "What isn't a difference"; `content` also has a `field-one-side` case.
 
 ## Verification owed
 

@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c0de-000000000010">
+  <content>{"partialurl":"logo.png","publishingstateid":"00000000-0000-0000-c0de-000000000002"}</content>
+  <name>logo.png</name>
+  <powerpagecomponenttype>3</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c0de-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

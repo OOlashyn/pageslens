@@ -1,0 +1,19 @@
+# content-differs: Search/PageSize uses a variable in the solution only
+- adx_name: Search/PageSize
+  adx_sitesettingid: 00000000-0000-0000-0a75-000000000001
+  adx_value: 10
+# variable-missing: dwcrm_Gone isn't in the solution
+- adx_envvar_schema: dwcrm_Gone
+  adx_name: Search/Gone
+  adx_sitesettingid: 00000000-0000-0000-0a75-000000000002
+  adx_source: 1
+# variable-no-value: dwcrm_Empty has no current or default value
+- adx_envvar_schema: dwcrm_Empty
+  adx_name: Search/Empty
+  adx_sitesettingid: 00000000-0000-0000-0a75-000000000003
+  adx_source: 1
+# clean: a secret's value is in Azure Key Vault
+- adx_envvar_schema: dwcrm_Secret
+  adx_name: Authentication/OpenIdConnect/Contoso/ClientSecret
+  adx_sitesettingid: 00000000-0000-0000-0a75-000000000004
+  adx_source: 1
