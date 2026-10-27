@@ -1,6 +1,6 @@
 # 0008: `pageslens align`
 
-**Status:** draft 1, with open questions for Oleksandr. Nothing is built.
+**Status:** draft 2, every open question answered (see "Decisions"). Ready to build; nothing is built yet.
 
 Teams on the solution track can keep two snapshots of the same site in git ([alm-story.md](research/alm-story.md), "The dev process"): a `pac pages download` that reviewers can read, and the unpacked solution that gets packed and deployed. `align` answers one question about them: **do the download and the solution describe the same site?**
 
@@ -18,15 +18,16 @@ From [alm-story.md](research/alm-story.md) (agreed 2026-10-23):
 - The pull request runs `align site/ solution/` with `lint`, `test` and `diff`. `align` errors fail it.
 - `site/` is never deployed. What reaches test and prod is the solution.
 - The research table lists six findings: in the download and not the solution (error), the reverse (warning), content that differs (error), a table, web role or environment variable the site uses and the solution lacks (error), a secret-like setting with a hardcoded value (error), and a setting that differs per stage without a variable (warning).
-- In the git-first process for bigger teams, `site/` is edited in pull requests and is ahead of `solution/` until CI deploys `main` and syncs the solution. There, `align` runs after the deploy (with `--fix` to add what's missing), not on pull requests.
+- In the git-first process for bigger teams, `site/` is edited in pull requests and is ahead of `solution/` until CI deploys `main` and syncs the solution. There, `align` runs after the deploy (with `--fix` to add what's missing, which is later: decision 1), not on pull requests.
 
 ### What the committed pairs show
 
-Two real pairs are in `test/fixtures/`, each a download and a solution of the same environment: `registration/` with `solution-registration/` (a classic site, 477 records), and `ecoflux/` with `solution-ecoflux/` (a code site, 143 and 144 records). 0007 checked that they give the same typed model. For this spec, every field of every record was compared on 2026-10-25, with a throwaway script over the adapters' records. Every record matched by GUID except one, and every difference falls in the list below. **None of them is a real difference.**
+Two real pairs are in `test/fixtures/`, each a download and a solution of the same environment: `registration/` with `solution-registration/` (a classic site, 477 records), and `ecoflux/` with `solution-ecoflux/` (a code site, 143 records). 0007 checked that they give the same typed model. For this spec, every field of every record was compared on 2026-10-25, with a throwaway script over the adapters' records. Every record matched by GUID, and every difference falls in the list below. **None of them is a real difference.**
+
+The EcoFlux solution also had a web file named `.gitkeep` that the download didn't. It was left over from testing in the environment, not something `pac` does, and was removed from `solution-ecoflux/` (decision 4).
 
 | Difference                                                                                                                                                                                        | Where                                                    | Seen in      |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------ |
-| A web file named `.gitkeep` in the solution only: `download-code-site` leaves it out                                                                                                              | 1 web file                                               | EcoFlux      |
 | Field names: a classic download prefixes keys with `adx_` and names the id `adx_<kind>id` (or an `ID_KEYS` exception); relationship lists keep the prefix in both                                 | every classic record                                     | Registration |
 | Empty side files a download writes where the solution has no value or an empty one                                                                                                                | 100 in Registration, 42 in EcoFlux                       | both         |
 | Side file names: a page's `customcss` and `customjavascript` are `custom_css` and `custom_javascript`; a form's or list's `registerstartupscript` is `custom_javascript`                          | already mapped by the adapter                            | both         |
@@ -50,6 +51,7 @@ Two of these are new since 0007: `statuscode`, and the language lookups, which t
 
 - A solution has the environment variables its settings use (`environmentvariabledefinitions/`), and the tables it includes (`RootComponents` of type 1 in `Other/Solution.xml`, and `Entities/`). EcoFlux's solution has its four custom tables; Registration's has none, because its tables come from a Microsoft app (`msdynce_`) and from Dataverse (`contact`).
 - A download has neither, and can't say which tables or variables the target environment already has.
+- Microsoft's recommendation is a separate solution for the Dataverse tables the site uses, and a site solution with only Power Pages components and environment variables (Oleksandr, 2026-10-26). In that setup the site solution never has the tables, so a table missing from it says nothing (decision 5).
 
 ### What can't be known offline
 
@@ -60,10 +62,10 @@ Two of these are new since 0007: `statuscode`, and the language lookups, which t
 ## Design rules
 
 - **Same site, compared by GUID.** Records match by GUID, never by file or name, as in `diff`.
-- **Known differences are not findings.** The table above is the list of what two snapshots of one site differ in. `align` on the committed pairs reports nothing, apart from the `.gitkeep` web file if that isn't on the list (open question 4). A difference not on the list is reported, so a new `pac` version shows up instead of hiding things.
+- **Known differences are not findings.** The table above is the list of what two snapshots of one site differ in. `align` on the committed pairs reports nothing. A difference not on the list is reported, so a new `pac` version shows up instead of hiding things.
 - **Closed set of checks**, as for `diff`'s change kinds: no user-defined comparisons.
 - **The solution is what deploys.** Findings are worded from the target's side: "missing from the solution: won't be in test or prod".
-- **Offline.** No Dataverse connection, no `pac`. What needs one (`--fix` that runs `pac`, drift against an environment) is either printed for a person to run, or a later version.
+- **Offline.** No Dataverse connection, no `pac`. What needs one (`--fix`, drift against an environment) is a later version (decisions 1 and 2).
 - **Findings point at files a reviewer can open**: the download's file when there is one, the solution's component file otherwise.
 - **Deterministic output**: sorted, no timestamps.
 
@@ -93,25 +95,25 @@ pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config 
 
 ### Checks
 
-| Check                   | Severity                                      | Reports                                                                                                                                                                                           |
-| ----------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `site-mismatch`         | error                                         | The two sides are different sites (above). Nothing else is checked.                                                                                                                               |
-| `missing-from-solution` | error; warning for an inactive record         | A record in the download that the solution doesn't have. "It works in dev and won't be in test or prod." An inactive one does nothing in the target, but would be missing the day it's activated. |
-| `missing-from-download` | warning                                       | A component in the solution that the download doesn't have: deleted in dev and still shipped, or taken from a snapshot of a different time.                                                       |
-| `state-differs`         | error                                         | Active on one side, inactive on the other.                                                                                                                                                        |
-| `content-differs`       | error                                         | A field, a side file's text or a web file's content that differs, after the normalisation below. One finding per record, naming the fields (the first five, then "and N more").                   |
-| `field-one-side`        | warning                                       | A field with a value on one side only that isn't on the known list. Reported apart from `content-differs` so a new `pac` version doesn't fail every build (open question 3).                      |
-| `variable-missing`      | error                                         | A setting backed by an environment variable (`source: 1`) whose variable isn't in the solution. The import needs it. Uses the reason 0007's adapter already records.                              |
-| `variable-no-value`     | warning                                       | A variable a setting uses that has neither a current value nor a default in the solution, and isn't a secret: the import needs a value from the deployment settings file.                         |
-| `table-missing`         | warning, for the tables open question 5 picks | A table that a table permission, form, list or `Webapi/<table>/enabled` setting uses and the solution doesn't include.                                                                            |
+| Check                   | Severity                              | Reports                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `site-mismatch`         | error                                 | The two sides are different sites (above). Nothing else is checked.                                                                                                                               |
+| `missing-from-solution` | error; warning for an inactive record | A record in the download that the solution doesn't have. "It works in dev and won't be in test or prod." An inactive one does nothing in the target, but would be missing the day it's activated. |
+| `missing-from-download` | warning                               | A component in the solution that the download doesn't have: deleted in dev and still shipped, or taken from a snapshot of a different time.                                                       |
+| `state-differs`         | error                                 | Active on one side, inactive on the other.                                                                                                                                                        |
+| `content-differs`       | error                                 | A field, a side file's text or a web file's content that differs, after the normalisation below. One finding per record, naming the fields (the first five, then "and N more").                   |
+| `field-one-side`        | warning                               | A field with a value on one side only that isn't on the known list. Reported apart from `content-differs` so a new `pac` version doesn't fail every build (decision 3).                           |
+| `variable-missing`      | error                                 | A setting backed by an environment variable (`source: 1`) whose variable isn't in the solution. The import needs it. Uses the reason 0007's adapter already records.                              |
+| `variable-no-value`     | warning                               | A variable a setting uses that has neither a current value nor a default in the solution, and isn't a secret: the import needs a value from the deployment settings file.                         |
 
 A variable-backed setting is compared on `source` and `envvar_schema`, not on its value: the download has only the leftover value, and the solution's value is what the setting will have. A setting that uses a variable in the download and its own value in the solution (or the reverse) is `content-differs`.
 
 A web role or table permission missing from the solution is `missing-from-solution` like any component; no separate check is needed. A table permission whose role is in neither snapshot is a broken reference, which is `lint`'s job.
 
-Two of the research's findings are left out of `align`:
+Three of the research's findings are left out of `align`:
 
-- **Hardcoded secret-like settings** (`Authentication/OpenIdConnect/*/ClientSecret`, `.../AppSecret`, `.../ConsumerSecret` with a value) are a problem in a download too, which commits the secret to git just the same. That makes them a lint rule, not an alignment check (open question 6).
+- **Tables the site uses that the solution doesn't include.** The tables usually live in a solution of their own, so the site solution is expected to lack them (decision 5). `align` doesn't read `RootComponents` or `Entities/`.
+- **Hardcoded secret-like settings** (`Authentication/OpenIdConnect/*/ClientSecret`, `.../AppSecret`, `.../ConsumerSecret` with a value) are a problem in a download too, which commits the secret to git just the same. They become a lint rule, `setting-secret-value`, not an alignment check (decision 6).
 - **Settings that differ per stage without a variable** need the deployment settings files. A later `--settings <file>` could read them; not in this version.
 
 ### What isn't a difference
@@ -125,7 +127,8 @@ Before comparing, each record is brought to one form. This is the known-differen
 5. **Lists of GUIDs** are sets.
 6. **Ignored fields**, a closed list in code (`ALIGN_IGNORED`): `websiteid`; `statuscode` (`statecode` is compared); web file annotation metadata; the record's language field on the download side, compared instead with the solution's `powerpagesitelanguageid` element (the adapter reads it, a small change to 0007's adapter); a site language's `portallanguageid` and `systemlanguage`; a table permission's `name` field; and the fields only one side writes: `adx_accesscontrolrule_publishingstate`, `displaypagevalidation`, `enhancedauthorization`.
 7. **Variable-backed settings** are compared as above.
-8. **Records only one side can have**: a web file named `.gitkeep` in a code site's solution (open question 4).
+
+No record is exempt from matching: a record on one side only is always reported (decision 4).
 
 ### Output
 
@@ -155,7 +158,7 @@ When access components (web roles, table permissions, page rules, website access
 
 ### Configuration
 
-Reuse `pageslens.config.yaml` rather than a new file (open question 7):
+Reuse `pageslens.config.yaml` rather than a new file (decision 7):
 
 ```yaml
 align:
@@ -172,23 +175,22 @@ align:
 
 - **`diff`** compares access between any two snapshots, a download and a solution included. `align` compares every component and its content, not only access, and fails on what's missing. They overlap on purpose: `align` says the web role is missing, `diff site/ solution/` says what that does to who can see what. The note in `docs/diff.md` that a download and a solution "give no changes, unless the solution is missing components" points at `align`.
 - **`lint` and `test`** run on either snapshot. In the two-snapshot process, run them on the solution: it's what deploys, and it has the variables' values.
-- **The GitHub Action** gets a `solution` input, empty by default. When set, `run` also runs `align <path> <solution>`: its SARIF is uploaded with lint and test (its own category), its Markdown goes into the comment above the access changes, an `align-errors` output is set, and `finish` fails the job on errors. Off by default because only two-snapshot teams have both folders, and in the git-first process `site/` is ahead of `solution/` on every pull request (open question 8).
+- **The GitHub Action** gets a `solution` input, empty by default. When set, `run` also runs `align <path> <solution>`: its SARIF is uploaded with lint and test (its own category), its Markdown goes into the comment above the access changes, an `align-errors` output is set, and `finish` fails the job on errors. Off by default because only two-snapshot teams have both folders, and in the git-first process `site/` is ahead of `solution/` on every pull request (decision 8).
 
-### `--fix` and `--target`
+### Later: `--fix` and `--target`
 
-The research has two extensions. Neither is needed for the main use, and each needs something an offline check doesn't have.
+The research has two extensions. Neither is in the first version (decisions 1 and 2): each needs more investigation, and something an offline check doesn't have. What's known so far, for when they're picked up:
 
-- **`--fix`**: the `pac solution add-solution-component` commands for what's missing. Printing them is offline and safe, but the component type for a site component is a per-environment number (above), so a printed command needs it from the user (`--component-type <n>`, found once with the query Learn gives) or a placeholder. Running them needs `pac`, an auth profile and the dev environment: it's a step for a CI job or an agent skill (`fix-alignment` in the research), not for a check. Recommended scope in open question 1.
-- **`--target`**: a download of test or prod against the solution, to show edits made in the target (the unmanaged layer Learn warns about). The comparison is the same; what changes is the reading. A managed target has every solution component, so `missing-from-download` becomes the error and `missing-from-solution` means something created in the target. Before building it, it needs one sample: what `pac pages download` writes for a site that came in a managed solution. Recommended scope in open question 2.
+- **`--fix`**: the `pac solution add-solution-component` commands for what's missing. Printing them is offline and safe, but the component type for a site component is a per-environment number (above), so a printed command needs it from the user (`--component-type <n>`, found once with the query Learn gives) or a placeholder. Running them needs `pac`, an auth profile and the dev environment: it's a step for a CI job or an agent skill (`fix-alignment` in the research), not for a check. To investigate: whether the type numbers really differ between environments, and whether `pac pages upload` keeps GUIDs on new components (alm-story.md, open point 7).
+- **`--target`**: a download of test or prod against the solution, to show edits made in the target (the unmanaged layer Learn warns about). The comparison is the same; what changes is the reading. A managed target has every solution component, so `missing-from-download` becomes the error and `missing-from-solution` means something created in the target. To investigate, with environments to deploy to: what `pac pages download` writes for a site that came in a managed solution.
 
 ## Tests and fixtures
 
-- **The real pairs, read-only.** `registration/` with `solution-registration/`, and `ecoflux/` with `solution-ecoflux/`, give no errors and no warnings (EcoFlux's `.gitkeep` aside, per open question 4), and every known difference in the table above is exercised. If the adapter or `pac` changes and a pair stops aligning, a test fails.
+- **The real pairs, read-only.** `registration/` with `solution-registration/`, and `ecoflux/` with `solution-ecoflux/`, give no errors and no warnings, and every known difference in the table above is exercised. If the adapter or `pac` changes and a pair stops aligning, a test fails.
 - **Hand-written broken pairs** in `test/fixtures/align/<case>/{site,solution}`, small, each case's first file starting with a comment naming the check (`#` in YAML, an XML comment in a component, as 0007's diff fixtures do):
   - `missing`: a web role and a table permission in the download only (error), an inactive page in the download only (warning), a page in the solution only (warning).
   - `content`: a setting value, a template's text, a web file's bytes, a form's `settings` JSON with a real change next to one that differs only in `$type`/`Type` and formatting (only the first is reported), a role list in another order (not reported), a record active on one side only.
   - `variables`: a setting moved to a variable in the solution only; a variable missing from the solution; one with no value; a secret (not reported).
-  - `tables`: a permission on a custom table that the solution doesn't include (per open question 5).
   - `mismatch`: two different sites.
   - `classic` and `code`: one of each layout, so both key forms are covered.
 - **Unit tests** for the normalisation (keys, empty, JSON, sets), the exit codes and the wrong-kind errors, and a text snapshot of each format.
@@ -201,8 +203,21 @@ The research has two extensions. Neither is needed for the main use, and each ne
 - `src/cli.ts`: the command. `src/lint/config.ts` and the schema: the `align` section.
 - `action.yml` and `action/main.ts`: the `solution` input and output.
 - Docs: `docs/align.md` (the user reference: checks, what isn't a difference, exit codes), the README (a section and the Action input), `docs/diff.md` (the pointer).
+- The `setting-secret-value` lint rule (decision 6) follows AGENTS.md, "Changing a lint rule". It can ship with `align` or on its own.
 
-## Open questions for Oleksandr
+## Decisions (Oleksandr, 2026-10-26)
+
+1. **No `--fix` in the first version.** Later, after more investigation (roadmap, Later).
+2. **No `--target` in the first version.** It needs environments to deploy to; much later, after more investigation (roadmap, Later).
+3. A field on one side only that isn't on the known list is a warning, `field-one-side`, as recommended.
+4. **The `.gitkeep` web file isn't a `pac` behaviour.** It was left over from testing in the environment, and was removed from `solution-ecoflux/`. No record is exempt from matching.
+5. **No table check.** Microsoft recommends a separate solution for the configuration tables, and a site solution with only Power Pages components and environment variables. Tables missing from the site solution are expected, so `align` doesn't report them.
+6. Hardcoded secrets become a lint rule, `setting-secret-value`, as recommended.
+7. An `align` section in `pageslens.config.yaml`, with severities and `ignore` by record, as recommended.
+8. The Action gets a `solution` input, off by default, as recommended.
+9. An inactive record missing from the solution is a warning, as recommended.
+
+## Open questions for Oleksandr (answered, see Decisions)
 
 1. **`--fix` in the first version?** Options: none; print the `pac solution add-solution-component` commands; or run them. Recommended: print them, behind `--fix`, with the component type from `--component-type <n>` and a placeholder without it, and say in the docs how to find the number. Running `pac` breaks the offline rule, needs credentials in the check, and belongs in a CI step or an agent skill that reads the JSON.
 2. **`--target` in the first version?** Recommended: not yet. Ship `align` for the two-snapshot pull request first. `--target` needs a sample of a download from an environment where the site came in a managed solution, to know what's normal there; it's a follow-up once one is at hand (roadmap, "Verification in a Dataverse environment").
@@ -216,7 +231,7 @@ The research has two extensions. Neither is needed for the main use, and each ne
 
 ## Verification owed
 
-1. A download of a site deployed by a managed solution (for `--target`): what it writes, and whether anything differs from the solution beyond the known list.
+1. For `--target`, later: a download of a site deployed by a managed solution, what it writes, and whether anything differs from the solution beyond the known list.
 2. Advanced forms, column permissions, Server Logic and cloud flows (0007, verification 3): their own one-sided fields, if any, before `align` claims to compare them cleanly. Until then they're compared like any untyped record, and a difference shows as a finding.
 3. A code site's download of a variable-backed setting (0007, verification 2): `source: 1` and `envvar_schema`, as expected.
 

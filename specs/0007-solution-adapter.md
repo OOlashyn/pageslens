@@ -203,7 +203,7 @@ Design: this document (draft 3, all 9 questions answered). User reference: the "
 - Found while building, outside the solution adapter:
   - `registration/` is a download of PagesLensEDM2, the site the solution samples came from. It's used as the solution's download rather than adding a second copy; its `sitesetting.yml` was replaced with the 2026-10-25 download, the only file that differed.
   - The classic adapter read lists without an id: their id key is `adx_entitylistid`. Added to `ID_KEYS`. Lists aren't typed, so no output changed.
-  - The EcoFlux solution has one component its download doesn't: a web file named `.gitkeep`, which `pac pages download-code-site` leaves out. It's the folder spike 0 couldn't match.
+  - The EcoFlux solution had one component its download didn't: a web file named `.gitkeep`, the folder spike 0 couldn't match. It was left over from testing in the environment, so it was removed from `solution-ecoflux/` (2026-10-26, spec 0008).
 - Tested: `test/adapters/solution.test.ts` checks `solution-ecoflux/` against `ecoflux/` (model, side files, lint findings, docs) and `solution-registration/` against `registration/` (the same, apart from the variable-backed setting), the hand-written `solution-broken/`, and the errors on copies in a temporary folder. `diff` has a `solution` case (variable values between two solutions, also committed as a clone project's `src/` in `git.test.ts`), a `variables` case (downloads, both ways round) and a solution-to-download case with no changes. Their marker comments are XML comments, in the head's environment variable definitions, since a component file can't start with `#`.
 
 ## Sources

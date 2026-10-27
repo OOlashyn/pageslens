@@ -103,7 +103,7 @@ It reads into the same records, model, side files and lint findings as `registra
 
 ## `solution-ecoflux/`
 
-The EcoFlux solution, a `pac solution clone` project (`EcoFluxPortal.cdsproj`, `src/`) from the same environment as `ecoflux/`, without `primarydomainname` and the publisher's e-mail address. Read-only. It reads into the same model, side files, lint findings and docs as `ecoflux/` (the docs index adds the solution's name). It has one record the download doesn't: a web file named `.gitkeep`, which `pac pages download-code-site` leaves out.
+The EcoFlux solution, a `pac solution clone` project (`EcoFluxPortal.cdsproj`, `src/`) from the same environment as `ecoflux/`, without `primarydomainname` and the publisher's e-mail address. Read-only. It reads into the same model, side files, lint findings and docs as `ecoflux/` (the docs index adds the solution's name), with the same records. The export also had a web file named `.gitkeep`, left over from testing in the environment and not in the download; it was removed from the copy (2026-10-26).
 
 ## `solution-broken/`
 

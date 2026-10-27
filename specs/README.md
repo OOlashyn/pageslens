@@ -19,7 +19,7 @@ Design notes for pageslens: why it works the way it does. User docs are the [REA
 | [0005: Page access rules](0005-page-access-rules.md)                    | lint and docs shipped in 0.6.0; test and diff in 0.7.0 |
 | [0006: Page access in `test` and `diff`](0006-page-access-test-diff.md) | shipped in 0.7.0                                       |
 | [0007: Solution adapter](0007-solution-adapter.md)                      | shipped in 0.8.0                                       |
-| [0008: `pageslens align`](0008-align.md)                                | draft, open questions                                  |
+| [0008: `pageslens align`](0008-align.md)                                | specified, not built                                   |
 
 ## Writing a spec
 
