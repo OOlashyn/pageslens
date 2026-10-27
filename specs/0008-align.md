@@ -1,6 +1,6 @@
 # 0008: `pageslens align`
 
-**Status:** built (see "As built"), not yet released. Draft 2, every open question answered (see "Decisions").
+**Status:** shipped in 0.9.0 (see "As built"). Draft 2, every open question answered (see "Decisions").
 
 Teams on the solution track can keep two snapshots of the same site in git ([alm-story.md](research/alm-story.md), "The dev process"): a `pac pages download` that reviewers can read, and the unpacked solution that gets packed and deployed. `align` answers one question about them: **do the download and the solution describe the same site?**
 
