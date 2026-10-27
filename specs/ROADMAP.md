@@ -2,17 +2,16 @@
 
 Where pageslens stands and what comes next. Keep this file short and current: update it in the same change that finishes or starts a piece of work. History lives in the feature specs and in [archive/m1-plan.md](archive/m1-plan.md).
 
-## Status (2026-10-26)
+## Status (2026-10-27)
 
-|                     |                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Released (`latest`) | `0.8.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic downloads and unpacked solutions (spec [0007](0007-solution-adapter.md)), settings from environment variables, config ignores (unused ones listed), inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
-| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3: the solution adapter shipped in 0.8.0; `align` and the `setting-secret-value` rule are built (spec [0008](0008-align.md)) and wait for a release                                                                                                                                                                                                      |
+|                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Released (`latest`) | `0.9.0`: `lint`, `test`, `diff`, `align`, `docs`, `--format sarif`, the GitHub Action, code-site and classic downloads and unpacked solutions (specs [0007](0007-solution-adapter.md), [0008](0008-align.md)), settings from environment variables, config ignores (unused ones listed), inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
+| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3 done: the solution adapter shipped in 0.8.0, `align` and the `setting-secret-value` rule in 0.9.0                                                                                                                                                                                                                                                                                       |
 
 ## Next
 
-1. **Release `align` and `setting-secret-value`** (spec [0008](0008-align.md)), built and waiting for the maintainer.
-2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
+1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed
 
