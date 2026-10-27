@@ -1,0 +1,8 @@
+# clean: the solution's publishing states list is its own
+- adx_name: Restrict Read on Home
+  adx_right: 1
+  adx_scope: 1
+  adx_webpageaccesscontrolrule_webrole:
+  - 00000000-0000-0000-c1a5-000000000003
+  adx_webpageaccesscontrolruleid: 00000000-0000-0000-c1a5-000000000007
+  adx_webpageid: 00000000-0000-0000-c1a5-000000000008

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/OOlashyn/pageslens/main/pageslens.config.schema.json",
   "title": "pageslens config",
-  "description": "Configuration for `pageslens lint`: rule severities and ignored findings.",
+  "description": "Configuration for `pageslens lint` and `pageslens align`: severities and ignored findings.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -37,6 +37,15 @@
             "error"
           ],
           "description": "Web API error responses include the inner error (`Webapi/error/innererror = true`). Default: warning."
+        },
+        "setting-secret-value": {
+          "enum": [
+            "off",
+            "info",
+            "warning",
+            "error"
+          ],
+          "description": "A secret site setting (`ClientSecret`, `AppSecret`, `ConsumerSecret`) with a value of its own. Default: error."
         },
         "permission-no-role": {
           "enum": [
@@ -202,6 +211,7 @@
                 "webapi-wildcard-fields",
                 "webapi-no-permission",
                 "webapi-inner-errors",
+                "setting-secret-value",
                 "permission-no-role",
                 "global-write-anonymous",
                 "global-write-authenticated",
@@ -242,6 +252,135 @@
           "reason": {
             "description": "Why these findings are ignored, for reviewers.",
             "type": "string"
+          }
+        }
+      }
+    },
+    "align": {
+      "description": "Configuration for `pageslens align`: check severities and ignored findings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "description": "Severity per check; `off` turns the check off.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "site-mismatch": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "The download and the solution are different sites. Nothing else is checked. Default: error."
+            },
+            "missing-from-solution": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A record in the download that the solution doesn't have: it won't be in test or prod. A warning for an inactive record. Default: error."
+            },
+            "state-differs": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A record active on one side and inactive on the other. Default: error."
+            },
+            "content-differs": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A field, a side file's text or a web file's content that differs. Default: error."
+            },
+            "variable-missing": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A setting backed by an environment variable that isn't in the solution: the import needs it. Default: error."
+            },
+            "missing-from-download": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A component in the solution that the download doesn't have: deleted in dev and still shipped, or from a snapshot of another time. Default: warning."
+            },
+            "field-one-side": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "A field with a value on one side only that the other side's format doesn't write: a new pac version, or a field pageslens doesn't know yet. Default: warning."
+            },
+            "variable-no-value": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "An environment variable a setting uses with no current or default value in the solution: the import needs one from the deployment settings. Default: warning."
+            }
+          }
+        },
+        "ignore": {
+          "description": "Findings to leave out: those on any of the records, from the listed checks only when `checks` is given.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "records"
+            ],
+            "properties": {
+              "checks": {
+                "description": "Checks this entry applies to; every check when left out.",
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "site-mismatch",
+                    "missing-from-solution",
+                    "state-differs",
+                    "content-differs",
+                    "variable-missing",
+                    "missing-from-download",
+                    "field-one-side",
+                    "variable-no-value"
+                  ]
+                },
+                "minItems": 1
+              },
+              "records": {
+                "description": "Record GUIDs, as align prints them in JSON output (`recordId`).",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "reason": {
+                "description": "Why these findings are ignored, for reviewers.",
+                "type": "string"
+              }
+            }
           }
         }
       }

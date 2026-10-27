@@ -1,0 +1,19 @@
+# clean: the settings JSON differs only in type keys and formatting
+adx_entityformid: 00000000-0000-0000-c047-000000000008
+adx_entityname: contact
+adx_name: View
+adx_settings: >-
+  {
+    "Type": "FormActionMetadata",
+    "Actions": [],
+    "DeleteDialog": {
+      "Type": "DeleteModal",
+      "Title": [
+        {
+          "Type": "LanguageResources",
+          "LCID": 1033,
+          "Value": "Delete"
+        }
+      ]
+    }
+  }

@@ -94,13 +94,33 @@ export function findComment(comments: IssueComment[], marker: string): IssueComm
   );
 }
 
-/** With no access changes, an earlier comment is updated to say so, but none is created. */
+/** With nothing to report, an earlier comment is updated to say so, but none is created. */
 export function commentAction(
   existing: IssueComment | undefined,
   hasChanges: boolean,
 ): 'create' | 'update' | 'none' {
   if (existing) return 'update';
   return hasChanges ? 'create' : 'none';
+}
+
+/** GitHub rejects comments over 65,536 characters; this leaves room for its own text. */
+export const COMMENT_MAX_LENGTH = 65_000;
+
+/**
+ * The pull request comment: `align`'s Markdown above the access changes, under the diff's marker
+ * so the comment found and edited is the same with `solution` set or not. Undefined when neither
+ * ran. Access changes that don't fit next to the alignment are left to the job summary.
+ */
+export function commentBody(
+  diff: string | undefined,
+  align: string | undefined,
+): string | undefined {
+  if (!diff || !align) return diff ?? align;
+  const [marker, ...access] = diff.split('\n');
+  const alignment = align.split('\n').slice(1).join('\n');
+  const body = `${marker}\n${alignment}\n${access.join('\n')}`;
+  if (body.length <= COMMENT_MAX_LENGTH) return body;
+  return `${marker}\n${alignment}\n### Access changes\n\n_Too long to add to this comment: see the job summary._\n`;
 }
 
 function count(n: number, singular: string, plural = `${singular}s`): string {
@@ -189,7 +209,7 @@ function pageslens(cli: string, args: string[], outFile?: string): number {
 }
 
 /**
- * Runs lint, test and diff, and never fails: each command's outcome goes to `failures.txt` for
+ * Runs lint, test, align and diff, and never fails: each command's outcome goes to `failures.txt` for
  * `finish`, so a failing lint doesn't stop the SARIF upload or the comment.
  */
 function run(): void {
@@ -244,14 +264,41 @@ function run(): void {
     }
   }
 
-  const sarifWanted = flag('sarif') && (flag('lint') || flag('test'));
-  const sarifFiles = ['lint.sarif', 'test.sarif'].some((file) => existsSync(join(sarifDir, file)));
+  // align compares the download at `path` with the solution, when one is given
+  const solution = input('solution');
+  let alignMarkdown: string | undefined;
+  let alignFindings = 0;
+  if (solution) {
+    const { code, counts } = check(['align', path, solution], 'align.sarif');
+    if (counts) {
+      const errors = count(counts.errors, 'error');
+      setOutput('align-errors', counts.errors);
+      lines.push(`- Align: ${errors}, ${count(counts.warnings, 'warning')}`);
+      if (code === 1) failures.push(`align found ${errors}`);
+      alignFindings = counts.errors + counts.warnings;
+      const markdown = join(dir, 'align.md');
+      pageslens(cli, ['align', path, solution, '--format', 'markdown'], markdown);
+      alignMarkdown = readFileSync(markdown, 'utf8');
+    } else {
+      lines.push(`- Align: couldn't run`);
+      failures.push(`align couldn't run (exit code ${code})`);
+    }
+  }
+
+  const sarifWanted = flag('sarif') && (flag('lint') || flag('test') || solution !== '');
+  const sarifFiles = ['lint.sarif', 'test.sarif', 'align.sarif'].some((file) =>
+    existsSync(join(sarifDir, file)),
+  );
   if (sarifWanted && fork) {
     notice('Pull requests from forks get a read-only token, so SARIF was not uploaded.');
   }
   setOutput('sarif-dir', sarifWanted && sarifFiles && !fork ? sarifDir : '');
 
   if (lines.length > 0) summary(`### pageslens checks\n\n${lines.join('\n')}\n\n`);
+  if (alignMarkdown) summary(`${alignMarkdown}\n`);
+
+  let diffMarkdown: string | undefined;
+  let accessChanges = 0;
 
   if (pr && flag('diff')) {
     const base = baseRef(
@@ -283,9 +330,9 @@ function run(): void {
       setOutput('wider', wider);
       setOutput('narrower', narrower);
       setOutput('neutral', neutral);
-      setOutput('has-changes', wider + narrower + neutral > 0);
-      setOutput('diff-file', markdown);
-      summary(`${readFileSync(markdown, 'utf8')}\n`);
+      accessChanges = wider + narrower + neutral;
+      diffMarkdown = readFileSync(markdown, 'utf8');
+      summary(`${diffMarkdown}\n`);
       if (code === 1)
         failures.push(`diff --fail-on ${failOn}: ${wider} wider, ${narrower} narrower`);
     }
@@ -294,6 +341,14 @@ function run(): void {
         'Pull requests from forks get a read-only token, so the access changes are in the job summary, not a comment.',
       );
     }
+  }
+
+  const body = pr ? commentBody(diffMarkdown, alignMarkdown) : undefined;
+  if (body) {
+    const file = join(dir, 'comment.md');
+    writeFileSync(file, body);
+    setOutput('comment-file', file);
+    setOutput('has-changes', accessChanges + alignFindings > 0);
   }
 
   setOutput('fork', fork);
@@ -328,11 +383,11 @@ async function api<T>(method: string, path: string, body?: object): Promise<T> {
   return (await response.json()) as T;
 }
 
-/** Creates or updates the access-changes comment; a token that can't comment is a notice, not a failure. */
+/** Creates or updates the comment (access changes, and the alignment with `solution`); a token that can't comment is a notice, not a failure. */
 async function comment(): Promise<void> {
   const pr = pullRequest(readEvent());
   if (!pr) return;
-  const body = readFileSync(env('DIFF_FILE'), 'utf8');
+  const body = readFileSync(env('COMMENT_FILE'), 'utf8');
   const marker = body.split('\n', 1)[0] ?? '';
   const repo = `/repos/${env('GITHUB_REPOSITORY')}`;
   try {
@@ -357,7 +412,7 @@ async function comment(): Promise<void> {
       console.log(`${action === 'update' ? 'Updated' : 'Posted'} ${posted.html_url}`);
       setOutput('comment-url', posted.html_url);
     } else {
-      console.log('No access changes and no earlier comment, so nothing was posted.');
+      console.log('Nothing to report and no earlier comment, so nothing was posted.');
     }
   } catch (cause) {
     if (cause instanceof ApiError && (cause.status === 403 || cause.status === 404)) {

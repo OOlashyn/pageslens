@@ -1,0 +1,4 @@
+anonymoususersrole: false
+authenticatedusersrole: true
+id: 00000000-0000-0000-c0de-000000000003
+name: Authenticated Users

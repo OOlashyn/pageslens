@@ -1,0 +1,5 @@
+# missing-from-solution (error): a web role made in dev and never added
+anonymoususersrole: false
+authenticatedusersrole: false
+id: 00000000-0000-0000-a155-000000000002
+name: Course Admins

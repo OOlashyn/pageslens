@@ -1,0 +1,9 @@
+# missing-from-solution (error): a table permission made in dev and never added
+adx_entitypermission_webrole:
+- 00000000-0000-0000-a155-000000000002
+entitylogicalname: dwcrm_course
+entityname: Course Admins - Courses
+id: 00000000-0000-0000-a155-000000000003
+read: true
+scope: 756150000
+write: true

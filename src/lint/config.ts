@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parse, YAMLParseError } from 'yaml';
 import { z } from 'zod';
+import { CHECKS } from '../align/types.js';
 import { toPosixPath } from '../model/normalize.js';
 import { findUp } from '../util/fs.js';
 import type { RuleSetting } from './types.js';
@@ -13,6 +14,8 @@ export interface LintConfig {
   path?: string;
   rules: Record<string, RuleSetting>;
   ignore: IgnoreEntry[];
+  /** `pageslens align`'s section. */
+  align: AlignConfig;
 }
 
 export class ConfigError extends Error {
@@ -39,9 +42,28 @@ const ignoreSchema = z
  */
 export type IgnoreEntry = z.output<typeof ignoreSchema>;
 
+const settingSchema = z.enum(['off', 'info', 'warning', 'error']);
+
+const alignIgnoreSchema = z.strictObject({
+  checks: z.array(z.enum(CHECKS)).min(1).optional(),
+  records: nonEmptyList,
+  reason: z.string().optional(),
+});
+
+/** Findings `align` leaves out: those on any of `records` (GUIDs), from `checks` only when given. */
+export type AlignIgnoreEntry = z.output<typeof alignIgnoreSchema>;
+
+const alignSchema = z.strictObject({
+  checks: z.partialRecord(z.enum(CHECKS), settingSchema).default({}),
+  ignore: z.array(alignIgnoreSchema).default([]),
+});
+
+export type AlignConfig = z.output<typeof alignSchema>;
+
 const configSchema = z.strictObject({
-  rules: z.record(z.string(), z.enum(['off', 'info', 'warning', 'error'])).default({}),
+  rules: z.record(z.string(), settingSchema).default({}),
   ignore: z.array(ignoreSchema).default([]),
+  align: alignSchema.default({ checks: {}, ignore: [] }),
 });
 
 /**
@@ -54,7 +76,7 @@ export async function loadConfig(
   explicitPath?: string,
 ): Promise<LintConfig> {
   const path = explicitPath ? resolve(explicitPath) : await findUp(resolve(startDir), CONFIG_FILE);
-  if (!path) return { rules: {}, ignore: [] };
+  if (!path) return { rules: {}, ignore: [], align: { checks: {}, ignore: [] } };
 
   let text: string;
   try {
@@ -80,7 +102,7 @@ export async function loadConfig(
     throw new ConfigError(`${path}: ${issues.join('; ')}`);
   }
 
-  const { rules, ignore } = result.data;
+  const { rules, ignore, align } = result.data;
   const named = [...Object.keys(rules), ...ignore.flatMap((entry) => entry.rules ?? [])];
   const unknown = [...new Set(named.filter((id) => !knownRuleIds.includes(id)))];
   if (unknown.length > 0) {
@@ -94,5 +116,12 @@ export async function loadConfig(
       ...(entry.files && { files: entry.files.map((f) => toPosixPath(f).replace(/^\.\//, '')) }),
       ...(entry.records && { records: entry.records.map((id) => id.toLowerCase()) }),
     })),
+    align: {
+      checks: align.checks,
+      ignore: align.ignore.map((entry) => ({
+        ...entry,
+        records: entry.records.map((id) => id.toLowerCase()),
+      })),
+    },
   };
 }

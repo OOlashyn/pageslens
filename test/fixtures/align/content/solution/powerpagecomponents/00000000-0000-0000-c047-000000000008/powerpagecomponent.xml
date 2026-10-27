@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c047-000000000008">
+  <content>{"entityname":"contact","settings":"{\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.FormActionMetadata, Adxstudio.Xrm\",\"DeleteDialog\":{\"Title\":[{\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.LanguageResources, Adxstudio.Xrm\",\"Value\":\"Delete\",\"LCID\":1033}],\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.GridMetadata+DeleteModal, Adxstudio.Xrm\"},\"Actions\":[]}"}</content>
+  <name>View</name>
+  <powerpagecomponenttype>15</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c047-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

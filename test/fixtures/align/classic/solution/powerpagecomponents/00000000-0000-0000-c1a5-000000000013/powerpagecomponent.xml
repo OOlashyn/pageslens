@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c1a5-000000000013">
+  <content>{"entityname":"contact","views":"[{\"DisplayName\":[{\"Value\":\"Active\",\"LCID\":1033}],\"ViewId\":\"00000000-0000-0000-c1a5-000000000030\"}]"}</content>
+  <name>Contacts</name>
+  <powerpagecomponenttype>17</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c1a5-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

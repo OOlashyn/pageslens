@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c1a5-000000000009">
+  <content>{"adx_adplacement_ad":["00000000-0000-0000-c1a5-000000000020","00000000-0000-0000-c1a5-000000000021"]}</content>
+  <name>Sidebar</name>
+  <powerpagecomponenttype>26</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c1a5-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

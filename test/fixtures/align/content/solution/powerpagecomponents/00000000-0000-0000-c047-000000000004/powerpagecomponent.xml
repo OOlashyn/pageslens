@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c047-000000000004">
+  <content>{"adx_entitypermission_webrole":["00000000-0000-0000-c047-000000000001","00000000-0000-0000-c047-000000000002"],"entitylogicalname":"account","entityname":"Partner Accounts","read":true,"scope":756150000}</content>
+  <name>Partner Accounts</name>
+  <powerpagecomponenttype>18</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c047-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "site": {
+    "path": "test/fixtures/align/content/site",
+    "format": "classic-download",
+    "layout": "classic",
+    "site": {
+      "id": "00000000-0000-0000-c047-000000000000",
+      "name": "Content"
+    }
+  },
+  "solution": {
+    "path": "test/fixtures/align/content/solution",
+    "format": "solution",
+    "layout": "classic",
+    "site": {
+      "id": "00000000-0000-0000-c047-000000000000",
+      "name": "Content"
+    },
+    "solution": {
+      "name": "AlignSolution",
+      "version": "1.0.0.0"
+    }
+  },
+  "summary": {
+    "error": 5,
+    "warning": 1,
+    "info": 0,
+    "matched": 3,
+    "ignored": 0
+  },
+  "findings": [
+    {
+      "check": "state-differs",
+      "severity": "error",
+      "kind": "webrole",
+      "recordId": "00000000-0000-0000-c047-000000000001",
+      "name": "Partners",
+      "message": "active in the download, inactive in the solution",
+      "siteFile": "webrole.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000001/powerpagecomponent.xml"
+    },
+    {
+      "check": "content-differs",
+      "severity": "error",
+      "kind": "basicform",
+      "recordId": "00000000-0000-0000-c047-000000000007",
+      "name": "Edit",
+      "message": "settings differs",
+      "siteFile": "basic-forms/edit/Edit.basicform.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000007/powerpagecomponent.xml",
+      "fields": [
+        {
+          "field": "settings",
+          "site": "{\n  \"Type\": \"FormActionMetadata\",\n  \"Actions\": [],\n  \"DeleteDialog\": {\n    \"Type\": \"DeleteModal\",\n    \"Title\": [\n      {\n        \"Type\": \"LanguageResources\",\n        \"LCID\": 1033,\n        \"Value\": \"Remove\"\n      }\n    ]\n  }\n}",
+          "solution": "{\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.FormActionMetadata, Adxstudio.Xrm\",\"DeleteDialog\":{\"Title\":[{\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.LanguageResources, Adxstudio.Xrm\",\"Value\":\"Delete\",\"LCID\":1033}],\"$type\":\"Adxstudio.Xrm.Web.UI.JsonConfiguration.GridMetadata+DeleteModal, Adxstudio.Xrm\"},\"Actions\":[]}"
+        }
+      ]
+    },
+    {
+      "check": "content-differs",
+      "severity": "error",
+      "kind": "sitesetting",
+      "recordId": "00000000-0000-0000-c047-000000000003",
+      "name": "Search/Enabled",
+      "message": "value is \"true\" in the download, \"false\" in the solution",
+      "siteFile": "sitesetting.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000003/powerpagecomponent.xml",
+      "fields": [
+        {
+          "field": "value",
+          "site": "true",
+          "solution": "false"
+        }
+      ]
+    },
+    {
+      "check": "content-differs",
+      "severity": "error",
+      "kind": "webfile",
+      "recordId": "00000000-0000-0000-c047-000000000006",
+      "name": "logo.png",
+      "message": "content differs",
+      "siteFile": "web-files/logo.png.webfile.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000006/powerpagecomponent.xml",
+      "fields": [
+        {
+          "field": "content",
+          "site": "differs",
+          "solution": "differs"
+        }
+      ]
+    },
+    {
+      "check": "content-differs",
+      "severity": "error",
+      "kind": "webtemplate",
+      "recordId": "00000000-0000-0000-c047-000000000005",
+      "name": "Header",
+      "message": "source differs",
+      "siteFile": "web-templates/header/Header.webtemplate.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000005/powerpagecomponent.xml",
+      "fields": [
+        {
+          "field": "source",
+          "site": "differs",
+          "solution": "differs"
+        }
+      ]
+    },
+    {
+      "check": "field-one-side",
+      "severity": "warning",
+      "kind": "webrole",
+      "recordId": "00000000-0000-0000-c047-000000000002",
+      "name": "Staff",
+      "message": "futurefield is \"x\" in the solution only; the other side's format doesn't write it",
+      "siteFile": "webrole.yml",
+      "solutionFile": "powerpagecomponents/00000000-0000-0000-c047-000000000002/powerpagecomponent.xml",
+      "fields": [
+        {
+          "field": "futurefield",
+          "solution": "x"
+        }
+      ]
+    }
+  ],
+  "unusedIgnores": []
+}

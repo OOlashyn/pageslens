@@ -1,0 +1,9 @@
+<powerpagesites>
+  <powerpagesite powerpagesiteid="00000000-0000-0000-c0de-000000000000">
+    <content>{"defaultlanguage":"00000000-0000-0000-c0de-000000000001","website_language":1033}</content>
+    <enhancedauthorization>0</enhancedauthorization>
+    <name>Code Site</name>
+    <statecode>0</statecode>
+    <statuscode>1</statuscode>
+  </powerpagesite>
+</powerpagesites>

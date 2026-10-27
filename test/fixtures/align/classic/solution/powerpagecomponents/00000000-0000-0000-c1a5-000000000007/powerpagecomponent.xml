@@ -1,0 +1,10 @@
+<powerpagecomponent powerpagecomponentid="00000000-0000-0000-c1a5-000000000007">
+  <content>{"adx_accesscontrolrule_publishingstate":["00000000-0000-0000-c1a5-000000000002"],"adx_webpageaccesscontrolrule_webrole":["00000000-0000-0000-c1a5-000000000003"],"right":1,"scope":1,"webpageid":"00000000-0000-0000-c1a5-000000000008"}</content>
+  <name>Restrict Read on Home</name>
+  <powerpagecomponenttype>10</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>00000000-0000-0000-c1a5-000000000000</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

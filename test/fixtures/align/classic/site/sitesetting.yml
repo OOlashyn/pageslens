@@ -1,0 +1,9 @@
+# clean: a variable-backed setting is compared on source and envvar_schema, not its leftover value
+- adx_envvar_schema: dwcrm_PageSize
+  adx_name: Search/PageSize
+  adx_sitesettingid: 00000000-0000-0000-c1a5-000000000005
+  adx_source: 1
+  adx_value: 10
+- adx_name: Search/Enabled
+  adx_sitesettingid: 00000000-0000-0000-c1a5-000000000006
+  adx_value: true

@@ -2,6 +2,12 @@ import { relative, resolve } from 'node:path';
 import { Command, CommanderError, Option } from 'commander';
 import pkg from '../package.json' with { type: 'json' };
 import { loadSiteFolder, SiteLoadError } from './adapters/site-folder.js';
+import { alignSites } from './align/compare.js';
+import { formatJson as formatAlignJson } from './align/format/json.js';
+import { formatMarkdown as formatAlignMarkdown } from './align/format/markdown.js';
+import { formatSarif as formatAlignSarif } from './align/format/sarif.js';
+import { formatText as formatAlignText } from './align/format/text.js';
+import type { AlignSide } from './align/types.js';
 import { diffSites, summarize } from './diff/compare.js';
 import { formatJson as formatDiffJson } from './diff/format/json.js';
 import { formatMarkdown as formatDiffMarkdown } from './diff/format/markdown.js';
@@ -16,6 +22,7 @@ import { formatSarif } from './lint/format/sarif.js';
 import { formatText } from './lint/format/text.js';
 import { RULES } from './lint/rules/index.js';
 import { toPosixPath } from './model/normalize.js';
+import type { Site } from './model/schema.js';
 import { evaluatePolicy } from './policy/evaluate.js';
 import { formatJson as formatTestJson } from './policy/format/json.js';
 import { formatSarif as formatTestSarif } from './policy/format/sarif.js';
@@ -67,6 +74,39 @@ const DIFF_FORMATS = {
   markdown: formatDiffMarkdown,
   json: formatDiffJson,
 } satisfies Record<DiffFormat, (result: DiffResult) => string>;
+
+type AlignFormat = 'text' | 'json' | 'markdown' | 'sarif';
+
+const ALIGN_FORMATS: AlignFormat[] = ['text', 'json', 'markdown', 'sarif'];
+
+interface AlignOptions {
+  format: AlignFormat;
+  config?: string;
+}
+
+/** `align` was given the wrong kind of folder: exit code 2, like a usage error. */
+export class AlignInputError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AlignInputError';
+  }
+}
+
+const FORMAT_NAMES: Record<Site['format'], string> = {
+  'code-download': 'a code site download',
+  'classic-download': 'a classic site download',
+  solution: 'an unpacked solution',
+};
+
+function alignSide(site: Site): AlignSide {
+  return {
+    path: toPosixPath(relative(process.cwd(), site.root)) || '.',
+    format: site.format,
+    layout: site.layout,
+    site: { id: site.website.id, name: site.website.name },
+    ...(site.solution && { solution: site.solution }),
+  };
+}
 
 export function buildProgram(io: Io, setExitCode: (code: number) => void): Command {
   const program = new Command()
@@ -189,6 +229,55 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     });
 
   program
+    .command('align')
+    .description('Check that a download and the solution describe the same site')
+    .argument(
+      '<site>',
+      'the download: .powerpages-site folder, a folder that contains one, or a classic site folder',
+    )
+    .argument('<solution>', 'the unpacked solution (XML format), or a pac solution clone project')
+    .addOption(
+      new Option('--format <format>', 'output format').choices(ALIGN_FORMATS).default('text'),
+    )
+    .option('--config <file>', `path to pageslens.config.yaml (default: nearest one found)`)
+    .action(async (sitePath: string, solutionPath: string, options: AlignOptions) => {
+      const config = await loadConfig(
+        sitePath,
+        RULES.map((rule) => rule.id),
+        options.config,
+      );
+      const site = await loadSiteFolder(sitePath);
+      const solution = await loadSiteFolder(solutionPath);
+      const compares = 'align compares a download with a solution';
+      if (site.format === 'solution') {
+        throw new AlignInputError(`${sitePath} is ${FORMAT_NAMES[site.format]}; ${compares}`);
+      }
+      if (solution.format !== 'solution') {
+        throw new AlignInputError(
+          `${solutionPath} is ${FORMAT_NAMES[solution.format]}; ${compares}`,
+        );
+      }
+      const sides = { site: alignSide(site), solution: alignSide(solution) };
+      const result = await alignSites(site, solution, sides, config.align);
+      if (options.format === 'sarif') {
+        const files = (key: 'siteFile' | 'solutionFile') =>
+          result.findings.flatMap((f) => (f[key] ? [f[key]] : []));
+        io.out(
+          formatAlignSarif(result, {
+            site: await recordLines(site.root, files('siteFile')),
+            solution: await recordLines(solution.root, files('solutionFile')),
+          }),
+        );
+      } else if (options.format === 'text') {
+        const configPath = config.path && toPosixPath(relative(process.cwd(), config.path));
+        io.out(formatAlignText(result, configPath));
+      } else {
+        io.out((options.format === 'json' ? formatAlignJson : formatAlignMarkdown)(result));
+      }
+      setExitCode(result.counts.error > 0 ? ExitCode.Findings : ExitCode.Ok);
+    });
+
+  program
     .command('docs')
     .description('Write Markdown docs for a downloaded site')
     .argument(
@@ -227,7 +316,11 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
       io.err(`error: the policy can't be used\n${problems.join('')}`);
       return ExitCode.Usage;
     }
-    if (error instanceof DiffInputError || error instanceof GitError) {
+    if (
+      error instanceof DiffInputError ||
+      error instanceof GitError ||
+      error instanceof AlignInputError
+    ) {
       io.err(`error: ${error.message}
 `);
       return ExitCode.Usage;

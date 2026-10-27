@@ -1,0 +1,20 @@
+# clean: JSON fields compare as JSON, without the type keys
+entityname: contact
+id: 00000000-0000-0000-c0de-000000000013
+mode: 100000000
+name: Contact
+settings: >-
+  {
+    "Type": "FormActionMetadata",
+    "Actions": [],
+    "DeleteDialog": {
+      "Type": "DeleteModal",
+      "Title": [
+        {
+          "Type": "LanguageResources",
+          "LCID": 1033,
+          "Value": "Delete"
+        }
+      ]
+    }
+  }

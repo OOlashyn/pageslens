@@ -1,0 +1,19 @@
+# content-differs: a real change in the settings JSON
+adx_entityformid: 00000000-0000-0000-c047-000000000007
+adx_entityname: contact
+adx_name: Edit
+adx_settings: >-
+  {
+    "Type": "FormActionMetadata",
+    "Actions": [],
+    "DeleteDialog": {
+      "Type": "DeleteModal",
+      "Title": [
+        {
+          "Type": "LanguageResources",
+          "LCID": 1033,
+          "Value": "Remove"
+        }
+      ]
+    }
+  }

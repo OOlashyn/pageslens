@@ -30,7 +30,7 @@ Base comes first, like `git diff A B`: sentences read "head compared with base" 
 - Commits are read with git, without a checkout or worktree, exactly as committed.
 - `--merge-base` compares head with the merge base of the two refs, the way a pull request's diff does, so commits added to the target branch since the branch was made don't show up reversed. It needs two refs. In CI, fetch enough history for the merge base (`fetch-depth: 0`).
 - A side where the site folder doesn't exist (the change adds the site, or removes it) is read as an empty site, with a note. A side that exists but can't be read is an error, as for `lint`.
-- A classic download can be compared with a code site, and a download with an unpacked solution: all of them read into the same records with the same GUIDs. The output says when the sides were read differently. A download and a solution of the same site give no changes, unless the solution is missing components.
+- A classic download can be compared with a code site, and a download with an unpacked solution: all of them read into the same records with the same GUIDs. The output says when the sides were read differently. A download and a solution of the same site give no changes, unless the solution is missing components; [`align`](align.md) lists every component missing from the solution or different in it.
 
 ## Matching records
 

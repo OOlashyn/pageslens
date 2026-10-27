@@ -67,8 +67,25 @@ const TEXT_FIELDS: Record<string, Record<string, string>> = {
   list: { registerstartupscript: 'custom_javascript' },
 };
 
+/**
+ * The field a download keeps a record's language in, by kind. A solution has it as the element
+ * `powerpagesitelanguageid`, outside `content`.
+ */
+const LANGUAGE_FIELDS: Record<string, string> = {
+  webpage: 'webpagelanguageid',
+  contentsnippet: 'contentsnippetlanguageid',
+  weblinkset: 'websitelanguageid',
+};
+
 /** Environment variable types: Secret keeps its value in Azure Key Vault. */
 const SECRET_TYPE = '100000005';
+
+/** Why a variable-backed setting has no value in a solution (`SiteSetting.noValue`). */
+export const NO_VALUE = {
+  missing: "the variable isn't in the solution",
+  secret: 'the variable is a secret',
+  empty: 'the variable has no value',
+} as const;
 
 interface Variable {
   value?: string;
@@ -206,6 +223,12 @@ async function readComponent(
   // `websiteid` is in some solutions' content and in no download; `statecode` is an element
   delete content.websiteid;
   const fields: Record<string, unknown> = { id, name, ...content };
+  const languageField = LANGUAGE_FIELDS[kind];
+  const language = childText(
+    firstChild(root, 'powerpagesitelanguageid'),
+    'powerpagesitelanguageid',
+  );
+  if (languageField && language) fields[languageField] = language.toLowerCase();
   const state = childText(root, 'statecode');
   if (state && state !== '0') fields.statecode = state;
   return { kind, id, name, fields, text, source: { file } };
@@ -298,10 +321,10 @@ function solutionFields(variables: Map<string, Variable>): FieldMapping {
       if (kind !== 'sitesetting' || fields.source !== '1') return fields;
       const schema = typeof fields.envvar_schema === 'string' ? fields.envvar_schema : '';
       const variable = variables.get(schema.toLowerCase());
-      if (!variable) return { ...fields, envvar_none: "the variable isn't in the solution" };
-      if (variable.secret) return { ...fields, envvar_none: 'the variable is a secret' };
+      if (!variable) return { ...fields, envvar_none: NO_VALUE.missing };
+      if (variable.secret) return { ...fields, envvar_none: NO_VALUE.secret };
       const value = variable.value ?? variable.defaultValue;
-      if (value === undefined) return { ...fields, envvar_none: 'the variable has no value' };
+      if (value === undefined) return { ...fields, envvar_none: NO_VALUE.empty };
       return { ...fields, envvar_value: value };
     },
     sourceKey: (_kind, key) => key,

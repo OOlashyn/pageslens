@@ -13,6 +13,7 @@ import { parentChainBroken } from './parent-chain-broken.js';
 import { permissionNoRole } from './permission-no-role.js';
 import { roleUnused } from './role-unused.js';
 import { scopeRelationshipMissing } from './scope-relationship-missing.js';
+import { settingSecretValue } from './setting-secret-value.js';
 import { webapiInnerErrors } from './webapi-inner-errors.js';
 import { webapiNoPermission } from './webapi-no-permission.js';
 import { webapiWildcardFields } from './webapi-wildcard-fields.js';
@@ -22,6 +23,7 @@ export const RULES: readonly Rule[] = [
   webapiWildcardFields,
   webapiNoPermission,
   webapiInnerErrors,
+  settingSecretValue,
   permissionNoRole,
   globalWriteAnonymous,
   globalWriteAuthenticated,

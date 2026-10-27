@@ -1,0 +1,26 @@
+align test/fixtures/align/content/site (classic site download) with test/fixtures/align/content/solution (AlignSolution 1.0.0.0)
+
+✗ active on one side only
+    web role "Partners": active in the download, inactive in the solution
+      webrole.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000001/powerpagecomponent.xml
+✗ content differs
+    basic form "Edit": settings differs
+      basic-forms/edit/Edit.basicform.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000007/powerpagecomponent.xml
+    site setting "Search/Enabled": value is "true" in the download, "false" in the solution
+      sitesetting.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000003/powerpagecomponent.xml
+    web file "logo.png": content differs
+      web-files/logo.png.webfile.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000006/powerpagecomponent.xml
+    web template "Header": source differs
+      web-templates/header/Header.webtemplate.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000005/powerpagecomponent.xml
+⚠ fields on one side only
+    web role "Staff": futurefield is "x" in the solution only; the other side's format doesn't write it
+      webrole.yml
+      powerpagecomponents/00000000-0000-0000-c047-000000000002/powerpagecomponent.xml
+
+5 errors, 1 warning. 3 records match.
+Access components differ: pageslens diff test/fixtures/align/content/site test/fixtures/align/content/solution shows what the solution changes about who can see what.

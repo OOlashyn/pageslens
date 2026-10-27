@@ -7,17 +7,18 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 |                     |                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Released (`latest`) | `0.8.0`: `lint`, `test`, `diff`, `docs`, `--format sarif`, the GitHub Action, code-site and classic downloads and unpacked solutions (spec [0007](0007-solution-adapter.md)), settings from environment variables, config ignores (unused ones listed), inactive records left out, and page access for classic sites in all four commands (specs [0005](0005-page-access-rules.md), [0006](0006-page-access-test-diff.md)) |
-| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3: the solution adapter shipped in 0.8.0; `align` is specified and next to build                                                                                                                                                                                                                                                                         |
+| Milestones          | M1 (MVP) and M2 (policies, SARIF, diff, the GitHub Action) done. M3: the solution adapter shipped in 0.8.0; `align` and the `setting-secret-value` rule are built (spec [0008](0008-align.md)) and wait for a release                                                                                                                                                                                                      |
 
 ## Next
 
-1. **`align`** (M3, spec [0008](0008-align.md), every question answered): whether a site download and an unpacked solution are the same site, so a component left out of the solution shows before it is deployed. With it, or on its own, the `setting-secret-value` lint rule (0008, decision 6).
+1. **Release `align` and `setting-secret-value`** (spec [0008](0008-align.md)), built and waiting for the maintainer.
 2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed
 
 - Run `diff` on macOS.
-- The action on GitHub: a comment near the size cap, a fork pull request (needs a second account), a token without `pull-requests: write`.
+- The action on GitHub: a comment near the size cap, a fork pull request (needs a second account), a token without `pull-requests: write`, and a comment with both the alignment and the access changes.
+- `align` on advanced forms, column permissions, Server Logic and cloud flows, and a code site's variable-backed setting (0008, verification 2 and 3).
 
 ## Open questions (need a Dataverse environment)
 

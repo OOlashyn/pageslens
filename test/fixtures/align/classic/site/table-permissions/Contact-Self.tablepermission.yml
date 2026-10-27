@@ -1,0 +1,13 @@
+# clean: a permission's name is its entityname in the download
+adx_append: false
+adx_appendto: false
+adx_create: false
+adx_delete: false
+adx_entitylogicalname: contact
+adx_entityname: Contact Self
+adx_entitypermission_webrole:
+- 00000000-0000-0000-c1a5-000000000003
+adx_entitypermissionid: 00000000-0000-0000-c1a5-000000000010
+adx_read: true
+adx_scope: 756150004
+adx_write: false

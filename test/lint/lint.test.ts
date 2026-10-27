@@ -24,6 +24,11 @@ const summary = (result: ReturnType<typeof lint>) =>
 describe('rules on the fixtures', () => {
   it('finds exactly the broken fixture cases listed in test/fixtures/README.md', () => {
     expect(summary(lint(broken))).toEqual([
+      [
+        'setting-secret-value',
+        'error',
+        'site-settings/Authentication-OpenIdConnect-Contoso-ClientSecret.sitesetting.yml',
+      ],
       ['webapi-wildcard-fields', 'error', 'site-settings/Webapi-contact-fields.sitesetting.yml'],
       [
         'webapi-no-permission',
@@ -117,6 +122,34 @@ describe('rules on the fixtures', () => {
     expect(findings.map((f) => f.message)).toContain(
       `Restrict Read rule "Allow Auth" on "/v1/v3/" lists "Authenticated Users", but Restrict Read rule "Restrict Read on v1" on "/v1/" doesn't let it in, so it can't reach "/v1/v3/".`,
     );
+  });
+
+  it('finds secrets typed into settings, but not empty ones or ones from a variable', () => {
+    const secrets = (site: typeof broken) =>
+      lint(site)
+        .findings.filter((f) => f.ruleId === 'setting-secret-value')
+        .map((f) => f.message);
+    expect(secrets(broken)).toEqual([
+      "Authentication/OpenIdConnect/Contoso/ClientSecret has its secret as the setting's value, so it's in every download and solution of the site; keep it in an environment variable of type Secret.",
+    ]);
+    // The real sites have the OpenAuth secret settings, all empty
+    for (const site of [ecoflux, classic, registration]) expect(secrets(site)).toEqual([]);
+    const setting = broken.siteSettings[0]!;
+    const withSettings = (...settings: (typeof setting)[]) => ({
+      ...broken,
+      siteSettings: settings,
+    });
+    const named = (name: string, value?: string) => ({ ...setting, name, value });
+    expect(
+      secrets(
+        withSettings(
+          named('Authentication/OpenAuth/Facebook/appsecret', 'x'),
+          named('Authentication/OpenAuth/Twitter/ConsumerSecret', 'x'),
+          named('Authentication/OpenAuth/Twitter/ConsumerSecret', '  '),
+          named('Authentication/OpenAuth/Twitter/ConsumerKey', 'x'),
+        ),
+      ),
+    ).toHaveLength(2);
   });
 
   it("skips a setting whose value a download doesn't include", async () => {
@@ -225,7 +258,7 @@ describe('ignore config', () => {
     expect(files.some((f) => f.startsWith('web-roles/'))).toBe(false);
     expect(files).not.toContain('table-permissions/Incident---No-Role.tablepermission.yml');
     expect(result.ignored).toBe(4);
-    expect(result.counts).toEqual({ error: 5, warning: 5, info: 0 });
+    expect(result.counts).toEqual({ error: 6, warning: 5, info: 0 });
   });
 
   it('leaves out findings on a record, from the listed rules only', () => {
@@ -328,7 +361,11 @@ describe('loadConfig', () => {
   }
 
   it('uses defaults when there is no config file', async () => {
-    expect(await loadConfig(await folder(), ruleIds)).toEqual({ rules: {}, ignore: [] });
+    expect(await loadConfig(await folder(), ruleIds)).toEqual({
+      rules: {},
+      ignore: [],
+      align: { checks: {}, ignore: [] },
+    });
   });
 
   it('finds the nearest config in a folder above', async () => {
@@ -409,8 +446,10 @@ describe('output formats', () => {
       name: 'Broken Fixture',
       path: 'site',
     });
-    expect(output.summary).toEqual({ error: 7, warning: 6, info: 1 });
-    expect(output.findings[0]).toEqual({
+    expect(output.summary).toEqual({ error: 8, warning: 6, info: 1 });
+    expect(
+      output.findings.find((f: { ruleId: string }) => f.ruleId === 'webapi-wildcard-fields'),
+    ).toEqual({
       ruleId: 'webapi-wildcard-fields',
       severity: 'error',
       message:

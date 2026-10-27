@@ -1,0 +1,9 @@
+<powerpagesites>
+  <powerpagesite powerpagesiteid="00000000-0000-0000-3333-000000000002">
+    <content>{}</content>
+    <enhancedauthorization>0</enhancedauthorization>
+    <name>Fabrikam</name>
+    <statecode>0</statecode>
+    <statuscode>1</statuscode>
+  </powerpagesite>
+</powerpagesites>

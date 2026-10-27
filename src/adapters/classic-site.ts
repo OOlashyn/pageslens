@@ -45,21 +45,33 @@ const CLASSIC_FIELDS: FieldMapping = {
     };
   },
   lists: true,
-  modelFields: (kind, fields) => {
-    const own = idKey(kind);
-    return Object.fromEntries(
-      Object.entries(fields).map(([key, value]) => {
-        if (key === own) return ['id', value];
-        if (RELATIONSHIP_KEYS.has(key) || !key.startsWith('adx_')) return [key, value];
-        return [key.slice('adx_'.length), value];
-      }),
-    );
-  },
+  modelFields: (kind, fields) => classicModelFields(kind, fields),
   sourceKey: (kind, key) => {
     if (key === 'id') return idKey(kind);
     return RELATIONSHIP_KEYS.has(key) ? key : `adx_${key}`;
   },
 };
+
+/**
+ * A classic record's fields under the model's keys: `adx_` dropped, the record's own id as `id`.
+ * Lists keep their names (`adx_entitypermission_webrole`, `adx_adplacement_ad`), as in a code
+ * site and a solution. `align` uses it to compare a classic download with a solution.
+ */
+export function classicModelFields(
+  kind: string,
+  fields: Record<string, unknown>,
+): Record<string, unknown> {
+  const own = idKey(kind);
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => {
+      if (key === own) return ['id', value];
+      if (RELATIONSHIP_KEYS.has(key) || Array.isArray(value) || !key.startsWith('adx_')) {
+        return [key, value];
+      }
+      return [key.slice('adx_'.length), value];
+    }),
+  );
+}
 
 /** A classic `website.yml` names the site under `adx_name` and has its id under `adx_websiteid`. */
 export function isClassicWebsite(website: unknown): boolean {

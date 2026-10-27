@@ -1,0 +1,6 @@
+# clean: empty side files are no side files
+id: 00000000-0000-0000-c0de-000000000008
+isroot: true
+name: Home
+partialurl: /
+publishingstateid: 00000000-0000-0000-c0de-000000000002

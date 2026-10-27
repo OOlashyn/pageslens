@@ -4,9 +4,10 @@ Offline lint, policy tests, access diffs and docs for Power Pages site configura
 
 pageslens reads a site downloaded with the Power Platform CLI (the `.powerpages-site` folder that `pac pages download-code-site` writes, or the site folder that `pac pages download` writes) or an unpacked solution that holds the site (`pac solution unpack` or `pac solution clone`), and:
 
-- **lints** it: table permissions, web roles and Web API settings, with stable rule ids, severities and exit codes for CI;
+- **lints** it: table permissions, web roles, Web API settings and secrets typed into settings, with stable rule ids, severities and exit codes for CI;
 - **tests** it against your own requirements, written as short sentences in a policy file ("anonymous cannot read contact");
 - **diffs** two versions of it: what a change does to who can see and change what, for a pull request comment;
+- **aligns** a download with the solution that deploys it: components left out of the solution, or different in it, before the import;
 - **documents** it: an access matrix (which role can do what on which table), the Web API surface, and a Mermaid diagram, as plain Markdown.
 
 It needs no Dataverse connection and no agent: the same folder gives the same output every run.
@@ -32,6 +33,10 @@ npx pageslens diff origin/main HEAD path/to/site
 ```
 
 ```bash
+npx pageslens align path/to/site path/to/solution
+```
+
+```bash
 npx pageslens docs path/to/site --out docs/site
 ```
 
@@ -43,6 +48,7 @@ An unpacked solution is the folder with `Other/Solution.xml` that `pac solution 
 
 - A solution with more than one site isn't read yet, nor is the YAML source control format that Dataverse Git integration writes, nor a solution `.zip` (unpack it first).
 - A component that isn't in the solution isn't checked: pageslens reads what deploys.
+- To check that a download and a solution describe the same site, use [`align`](#pageslens-align).
 - A site setting can take its value from an environment variable. pageslens reads the variable's value from the solution (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: rules that need it skip the setting, `test` statements that need it fail and say why, and `diff` counts a move to a variable as wider.
 
 ## `pageslens lint`
@@ -79,6 +85,7 @@ table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml
 | [`webapi-wildcard-fields`](rules/webapi-wildcard-fields.md)             | error   | Web API enabled with `*` as the fields list                            |
 | [`webapi-no-permission`](rules/webapi-no-permission.md)                 | warning | Web API enabled on a table no table permission covers                  |
 | [`webapi-inner-errors`](rules/webapi-inner-errors.md)                   | warning | Web API errors that include the inner error                            |
+| [`setting-secret-value`](rules/setting-secret-value.md)                 | error   | Secret site setting (`ClientSecret`, ...) with a value of its own      |
 | [`permission-no-role`](rules/permission-no-role.md)                     | warning | Table permission with no web role                                      |
 | [`global-write-anonymous`](rules/global-write-anonymous.md)             | warning | Global create, write or delete for Anonymous Users                     |
 | [`global-write-authenticated`](rules/global-write-authenticated.md)     | warning | Global create, write or delete for Authenticated Users                 |
@@ -117,6 +124,8 @@ ignore:
 Severities are `error`, `warning`, `info` and `off`. An unknown rule id is an error, so typos don't silently do nothing.
 
 An `ignore` entry leaves out findings on any of its `files` or `records`, from the listed `rules` only (every rule when `rules` is left out); `reason` is for reviewers. `files` are globs over the paths lint prints, relative to the site folder (`*` within a folder, `**` across folders). `records` are the GUIDs in the JSON output's `recordId`. Prefer `records` on a classic site, where many records share one file, and anywhere a file name may change: pac derives file names from record names. Ignored findings are counted in the summary (`ignored` in JSON) so they don't disappear unnoticed. A file glob or record in an entry that leaves out no finding is listed as an unused ignore under the config file's name (`unusedIgnores` in JSON), so an entry for something since fixed doesn't hide the next finding there. It doesn't fail the run. An entry that lists a rule that's turned off isn't checked.
+
+The same file has an `align` section for [`pageslens align`](#pageslens-align).
 
 The `$schema` comment gives completion and validation in editors with the YAML language server (VS Code's YAML extension, JetBrains IDEs). The schema also ships in the package, at `node_modules/pageslens/pageslens.config.schema.json`.
 
@@ -171,6 +180,31 @@ Every change is **wider** (may give someone access they didn't have), **narrower
 
 What each change means and how it's classified: [docs/diff.md](docs/diff.md).
 
+## `pageslens align`
+
+```
+pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config <file>]
+```
+
+Checks that a download and an unpacked solution describe the same site, for teams that commit both: the readable download, and the solution that deploys. New site components aren't added to a solution automatically, so a web role, a table permission or a page made in dev can work there, be in the download, and be missing in test and prod. `align` shows it in the pull request, before the import.
+
+```
+align site (classic site download) with solution/src (PagesLensEDM2Sol 1.0.0.0)
+
+✗ missing from the solution: won't be in test or prod
+    web role "Course Admins"  webrole.yml
+✗ content differs
+    site setting "Search/Enabled": value is "true" in the download, "false" in the solution
+      sitesetting.yml
+      powerpagecomponents/9c1e0a2b-7d4e-4f31-8a6c-2b5d9e0f1a77/powerpagecomponent.xml
+
+2 errors, 0 warnings. 475 records match.
+```
+
+Records match by GUID. It reports records on one side only, records active on one side only, fields and text that differ, and environment variables the import needs. What two snapshots of one site always differ in (the keys a classic download prefixes, empty side files, JSON formatting, role order, and a few fields only one side writes) isn't reported. Tables aren't checked: they usually live in a solution of their own. Exit codes are `0` without errors, `1` with errors, and `2` when a side is the wrong kind or can't be read. Severities and ignores go in the `align` section of `pageslens.config.yaml`.
+
+The checks, what isn't a difference, and the output formats: [docs/align.md](docs/align.md).
+
 ## `pageslens docs`
 
 ```
@@ -219,7 +253,8 @@ jobs:
 
 - **On a pull request** it runs `lint`, `test` (when it finds a `pageslens.policy.yaml`) and `diff --merge-base`, which compares the pull request's head commit with where it branched from the base branch, as GitHub's own diff does. The access changes go to the run's summary page and to the comment. With no access changes it doesn't add a comment; it edits an earlier one to say so.
 - **On a push** to `main` it runs `lint` and `test` only. Code scanning compares a pull request's alerts with the last analysis of `main`, so run the action on both.
-- **The job fails** when lint finds errors, a policy statement fails, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
+- **With `solution`** it also runs `align <path> <solution>`: its results go to code scanning, its findings to the comment above the access changes, and errors fail the job. It's off by default: set it when you commit both a download and the solution taken from dev together.
+- **The job fails** when lint finds errors, a policy statement fails, align finds errors, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
 - **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
 - **Permissions:** without `security-events: write`, or with code scanning not available for the repository, the upload is skipped with a notice. Without `pull-requests: write`, the comment is.
 - **Version:** `v0.8.0` runs exactly pageslens 0.8.0. Dependabot (`package-ecosystem: github-actions`) keeps the tag up to date.
@@ -228,6 +263,7 @@ jobs:
 | -------------- | ----------------------- | ------------------------------------------------------------------------------------------------------- |
 | `path`         | `.`                     | The site folder. For several sites, use the action once per site; each gets its own comment.            |
 | `policy`       | nearest one             | The policy file. With none, `test` is skipped with a notice.                                            |
+| `solution`     |                         | The unpacked solution to compare `path` with (`align`). Empty skips `align`.                            |
 | `lint`         | `true`                  | Run `lint`.                                                                                             |
 | `test`         | `true`                  | Run `test`.                                                                                             |
 | `diff`         | `true`                  | Run `diff` on pull requests.                                                                            |
@@ -238,7 +274,7 @@ jobs:
 | `node-version` | `24`                    | Node.js for pageslens.                                                                                  |
 | `token`        | `github.token`          | The token for the comment.                                                                              |
 
-Outputs: `wider`, `narrower`, `neutral`, `lint-errors`, `policy-failures` and `comment-url`, for example to add a label when anything is wider.
+Outputs: `wider`, `narrower`, `neutral`, `lint-errors`, `policy-failures`, `align-errors` and `comment-url`, for example to add a label when anything is wider.
 
 ### Without the action
 
