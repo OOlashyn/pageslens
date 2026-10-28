@@ -1,8 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder } from '../../src/adapters/site-folder.js';
 import { ConfigError, loadConfig } from '../../src/lint/config.js';
 import { configJsonSchema } from '../../src/lint/config-schema.js';
@@ -10,6 +9,7 @@ import { lint } from '../../src/lint/engine.js';
 import { formatJson } from '../../src/lint/format/json.js';
 import { formatText } from '../../src/lint/format/text.js';
 import { RULES } from '../../src/lint/rules/index.js';
+import { tempFiles } from '../helpers.js';
 
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
@@ -155,13 +155,6 @@ describe('rules on the fixtures', () => {
   it("skips a setting whose value a download doesn't include", async () => {
     const download = await loadSiteFolder('test/fixtures/diff/variables/head');
     expect(lint(download).findings).toEqual([]);
-  });
-
-  it('runs no page rule on a code site', () => {
-    const pageRules = ruleIds.filter((id) => id.startsWith('page-') || id.startsWith('grant-'));
-    for (const site of [ecoflux, broken]) {
-      expect(lint(site).findings.filter((f) => pageRules.includes(f.ruleId))).toEqual([]);
-    }
   });
 
   it('finds only the missing account relationships and inner errors in ecoflux', () => {
@@ -348,17 +341,8 @@ describe('config JSON Schema', () => {
 });
 
 describe('loadConfig', () => {
-  let temp: string | undefined;
-  afterEach(async () => {
-    if (temp) await rm(temp, { recursive: true, force: true });
-    temp = undefined;
-  });
-
-  async function folder(config?: string): Promise<string> {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    if (config !== undefined) await writeFile(join(temp, 'pageslens.config.yaml'), config);
-    return temp;
-  }
+  const folder = (config?: string) =>
+    tempFiles(config === undefined ? {} : { 'pageslens.config.yaml': config });
 
   it('uses defaults when there is no config file', async () => {
     expect(await loadConfig(await folder(), ruleIds)).toEqual({

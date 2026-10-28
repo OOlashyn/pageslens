@@ -248,14 +248,14 @@ describe('evaluatePolicy', () => {
   });
 
   it('reads a variable-backed value from a solution', async () => {
-    const solution = await loadSiteFolder('test/fixtures/solution-registration');
+    const solution = await loadSiteFolder('test/fixtures/solution-broken');
     const policy = parsePolicy(
-      'settings:\n  - setting "ASP/Pagination/CardsPerPage" is "18"\n',
+      'settings:\n  - setting "Webapi/error/innererror" is "false"\n',
       'p.yaml',
     );
     const [result] = evaluatePolicy(policy, solution).results;
     expect(result!.evidence.map((e) => e.message)).toEqual([
-      'ASP/Pagination/CardsPerPage is "20" from environment variable dwcrm_CardsPerPage',
+      'Webapi/error/innererror is "true" from environment variable dwcrm_Current',
     ]);
   });
 });

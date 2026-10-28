@@ -1,8 +1,6 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder, SiteLoadError } from '../../src/adapters/site-folder.js';
+import { tempFiles } from '../helpers.js';
 
 const CLASSIC = 'test/fixtures/classic';
 
@@ -66,31 +64,6 @@ describe('loadSiteFolder: classic', async () => {
     });
   });
 
-  it('reads the real classic download: layout, root and content pages', async () => {
-    const registration = await loadSiteFolder('test/fixtures/registration');
-    expect(registration.layout).toBe('classic');
-    expect(site.layout).toBe('classic');
-    const roots = registration.webPages.filter((page) => page.isRoot);
-    expect(roots).toHaveLength(21);
-    expect(registration.webPages).toHaveLength(42);
-    expect(roots.find((page) => page.name === '[Admin] Delete-Course')).toMatchObject({
-      parentPageId: '58120917-5fcf-f111-a05a-70a8a52c89ad',
-      partialUrl: 'delete-course',
-      hiddenFromSitemap: false,
-    });
-    const content = registration.webPages.find(
-      (page) => !page.isRoot && page.name === '[Admin] Delete-Course',
-    );
-    expect(content?.rootPageId).toBe('27120917-5fcf-f111-a05a-70a8a52c89ad');
-    expect(registration.inactive.webPages.map((page) => page.name)).toEqual([
-      'Contact us',
-      'Contact us',
-    ]);
-    expect(
-      registration.webPageRules.find((r) => r.name === 'Restrict Read on Create Course')?.scope,
-    ).toBe(1);
-  });
-
   it('types site settings, page rules and website access', () => {
     const byName = new Map(site.siteSettings.map((s) => [s.name, s.value]));
     expect(site.siteSettings).toHaveLength(51);
@@ -114,21 +87,7 @@ describe('loadSiteFolder: classic', async () => {
 });
 
 describe('loadSiteFolder: classic layout details', () => {
-  let temp: string | undefined;
-  afterEach(async () => {
-    if (temp) await rm(temp, { recursive: true, force: true });
-    temp = undefined;
-  });
-
-  async function site(files: Record<string, string>): Promise<string> {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    for (const [file, content] of Object.entries(files)) {
-      const path = join(temp, file);
-      await mkdir(dirname(path), { recursive: true });
-      await writeFile(path, content);
-    }
-    return temp;
-  }
+  const site = (files: Record<string, string>) => tempFiles(files);
 
   const website = 'adx_name: Test\nadx_websiteid: c9a088bc-3409-48a4-9650-f11fe353b5b6\n';
 

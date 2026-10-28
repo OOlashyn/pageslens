@@ -3,10 +3,10 @@ import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vite-plus/test';
-import { diffSites, summarize } from '../../src/diff/compare.js';
 import { formatText } from '../../src/diff/format/text.js';
-import { loadSides, type DiffInputs } from '../../src/diff/inputs.js';
+import type { DiffInputs } from '../../src/diff/inputs.js';
 import { plain } from '../../src/graph/describe.js';
+import { diffResult } from '../helpers.js';
 
 // A throwaway repository with the grants pair committed under portal/, the classic pair under
 // classic/ and the solution pair under solution/src/:
@@ -73,11 +73,8 @@ afterAll(async () => {
   if (repo) await rm(repo, { recursive: true, force: true });
 });
 
-async function diff(inputs: Omit<DiffInputs, 'cwd'> & { cwd?: string }) {
-  const sides = await loadSides({ cwd: repo, ...inputs });
-  const changes = diffSites(sides.base.site, sides.head.site);
-  return { base: sides.base.side, head: sides.head.side, changes, summary: summarize(changes) };
-}
+const diff = (inputs: Omit<DiffInputs, 'cwd'> & { cwd?: string }) =>
+  diffResult({ cwd: repo, ...inputs });
 
 describe('diff at git refs', () => {
   it("finds a solution project's src/ at each ref", async () => {

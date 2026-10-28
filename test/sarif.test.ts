@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test';
 import pkg from '../package.json' with { type: 'json' };
 import { loadSiteFolder } from '../src/adapters/site-folder.js';
-import { ExitCode, run } from '../src/cli.js';
+import { ExitCode } from '../src/cli.js';
 import { lint } from '../src/lint/engine.js';
 import { formatSarif as formatLintSarif } from '../src/lint/format/sarif.js';
 import { RULES } from '../src/lint/rules/index.js';
@@ -9,6 +9,7 @@ import { evaluatePolicy } from '../src/policy/evaluate.js';
 import { formatSarif as formatTestSarif } from '../src/policy/format/sarif.js';
 import { loadPolicy, parsePolicy } from '../src/policy/parse.js';
 import { recordLines } from '../src/sarif.js';
+import { cli } from './helpers.js';
 
 const broken = await loadSiteFolder('test/fixtures/broken');
 const classic = await loadSiteFolder('test/fixtures/classic');
@@ -150,12 +151,6 @@ describe('test SARIF', () => {
 });
 
 describe('cli --format sarif', () => {
-  async function cli(...argv: string[]) {
-    let out = '';
-    const code = await run(argv, { out: (text) => (out += text), err: () => {} });
-    return { code, out };
-  }
-
   it('writes SARIF for lint, with lines found from record GUIDs', async () => {
     const result = await cli('lint', 'test/fixtures/classic', '--format', 'sarif');
     expect(result.code).toBe(ExitCode.Ok);

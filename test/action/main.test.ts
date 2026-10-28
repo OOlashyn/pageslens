@@ -1,5 +1,4 @@
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
 import {
@@ -15,6 +14,7 @@ import {
   type PullRequest,
   sarifCounts,
 } from '../../action/main.js';
+import { tempDir } from '../helpers.js';
 
 const pr: PullRequest = {
   number: 7,
@@ -48,16 +48,12 @@ describe('action', () => {
   });
 
   it('finds the nearest policy file, as test does', async () => {
-    const temp = await mkdtemp(join(tmpdir(), 'pageslens-action-'));
-    try {
-      const site = join(temp, 'repo', 'site');
-      await mkdir(site, { recursive: true });
-      expect(findPolicy(site)).toBeUndefined();
-      await writeFile(join(temp, 'repo', 'pageslens.policy.yaml'), 'access: []\n');
-      expect(findPolicy(site)).toBe(join(temp, 'repo', 'pageslens.policy.yaml'));
-    } finally {
-      await rm(temp, { recursive: true, force: true });
-    }
+    const temp = await tempDir();
+    const site = join(temp, 'repo', 'site');
+    await mkdir(site, { recursive: true });
+    expect(findPolicy(site)).toBeUndefined();
+    await writeFile(join(temp, 'repo', 'pageslens.policy.yaml'), 'access: []\n');
+    expect(findPolicy(site)).toBe(join(temp, 'repo', 'pageslens.policy.yaml'));
   });
 
   it('counts lint errors and failed statements from SARIF', () => {
