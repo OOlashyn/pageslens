@@ -225,7 +225,11 @@ The output has no timestamps and a fixed order, so regenerating it for an unchan
 
 ## Using pageslens with an agent
 
-pageslens gives the facts; a coding agent can explain them and propose fixes. Point your agent at this section, or paste it into your `AGENTS.md` or `CLAUDE.md`.
+pageslens gives the facts; a coding agent can explain them and propose fixes. Point your agent at this section, or paste it into your `AGENTS.md` or `CLAUDE.md`. So that an agent knows pageslens is there at all, one line in `AGENTS.md` is enough:
+
+```markdown
+The Power Pages site is in `site/`. Check it with pageslens (`npx pageslens`): see https://github.com/OOlashyn/pageslens#using-pageslens-with-an-agent
+```
 
 ### Running pageslens
 
@@ -237,9 +241,9 @@ pageslens gives the facts; a coding agent can explain them and propose fixes. Po
 
 - pageslens decides. Whether something is a finding, whether a change is wider, whether a statement passes: that's in its output, so don't reclassify it. Say why a change may be intended and what a reviewer should check.
 - Work offline, from the files in git. Don't connect to Dataverse, run `pac`, upload, post, commit or push.
-- Find records by GUID (`recordId`), not by file name. Don't change a record's id or a GUID that links records.
+- Find records by GUID (`recordId`), not by file name. Don't change a record's own id. Pointing a record at another one (a permission's parent, its web roles) is a fix like any other: say what it does to access.
 - A value marked `unknown` comes from an environment variable, which a download doesn't have. Say it can't be known offline; don't guess.
-- Check every fix: run `lint` (and `test`, with a policy file) again. Undo a fix that adds a finding.
+- Check every fix: run `lint` (and `test`, with a policy file) again, and `diff HEAD <site>` to see what the edits do to access. Undo a fix that adds an error or a warning. A fix can leave an info finding behind as its expected result (a role nothing uses any more): say so.
 
 ### Review a site
 
@@ -247,7 +251,7 @@ pageslens gives the facts; a coding agent can explain them and propose fixes. Po
 2. Group the findings by rule, errors first. Run `explain` for each rule and open the files the findings point at.
 3. Explain each group in the site's terms: which role, which table, who could do what.
 4. Propose fixes one rule at a time, as edits to the site's YAML. Where the fix is a choice (narrow the access, or keep it with an `ignore` entry and a `reason` in `pageslens.config.yaml`), offer both.
-5. Apply a rule's fixes when the user says yes, then run `lint` again and show what's left. Don't edit the solution folder: fix the site in dev, then take both snapshots again.
+5. Apply a rule's fixes when the user says yes. A fix that `diff` shows as wider needs its own yes, even when the user asked for every error to be fixed. Then run `lint` again and show what's left. Don't edit the solution folder: fix the site in dev, then take both snapshots again.
 
 ### Review a pull request's access changes
 

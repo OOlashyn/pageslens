@@ -20,7 +20,7 @@ Design notes for pageslens: why it works the way it does. User docs are the [REA
 | [0006: Page access in `test` and `diff`](0006-page-access-test-diff.md) | shipped in 0.7.0                                       |
 | [0007: Solution adapter](0007-solution-adapter.md)                      | shipped in 0.8.0                                       |
 | [0008: `pageslens align`](0008-align.md)                                | shipped in 0.9.0                                       |
-| [0009: Agent support](0009-agent-skills.md)                             | parts 1, 2 shipped in 0.10.0                           |
+| [0009: Agent support](0009-agent-skills.md)                             | shipped in 0.10.0; skill closed                        |
 
 ## Writing a spec
 
