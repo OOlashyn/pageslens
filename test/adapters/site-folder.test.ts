@@ -1,8 +1,6 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder, resolveSiteRoot, SiteLoadError } from '../../src/adapters/site-folder.js';
+import { tempDir, tempFiles } from '../helpers.js';
 
 const ECOFLUX = 'test/fixtures/ecoflux';
 const BROKEN = 'test/fixtures/broken';
@@ -150,21 +148,7 @@ describe('resolveSiteRoot', () => {
 });
 
 describe('loadSiteFolder: errors', () => {
-  let temp: string | undefined;
-  afterEach(async () => {
-    if (temp) await rm(temp, { recursive: true, force: true });
-    temp = undefined;
-  });
-
-  async function site(files: Record<string, string>): Promise<string> {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    for (const [file, content] of Object.entries(files)) {
-      const path = join(temp, '.powerpages-site', file);
-      await mkdir(dirname(path), { recursive: true });
-      await writeFile(path, content);
-    }
-    return temp;
-  }
+  const site = (files: Record<string, string>) => tempFiles(files, { under: '.powerpages-site' });
 
   async function problems(path: string) {
     const error = await loadSiteFolder(path).catch((e: unknown) => e);
@@ -175,8 +159,7 @@ describe('loadSiteFolder: errors', () => {
   const website = 'id: 8f7bf824-ba20-4d0d-9a86-b2cafa3c34a6\nname: Test\n';
 
   it('fails when there is no site folder', async () => {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    expect((await problems(temp)).message).toMatch(
+    expect((await problems(await tempDir())).message).toMatch(
       /No \.powerpages-site folder, website\.yml or unpacked solution/,
     );
   });

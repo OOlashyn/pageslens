@@ -3,12 +3,38 @@ import { loadSiteFolder } from '../../src/adapters/site-folder.js';
 import { buildPageGraph, describeAudience, type Audience } from '../../src/graph/pages.js';
 
 const classicPages = buildPageGraph(await loadSiteFolder('test/fixtures/classic-pages'));
-const registration = buildPageGraph(await loadSiteFolder('test/fixtures/registration'));
+const registrationSite = await loadSiteFolder('test/fixtures/registration');
+const registration = buildPageGraph(registrationSite);
 
 const readers = (graph: typeof classicPages, url: string) => {
   const node = graph.pages.find((page) => page.url === url);
   return node?.readers && describeAudience(node.readers);
 };
+
+describe('pages in the real classic download', () => {
+  it('reads the layout, root and content pages', () => {
+    expect(registrationSite.layout).toBe('classic');
+    const roots = registrationSite.webPages.filter((page) => page.isRoot);
+    expect(roots).toHaveLength(21);
+    expect(registrationSite.webPages).toHaveLength(42);
+    expect(roots.find((page) => page.name === '[Admin] Delete-Course')).toMatchObject({
+      parentPageId: '58120917-5fcf-f111-a05a-70a8a52c89ad',
+      partialUrl: 'delete-course',
+      hiddenFromSitemap: false,
+    });
+    const content = registrationSite.webPages.find(
+      (page) => !page.isRoot && page.name === '[Admin] Delete-Course',
+    );
+    expect(content?.rootPageId).toBe('27120917-5fcf-f111-a05a-70a8a52c89ad');
+    expect(registrationSite.inactive.webPages.map((page) => page.name)).toEqual([
+      'Contact us',
+      'Contact us',
+    ]);
+    expect(
+      registrationSite.webPageRules.find((r) => r.name === 'Restrict Read on Create Course')?.scope,
+    ).toBe(1);
+  });
+});
 
 describe('page graph', () => {
   it('builds URLs from the partial URLs, in URL order, root pages only', () => {

@@ -1,36 +1,27 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { ExitCode, run } from '../../src/cli.js';
-import { diffSites, summarize } from '../../src/diff/compare.js';
+import { ExitCode } from '../../src/cli.js';
+import { summarize } from '../../src/diff/compare.js';
 import { formatJson } from '../../src/diff/format/json.js';
 import { formatMarkdown, MARKDOWN_MAX_LENGTH } from '../../src/diff/format/markdown.js';
 import { formatText } from '../../src/diff/format/text.js';
-import { loadSides } from '../../src/diff/inputs.js';
 import type { Change, DiffResult } from '../../src/diff/types.js';
 import { plain } from '../../src/graph/describe.js';
+import { cli, diffResult } from '../helpers.js';
 
 /** Compares `test/fixtures/diff/<name>/base` with `.../head` (or the other way round). */
-async function diffCase(name: string, reverse = false): Promise<DiffResult> {
+function diffCase(name: string, reverse = false): Promise<DiffResult> {
   const [from, to] = reverse ? ['head', 'base'] : ['base', 'head'];
-  const sides = await loadSides({
+  return diffResult({
     base: `test/fixtures/diff/${name}/${from}`,
     head: `test/fixtures/diff/${name}/${to}`,
     cwd: process.cwd(),
   });
-  const changes = diffSites(sides.base.site, sides.head.site);
-  return { base: sides.base.side, head: sides.head.side, changes, summary: summarize(changes) };
 }
 
 const kinds = (result: DiffResult) => result.changes.map((c) => `${c.class} ${c.kind}`);
 const messages = (result: DiffResult) => result.changes.map((c) => plain(c.message));
 const find = (result: DiffResult, text: string): Change =>
   result.changes.find((c) => plain(c.message).includes(text))!;
-
-async function cli(...argv: string[]) {
-  let out = '';
-  let err = '';
-  const code = await run(argv, { out: (text) => (out += text), err: (text) => (err += text) });
-  return { code, out, err };
-}
 
 describe('diff: grants', async () => {
   const result = await diffCase('grants');
@@ -209,12 +200,12 @@ describe('diff: neutral changes and renames', async () => {
   });
 
   it('finds no changes between a site and itself', async () => {
-    const same = await loadSides({
+    const same = await diffResult({
       base: 'test/fixtures/ecoflux',
       head: 'test/fixtures/ecoflux',
       cwd: process.cwd(),
     });
-    expect(diffSites(same.base.site, same.head.site)).toEqual([]);
+    expect(same.changes).toEqual([]);
   });
 });
 
@@ -277,19 +268,13 @@ describe('diff: solutions and environment variables', () => {
   });
 
   it('finds no change between a download and a solution of the same site', async () => {
-    const sides = await loadSides({
-      base: 'test/fixtures/solution-registration',
-      head: 'test/fixtures/registration',
+    // The real pairs are checked record by record in solution.test.ts and align.test.ts
+    const result = await diffResult({
+      base: 'test/fixtures/align/classic/solution',
+      head: 'test/fixtures/align/classic/site',
       cwd: process.cwd(),
     });
-    const changes = diffSites(sides.base.site, sides.head.site);
-    const result = {
-      base: sides.base.side,
-      head: sides.head.side,
-      changes,
-      summary: summarize(changes),
-    };
-    expect(changes).toEqual([]);
+    expect(result.changes).toEqual([]);
     expect(formatText(result)).toContain(
       'Note: the layouts differ: base is a classic site (unpacked solution), head is a classic site (pac pages download).',
     );

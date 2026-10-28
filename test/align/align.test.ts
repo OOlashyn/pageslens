@@ -1,5 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
 import { classicModelFields } from '../../src/adapters/classic-site.js';
@@ -8,19 +7,13 @@ import { alignSites } from '../../src/align/compare.js';
 import { formatMarkdown, MARKDOWN_MAX_LENGTH } from '../../src/align/format/markdown.js';
 import { normalizeValue } from '../../src/align/normalize.js';
 import { CHECKS, type AlignFinding, type AlignResult } from '../../src/align/types.js';
-import { ExitCode, run } from '../../src/cli.js';
+import { ExitCode } from '../../src/cli.js';
 import type { AlignConfig } from '../../src/lint/config.js';
 import type { Site } from '../../src/model/schema.js';
+import { cli, tempDir } from '../helpers.js';
 
 // `pageslens align` (specs/0008): the real pairs give nothing, the hand-written pairs in
 // test/fixtures/align/ give one finding per case their files' comments name.
-
-async function cli(...argv: string[]) {
-  let out = '';
-  let err = '';
-  const code = await run(argv, { out: (text) => (out += text), err: (text) => (err += text) });
-  return { code, out, err };
-}
 
 const side = (site: Site) => ({
   path: site.root,
@@ -202,45 +195,35 @@ describe('align: config', () => {
   });
 
   it('reads the align section from pageslens.config.yaml', async () => {
-    const temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    try {
-      const config = join(temp, 'pageslens.config.yaml');
-      await writeFile(
-        config,
-        `align:\n  checks:\n    state-differs: off\n    content-differs: warning\n  ignore:\n    - records: [${ROLE.toUpperCase()}]\n`,
-      );
-      const result = await cli(
-        'align',
-        'test/fixtures/align/content/site',
-        'test/fixtures/align/content/solution',
-        '--config',
-        config,
-      );
-      expect(result.code).toBe(ExitCode.Ok);
-      expect(result.out).toContain('0 errors, 5 warnings (1 unused ignore).');
-      await writeFile(config, 'align:\n  checks:\n    nope: off\n');
-      expect(
-        (
-          await cli(
-            'align',
-            'test/fixtures/align/content/site',
-            'test/fixtures/align/content/solution',
-            '--config',
-            config,
-          )
-        ).code,
-      ).toBe(ExitCode.Usage);
-    } finally {
-      await rm(temp, { recursive: true, force: true });
-    }
+    const config = join(await tempDir(), 'pageslens.config.yaml');
+    const args = [
+      'align',
+      'test/fixtures/align/content/site',
+      'test/fixtures/align/content/solution',
+      '--config',
+      config,
+    ];
+    await writeFile(
+      config,
+      `align:\n  checks:\n    state-differs: off\n    content-differs: warning\n  ignore:\n    - records: [${ROLE.toUpperCase()}]\n`,
+    );
+    const result = await cli(...args);
+    expect(result.code).toBe(ExitCode.Ok);
+    expect(result.out).toContain('0 errors, 5 warnings (1 unused ignore).');
+    await writeFile(config, 'align:\n  checks:\n    nope: off\n');
+    expect((await cli(...args)).code).toBe(ExitCode.Usage);
   });
 });
 
 describe('align: command line', () => {
   it('exits 0 with no errors, 1 with errors', async () => {
-    const clean = await cli('align', 'test/fixtures/ecoflux', 'test/fixtures/solution-ecoflux');
+    const clean = await cli(
+      'align',
+      'test/fixtures/align/code/site',
+      'test/fixtures/align/code/solution',
+    );
     expect(clean.code).toBe(ExitCode.Ok);
-    expect(clean.out).toContain('No differences. 143 records match.');
+    expect(clean.out).toContain('No differences. 15 records match.');
     const missing = await cli(
       'align',
       'test/fixtures/align/missing/site',
@@ -252,18 +235,14 @@ describe('align: command line', () => {
   it('exits 2 for the wrong kind of folder on either side', async () => {
     const solutionFirst = await cli(
       'align',
-      'test/fixtures/solution-ecoflux',
-      'test/fixtures/solution-ecoflux',
+      'test/fixtures/solution-broken',
+      'test/fixtures/solution-broken',
     );
     expect(solutionFirst).toMatchObject({
       code: ExitCode.Usage,
-      err: 'error: test/fixtures/solution-ecoflux is an unpacked solution; align compares a download with a solution\n',
+      err: 'error: test/fixtures/solution-broken is an unpacked solution; align compares a download with a solution\n',
     });
-    const downloadSecond = await cli(
-      'align',
-      'test/fixtures/ecoflux',
-      'test/fixtures/registration',
-    );
+    const downloadSecond = await cli('align', 'test/fixtures/broken', 'test/fixtures/classic');
     expect(downloadSecond.code).toBe(ExitCode.Usage);
     expect(downloadSecond.err).toContain('is a classic site download');
   });

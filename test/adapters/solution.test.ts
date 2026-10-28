@@ -1,11 +1,10 @@
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vite-plus/test';
+import { readFile } from 'node:fs/promises';
+import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder, resolveSiteRoot, SiteLoadError } from '../../src/adapters/site-folder.js';
 import { renderSiteDocs } from '../../src/docs/write.js';
 import { lint } from '../../src/lint/engine.js';
 import type { Site } from '../../src/model/schema.js';
+import { tempFiles } from '../helpers.js';
 
 // A solution and a download of the same environment give the same site (specs/0007): the real
 // copies are checked against each other, record by record.
@@ -201,27 +200,9 @@ describe('solution adapter: hand-written cases', () => {
 });
 
 describe('solution adapter: errors', () => {
-  let temp: string | undefined;
-  afterEach(async () => {
-    if (temp) await rm(temp, { recursive: true, force: true });
-    temp = undefined;
-  });
-
   /** A copy of solution-broken with some files replaced (or removed, for undefined). */
-  async function solution(files: Record<string, string | undefined>): Promise<string> {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    await cp('test/fixtures/solution-broken', temp, { recursive: true });
-    for (const [file, content] of Object.entries(files)) {
-      const path = join(temp, file);
-      if (content === undefined) {
-        await rm(path, { recursive: true, force: true });
-      } else {
-        await mkdir(dirname(path), { recursive: true });
-        await writeFile(path, content);
-      }
-    }
-    return temp;
-  }
+  const solution = (files: Record<string, string | undefined>) =>
+    tempFiles(files, { copyFrom: 'test/fixtures/solution-broken' });
 
   async function failure(path: string): Promise<SiteLoadError> {
     const error = await loadSiteFolder(path).catch((e: unknown) => e);
@@ -279,10 +260,8 @@ describe('solution adapter: errors', () => {
   });
 
   it('says the YAML source control format is not read yet', async () => {
-    temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    await mkdir(join(temp, 'solutions', 'Test'), { recursive: true });
-    await writeFile(join(temp, 'solutions', 'Test', 'solution.yml'), 'SolutionManifest: {}\n');
-    expect((await failure(temp)).message).toMatch(
+    const path = await tempFiles({ 'solutions/Test/solution.yml': 'SolutionManifest: {}\n' });
+    expect((await failure(path)).message).toMatch(
       /YAML source control format, which pageslens doesn't read yet/,
     );
   });

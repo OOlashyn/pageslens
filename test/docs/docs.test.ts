@@ -1,10 +1,7 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { describe, expect, it } from 'vite-plus/test';
 import { loadSiteFolder } from '../../src/adapters/site-folder.js';
 import { table } from '../../src/docs/markdown.js';
-import { renderSiteDocs, writeSiteDocs } from '../../src/docs/write.js';
+import { renderSiteDocs } from '../../src/docs/write.js';
 
 const ecoflux = await loadSiteFolder('test/fixtures/ecoflux');
 const broken = await loadSiteFolder('test/fixtures/broken');
@@ -117,24 +114,5 @@ describe('pages docs', () => {
 describe('markdown table', () => {
   it('escapes pipes and line breaks in cells', () => {
     expect(table(['a'], [['x | y\nz']])).toBe('| a |\n| --- |\n| x \\| y z |');
-  });
-});
-
-describe('writeSiteDocs', () => {
-  it('creates the folder and writes every page', async () => {
-    const temp = await mkdtemp(join(tmpdir(), 'pageslens-'));
-    try {
-      const out = join(temp, 'docs', 'site');
-      expect(await writeSiteDocs(ecoflux, out)).toEqual([
-        'index.md',
-        'access-matrix.md',
-        'webapi.md',
-      ]);
-      expect(await readFile(join(out, 'webapi.md'), 'utf8')).toBe(
-        renderSiteDocs(ecoflux).get('webapi.md'),
-      );
-    } finally {
-      await rm(temp, { recursive: true, force: true });
-    }
   });
 });
