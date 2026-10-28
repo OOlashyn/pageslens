@@ -52,6 +52,9 @@ export function formatText(
           ', ',
         ),
   );
+  if (result.findings.length > 0) {
+    lines.push('Run pageslens explain <rule> for why it matters and how to fix it.');
+  }
   return `${lines.join('\n')}\n`;
 }
 

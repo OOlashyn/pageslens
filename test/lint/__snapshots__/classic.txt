@@ -9,3 +9,4 @@ webpagerule.yml
   info     Grant Change rule "Grant Change to Content" applies to nothing: it has no web page.  page-rule-no-page
 
 0 errors, 3 warnings, 1 info
+Run pageslens explain <rule> for why it matters and how to fix it.

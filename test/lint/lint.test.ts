@@ -444,13 +444,17 @@ describe('output formats', () => {
     });
   });
 
-  it('groups text output by file and ends with a summary', () => {
+  it('groups text output by file and ends with a summary and a pointer to explain', () => {
     const text = formatText(lint(ecoflux), ecoflux, 'site');
     expect(text.startsWith('EcoFlux (site)\n\n')).toBe(true);
     expect(text).toContain(
       'table-permissions/Asset---Asset-Manager-CRUD.tablepermission.yml\n  error    Table permission "Asset - Asset Manager CRUD" has account scope',
     );
-    expect(text.endsWith('4 errors, 1 warning, 0 info\n')).toBe(true);
+    expect(
+      text.endsWith(
+        '4 errors, 1 warning, 0 info\nRun pageslens explain <rule> for why it matters and how to fix it.\n',
+      ),
+    ).toBe(true);
   });
 
   it('says so when there are no findings', () => {

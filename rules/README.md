@@ -22,6 +22,8 @@
 | [`page-rule-authenticated`](page-rule-authenticated.md)           | warning | Restrict Read listing Authenticated Users with other roles             |
 | [`page-parent-missing`](page-parent-missing.md)                   | error   | Web page whose parent is missing or inactive, or loops                 |
 
+`pageslens explain <rule>` prints a rule's page in the terminal, and `pageslens explain` lists the rules.
+
 The `page-` rules and `grant-change-overrides-read` run on classic sites only (`pac pages download`). Where a rule's default names two severities, a finding gets the one that fits it, unless the config sets the rule's severity.
 
 Change a rule's severity, or turn it off, in `pageslens.config.yaml`:

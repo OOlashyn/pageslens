@@ -15,6 +15,7 @@ import { formatText as formatDiffText } from './diff/format/text.js';
 import { DiffInputError, loadSides } from './diff/inputs.js';
 import type { DiffResult } from './diff/types.js';
 import { writeSiteDocs } from './docs/write.js';
+import { explainRule, listRules, UnknownRuleError } from './explain.js';
 import { ConfigError, loadConfig } from './lint/config.js';
 import { lint } from './lint/engine.js';
 import { formatJson } from './lint/format/json.js';
@@ -303,6 +304,14 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       io.out(`Wrote ${files.length} pages to ${outPath}: ${files.join(', ')}\n`);
     });
 
+  program
+    .command('explain')
+    .description('Show why a lint rule matters and how to fix it, or list the rules')
+    .argument('[rule]', 'rule id, as lint prints it (default: list every rule)')
+    .action(async (rule: string | undefined) => {
+      io.out(rule === undefined ? listRules() : await explainRule(rule));
+    });
+
   return program;
 }
 
@@ -329,7 +338,8 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
     if (
       error instanceof DiffInputError ||
       error instanceof GitError ||
-      error instanceof AlignInputError
+      error instanceof AlignInputError ||
+      error instanceof UnknownRuleError
     ) {
       io.err(`error: ${error.message}
 `);
