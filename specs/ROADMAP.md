@@ -11,7 +11,8 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
+1. **Agent support** (spec [0009](0009-agent-skills.md)): `pageslens explain` and a README section for agents first, then one `pageslens` skill if a comparison on the fixtures shows it helps. Decided; to build, `explain` first.
+2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed
 
@@ -28,7 +29,6 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Candidates
 
-- Agent skills on `--format json`: `site-review`, `pr-access-review`, `site-docs`.
 - JUnit output for `test`, if CI users ask. It's what Azure DevOps shows in a pipeline's Tests tab.
 
 ## Later
