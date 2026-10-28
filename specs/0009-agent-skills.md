@@ -1,6 +1,6 @@
 # 0009: Agent support: CLI first, one skill
 
-**Status:** parts 1 and 2 shipped in 0.10.0 (see "As built"); parts 3 and 4 to do. Draft 3, every open question answered (see "Decisions").
+**Status:** done. Parts 1 and 2 shipped in 0.10.0 (see "As built"); part 4 ran on 2026-10-27 (see "Comparison results"); part 3, the skill, was closed by decision 15. Draft 3.
 
 pageslens gives facts: findings, failed requirements and access changes, the same every run. What it can't give is judgement: why a finding matters on this site, which fix fits, whether a wider grant in a pull request was meant. The original plan ([mvp-spec.md](research/mvp-spec.md), "Agent skills") puts that in three agent skills. This spec asks a narrower question first: **what does an agent need that the CLI doesn't already give it?** Whatever that is goes into the CLI and the README where it can, so every agent gets it with or without a plugin. One thin skill carries the rest, and ships only if a comparison shows it does better than the CLI alone.
 
@@ -64,8 +64,8 @@ Microsoft's `power-platform-skills` repo (plugin `power-pages`, version 2.7.2, c
 - **CLI first.** Anything an agent needs that can be a command, an output field or a README section goes there, not into the skill. The skill holds only what can't: discovery, and pointing at the rest.
 - **Facts from the JSON, not the text output.** The text and Markdown formats can change wording in any release; the JSON can't without a version bump.
 - **Offline, read-mostly.** An agent following pageslens's guidance reads the site, the git history and the CLI output. The only writes are edits to site files in the working tree, on the user's yes, and the narrative file. Nothing is uploaded, posted, committed or pushed.
-- **GUIDs are the identity** (AGENTS.md). Records are found by `recordId`, not by file name, and no id or relationship GUID is changed.
-- **Every fix is checked by the CLI.** After an edit, `lint` (and `test`) run again. A fix that adds a finding is undone.
+- **GUIDs are the identity** (AGENTS.md). Records are found by `recordId`, not by file name, and no record's own id is changed. Pointing a record at another one is a fix, said with what it does to access (changed after the comparison).
+- **Every fix is checked by the CLI.** After an edit, `lint` (and `test`) run again. A fix that adds an error or a warning is undone, and `diff` shows what it does to access (changed after the comparison).
 - **Plain English in short sentences**, as the rest of the docs.
 
 ## Design
@@ -101,7 +101,7 @@ The section is the single place these rules are written. The skill points at it 
 
 ### 3. One skill, `pageslens`
 
-Only if part 4 says so. A `plugin/` folder in this repo, and the repo is its own marketplace:
+Not built: closed by decision 15 after the comparison. Kept as the design to start from if a plugin is wanted later. A `plugin/` folder in this repo, and the repo is its own marketplace:
 
 ```
 .claude-plugin/marketplace.json      lists one plugin, source ./plugin
@@ -128,6 +128,27 @@ Before part 3 is built, run the same tasks twice on the fixtures with one agent:
 | A site with a variable-backed setting          | `registration` (one `source: 1` setting)         | the value is called unknown, not guessed                                                       |
 
 The results go in this spec. The skill ships when, with the README section already in place, it still does visibly better on a check (most likely: being used at all, unprompted). If the README section alone does as well, the plugin isn't built and the README is pageslens's agent support. A regression found later becomes an eval case.
+
+## Comparison results (2026-10-27)
+
+Part 4, run with pageslens 0.10.0 from npm. Each task ran twice, each time in a fresh agent (Claude Opus 5.5 as a Claude Code subagent) in its own git copy of the fixture: once with only the request, and once with the README section as the project's `AGENTS.md`. The `#` comments that label the fixtures' expected results were removed first. The agents couldn't ask questions, so "fix the errors" counted as the user's yes. Every request named pageslens. One run per cell, so this shows behaviour, not rates.
+
+| Task                                                            | Without guidance                                                                                                                                                                                                                                   | With the README section                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Review and fix `broken` (8 errors)                              | Every error explained. Fixed 5 (8 to 3 errors), edits in the site only. One fix re-parented a permission and widened access; it said so, and checked its edits with `diff` on its own. Clearing a role's flag left an expected `role-unused` info. | Every error explained. Fixed 1 (8 to 7), the secret. Undid the role-flag fix because it added the info finding ("undo a fix that adds a finding"), and wouldn't re-parent a permission ("don't change a GUID that links records"). Both rules were read literally; the rest became proposals. |
+| Review and fix `ecoflux` (4 errors)                             | Explained; no edits: the fix needs relationship names the download doesn't have, and it said changing the scope would widen access.                                                                                                                | The same, with the record GUIDs and a proposal per table.                                                                                                                                                                                                                                     |
+| Review the `grants` branch (8 wider)                            | All 8 wider changes named with what to check; nothing reclassified (role re-creations kept as neutral, with the deployment risk explained); nothing posted.                                                                                        | The same. Used `--format json`.                                                                                                                                                                                                                                                               |
+| Document the roles of `registration`, then re-run after changes | `about.md` with the agent line and a GUID comment per role; generated pages untouched. It found the recipe in the README inside the npm package. The re-run kept the hand note word for word and picked up the renamed and the new role.           | The same, first run and re-run.                                                                                                                                                                                                                                                               |
+| Is `CardsPerPage` 18? (variable-backed)                         | Unknown, not 18: it wrote a one-line policy, and `test` said the value comes from an environment variable a download doesn't include.                                                                                                              | The same, and it cited the working rule.                                                                                                                                                                                                                                                      |
+
+What it shows:
+
+- **The CLI and the package README already carry what an agent needs.** Without `AGENTS.md`, the agents used `--site` and `--merge-base`, didn't reclassify, said unknown values were unknown, and wrote `about.md` the README's way: `npx` puts the README next to the package, and the CLI's messages say enough. On no check did the README section in `AGENTS.md` do better.
+- **Two working rules made the guided run worse**, both read literally. "Undo a fix that adds a finding" undid a correct fix whose expected result is an info finding, and "don't change a GUID that links records" ruled out re-parenting, the usual fix for `parent-chain-broken`. Both are reworded in the README: undo a fix that adds an error or a warning; pointing a record at another one is a fix, said with what it does to access.
+- **The unguided run widened access** to fix an error, without asking. It said so, but the README didn't cover it. The review recipe now asks for a separate yes for a fix that `diff` shows as wider, and the rules say to check edits with `diff HEAD <site>`, as that run did on its own.
+- **Not tested: discovery.** Every request named pageslens. Whether an agent reaches for it unprompted, the one thing a skill adds, depends on the project's `AGENTS.md` mentioning it, or a skill being installed (question 15).
+
+By part 4's own rule, the README section does as well as anything a skill would add on these checks, so the skill isn't built unless question 15 says otherwise.
 
 ## How it fits
 
@@ -173,6 +194,14 @@ Draft 3's questions, answered the same day (every recommendation accepted):
 2. **The skill's body.** Copy the README section into `SKILL.md` at release (a test checks they match); or keep only a pointer to the README on GitHub. Recommended: copy it, checked by a test. A skill has to work offline and without the repo checked out, and a pointer to `main` can be ahead of the version the skill runs.
 3. **`explain` for `align` checks.** Lint rules only; or `align`'s checks too, from sections of `docs/align.md`. Recommended: lint rules only for now. `align` findings already say what's missing and where, and its checks share one page; add them if agents are seen to need it.
 4. **The pointer at the end of `lint`'s text output.** One line, "Run `pageslens explain <rule>` for why it matters and how to fix it.", when there are findings; or nothing. Recommended: the line, in text output only. It's how a person, or an agent reading text output, finds `explain`. It changes the text snapshots, not the JSON or SARIF.
+
+## Decision after the comparison (Oleksandr, 2026-10-27)
+
+15. Part 3 is closed: no skill or plugin for now. The README's agent section gets one line to paste into `AGENTS.md`, so agents know pageslens is there. A plugin is revisited if people ask for one.
+
+## Open question after the comparison (answered, see decision 15)
+
+15. **Build the skill for discovery, or close part 3?** The comparison found nothing the skill would add once an agent knows to use pageslens. What's left is getting there: a project's `AGENTS.md` that mentions pageslens does it for that project; an installed skill does it for every project of the person who installed it, at the cost of a plugin to keep in step with each release. Recommended: close part 3 for now. Add one line to the README's agent section saying what to paste into `AGENTS.md` so agents know pageslens is there, and revisit a plugin if people ask for one.
 
 ## Sources
 
