@@ -65,6 +65,7 @@ type DiffFormat = 'text' | 'markdown' | 'json';
 
 interface DiffOptions {
   format: DiffFormat;
+  site?: string;
   mergeBase?: boolean;
   failOn?: 'wider' | 'any';
 }
@@ -185,10 +186,12 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
   program
     .command('diff')
     .description('Show what a change does to access: grants, Web API, web roles and key settings')
+    .usage('[options] <base> <head>')
     .argument('<base>', 'folder or git ref to compare from')
     .argument('<head>', 'folder or git ref to compare with base')
-    .argument(
-      '[path]',
+    .argument('[path]', 'deprecated: use --site')
+    .option(
+      '--site <path>',
       'with two refs: the site folder, relative to the current folder (default: .)',
     )
     .option(
@@ -207,10 +210,17 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       ).choices(['wider', 'any']),
     )
     .action(async (base: string, head: string, path: string | undefined, options: DiffOptions) => {
+      if (path !== undefined && options.site !== undefined) {
+        throw new DiffInputError('give the site folder once, with --site');
+      }
+      if (path !== undefined) {
+        io.err(`warning: the site folder as a third argument is deprecated; use --site ${path}\n`);
+      }
+      const site = options.site ?? path;
       const sides = await loadSides({
         base,
         head,
-        ...(path !== undefined && { path }),
+        ...(site !== undefined && { path: site }),
         mergeBase: options.mergeBase ?? false,
         cwd: process.cwd(),
       });

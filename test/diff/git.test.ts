@@ -104,7 +104,7 @@ describe('diff at git refs', () => {
     expect(result.head).toMatchObject({ path: 'classic', layout: 'classic' });
   });
 
-  it('takes [path] relative to the current folder', async () => {
+  it('takes the site folder relative to the current folder', async () => {
     const result = await diff({ base: commits.base!, head: 'feature', cwd: join(repo, 'portal') });
     expect(result.summary.wider).toBe(8);
     expect(result.head.path).toBe('.powerpages-site');

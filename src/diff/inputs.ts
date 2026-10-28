@@ -21,7 +21,7 @@ import {
 import type { DiffSide } from './types.js';
 
 // Each side of `diff` is a folder or a git ref. Two folders are read as they are; two refs read
-// the site folder `[path]` at each commit; a ref and a folder read the folder's own path at the
+// the site folder `--site` at each commit; a ref and a folder read the folder's own path at the
 // ref, so uncommitted edits show. Commits are read with git (no checkout or worktree).
 
 /** The arguments can't be used: exit code 2, like a usage error. */
@@ -56,7 +56,7 @@ export async function loadSides(
   const [base, head] = [await classify(inputs.base, cwd), await classify(inputs.head, cwd)];
   const refs = base.kind === 'ref' && head.kind === 'ref';
   if (inputs.path !== undefined && !refs) {
-    throw new DiffInputError('[path] can only be given with two git refs');
+    throw new DiffInputError('--site can only be given with two git refs');
   }
   if (inputs.mergeBase && !refs) {
     throw new DiffInputError('--merge-base needs a git ref for both base and head');

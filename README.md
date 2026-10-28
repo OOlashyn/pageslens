@@ -158,12 +158,12 @@ The full grammar, what each statement means and how to write a good policy: [doc
 ## `pageslens diff`
 
 ```
-pageslens diff <base> <head> [path] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
+pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
 ```
 
 Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, a few settings such as open registration, and on classic sites who can read and publish each page. It compares effective access, not files, and matches records by GUID (so a download and a solution can be compared too), so a renamed file or a permission split in two with the same result isn't an access change.
 
-Each side is a folder or a git ref: two downloads (`diff before after`), two commits (`diff origin/main HEAD site`), or a commit and the working tree (`diff origin/main site`, to see uncommitted edits). `--merge-base` compares with the merge base, as a pull request does.
+Each side is a folder or a git ref: two downloads (`diff before after`), two commits (`diff origin/main HEAD --site site`), or a commit and the working tree (`diff origin/main site`, to see uncommitted edits). `--merge-base` compares with the merge base, as a pull request does.
 
 ```
 Access changes in site/.powerpages-site, origin/main (a1b2c3d) → HEAD (e4f5a6b): 1 wider, 1 narrower, 0 neutral
