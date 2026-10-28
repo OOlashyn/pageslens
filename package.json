@@ -25,6 +25,7 @@
   },
   "files": [
     "dist",
+    "rules",
     "pageslens.config.schema.json"
   ],
   "type": "module",

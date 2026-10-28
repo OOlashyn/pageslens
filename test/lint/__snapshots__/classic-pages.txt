@@ -22,3 +22,4 @@ webpagerule.yml
   error    Restrict Read rule "Shared B" is one of 2 Restrict Read rules on "/shared/" ("Shared A", "Shared B"); Power Pages reports this as a conflict and expects one.  page-rules-conflict
 
 7 errors, 4 warnings, 2 info
+Run pageslens explain <rule> for why it matters and how to fix it.

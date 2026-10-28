@@ -11,7 +11,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Agent support** (spec [0009](0009-agent-skills.md)): `pageslens explain` and a README section for agents first, then one `pageslens` skill if a comparison on the fixtures shows it helps. Decided; to build, `explain` first.
+1. **Agent support** (spec [0009](0009-agent-skills.md)): `pageslens explain` and a README section for agents first, then one `pageslens` skill if a comparison on the fixtures shows it helps. `explain` and the README section are built and wait for a release; next, the comparison (part 4), then the skill if it helps.
 2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed

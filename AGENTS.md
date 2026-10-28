@@ -31,7 +31,7 @@ pageslens reads two download layouts and unpacked solutions into the same model 
 A rule touches all of these. The tests check that every rule has a page listed in `rules/README.md` and fires on `broken` (or on `classic-pages`, for the classic-only page rules); keep the rest in step by hand:
 
 - `src/lint/rules/<id>.ts`, registered in `src/lint/rules/index.ts`
-- `rules/<id>.md` (why it matters, how to fix), plus the tables in `rules/README.md` and `README.md`
+- `rules/<id>.md` (why it matters, how to fix), plus the tables in `rules/README.md` and `README.md`. The pages ship in the npm package: `pageslens explain <id>` prints them, starting with `# <id>`
 - a case in `test/fixtures/broken/` whose file starts with a `#` comment naming the rule (or `# clean:` for a record that must not fire); page access rules go in `test/fixtures/classic-pages/`
 - the expected findings in `test/fixtures/README.md` and `test/lint/lint.test.ts`
 - docs snapshots in `test/docs/__snapshots__/` if the output changes

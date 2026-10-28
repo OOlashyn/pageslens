@@ -1,6 +1,6 @@
 # 0009: Agent support: CLI first, one skill
 
-**Status:** draft 3, every open question answered (see "Decisions"). Reworked on 2026-10-27 from three skills to CLI first and one skill. Not built.
+**Status:** parts 1 and 2 built (see "As built"), not yet released; parts 3 and 4 to do. Draft 3, every open question answered (see "Decisions").
 
 pageslens gives facts: findings, failed requirements and access changes, the same every run. What it can't give is judgement: why a finding matters on this site, which fix fits, whether a wider grant in a pull request was meant. The original plan ([mvp-spec.md](research/mvp-spec.md), "Agent skills") puts that in three agent skills. This spec asks a narrower question first: **what does an agent need that the CLI doesn't already give it?** Whatever that is goes into the CLI and the README where it can, so every agent gets it with or without a plugin. One thin skill carries the rest, and ships only if a comparison shows it does better than the CLI alone.
 
@@ -134,6 +134,16 @@ The results go in this spec. The skill ships when, with the README section alrea
 - **The GitHub Action** stays the CI path: deterministic, no agent. The pull request recipe is for a reviewer at their desk, and reads the same `diff` JSON.
 - **Microsoft's skills** do the environment side: create, deploy, audit against Dataverse. pageslens checks and explains what's in git. The README can say to use both.
 - **`explain`** is useful to people too: the rule pages from the terminal, for the version installed.
+
+## As built
+
+Parts 1 and 2, not yet released. Interpretations made while building:
+
+- **The rule pages are read from the package, not bundled into `dist`.** `rules/` is added to the package's `files`, and `src/explain.ts` reads `../rules/<id>.md` from its own URL, which is the package root both as source and as `dist/bin.mjs`. It gives what the design asked for (offline, through `npx`, the page of the version that gave the finding) without a text loader in the build. A test checks that every rule's page prints and starts with `# <id>`, and that `rules` stays in `files`.
+- **`explain` alone lists each rule's `description`** (the one line SARIF also uses), not the first sentence of its page. They say the same thing, and the description is already one line.
+- An unknown rule's error suggests the closest id within two edits, as unknown roles and pages in a policy do, and says to run `explain` for the list.
+- The lint text output's last line is "Run pageslens explain <rule> for why it matters and how to fix it.", only when there are findings.
+- The README's quick start still had `diff origin/main HEAD path/to/site`; it now uses `--site`.
 
 ## Decisions (Oleksandr, 2026-10-27)
 
