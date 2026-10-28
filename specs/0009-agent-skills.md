@@ -1,6 +1,6 @@
 # 0009: Agent support: CLI first, one skill
 
-**Status:** parts 1 and 2 built (see "As built"), not yet released; parts 3 and 4 to do. Draft 3, every open question answered (see "Decisions").
+**Status:** parts 1 and 2 shipped in 0.10.0 (see "As built"); parts 3 and 4 to do. Draft 3, every open question answered (see "Decisions").
 
 pageslens gives facts: findings, failed requirements and access changes, the same every run. What it can't give is judgement: why a finding matters on this site, which fix fits, whether a wider grant in a pull request was meant. The original plan ([mvp-spec.md](research/mvp-spec.md), "Agent skills") puts that in three agent skills. This spec asks a narrower question first: **what does an agent need that the CLI doesn't already give it?** Whatever that is goes into the CLI and the README where it can, so every agent gets it with or without a plugin. One thin skill carries the rest, and ships only if a comparison shows it does better than the CLI alone.
 
@@ -94,7 +94,7 @@ A README section that any agent can be pointed at, and that people can paste int
 - **The working rules** from "Design rules" above, as a short list, plus: a value marked `unknown` comes from an environment variable and can't be known offline, so say so instead of guessing.
 - **Three recipes**, a few lines each:
   - _Review a site_: `lint` and `test` as JSON (and `align` when a solution folder is given), group findings by rule, `explain` each rule, propose fixes one rule at a time, apply on a yes per rule, run `lint` again. Never edit the solution folder; `pageslens.config.yaml` only for an ignore with a `reason`.
-  - _Review a pull request's access changes_: `diff <base> HEAD --site <path> --merge-base --format json`; for each wider change, open the `sources` on both sides and the commits that touched them, and say what a reviewer should check. Narrower and neutral changes get one line each. Write the review in the chat; don't post it. `--site` came after 0.9.0, so this needs the release that has it.
+  - _Review a pull request's access changes_: `diff <base> HEAD --site <path> --merge-base --format json`; for each wider change, open the `sources` on both sides and the commits that touched them, and say what a reviewer should check. Narrower and neutral changes get one line each. Write the review in the chat; don't post it. `--site` needs 0.10.0 or later.
   - _Write narrative docs_: run `docs`, then write `about.md` next to the generated pages. It starts with a line saying an agent wrote it and a person should check it, and each entry names its record and GUID in an HTML comment, so a re-run finds new, renamed and removed records and keeps what a person wrote. The generated pages aren't touched.
 
 The section is the single place these rules are written. The skill points at it instead of copying it (open question 2).
@@ -137,7 +137,7 @@ The results go in this spec. The skill ships when, with the README section alrea
 
 ## As built
 
-Parts 1 and 2, not yet released. Interpretations made while building:
+Parts 1 and 2, shipped in 0.10.0. Interpretations made while building:
 
 - **The rule pages are read from the package, not bundled into `dist`.** `rules/` is added to the package's `files`, and `src/explain.ts` reads `../rules/<id>.md` from its own URL, which is the package root both as source and as `dist/bin.mjs`. It gives what the design asked for (offline, through `npx`, the page of the version that gave the finding) without a text loader in the build. A test checks that every rule's page prints and starts with `# <id>`, and that `rules` stays in `files`.
 - **`explain` alone lists each rule's `description`** (the one line SARIF also uses), not the first sentence of its page. They say the same thing, and the description is already one line.
@@ -177,7 +177,7 @@ Draft 3's questions, answered the same day (every recommendation accepted):
 ## Sources
 
 - [mvp-spec.md](research/mvp-spec.md), "Agent skills (milestone 3)", and [alm-story.md](research/alm-story.md), "Where agent skills help".
-- [0003-diff.md](0003-diff.md): the change kinds a pull request review reads, and `--site` (as built, after 0.9.0). [0004-github-action.md](0004-github-action.md): exact-version pinning.
+- [0003-diff.md](0003-diff.md): the change kinds a pull request review reads, and `--site` (as built, 0.10.0). [0004-github-action.md](0004-github-action.md): exact-version pinning.
 - Microsoft's [power-platform-skills](https://github.com/microsoft/power-platform-skills) repo, plugin `power-pages` 2.7.2: manifests, `SKILL.md` front matter, the `audit-permissions` workflow, Copilot CLI install (read 2026-10-27).
 - [Agent Skills](https://agentskills.io): the `SKILL.md` format.
 - [Claude Code plugins](https://code.claude.com/docs/en/plugins) and [plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces).
