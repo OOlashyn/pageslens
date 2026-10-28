@@ -309,7 +309,7 @@ function run(): void {
           .status === 0,
     );
     const head = headRef(pr, (sha) => git('cat-file', '-e', `${sha}^{commit}`).status === 0);
-    const args = ['diff', '--merge-base', base, head, path];
+    const args = ['diff', '--merge-base', base, head, '--site', path];
     const failOn = input('fail-on');
     const markdown = join(dir, 'diff.md');
     const failArgs = failOn ? ['--fail-on', failOn] : [];

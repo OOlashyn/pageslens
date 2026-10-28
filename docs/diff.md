@@ -3,7 +3,7 @@
 `pageslens lint` catches known mistakes and `pageslens test` checks your requirements. `pageslens diff` answers a third question for a pull request: **what does this change do to who can see and change what?**
 
 ```
-pageslens diff <base> <head> [path] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
+pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
 ```
 
 It compares effective access, not files. Both sides go through the same reading and access logic as `docs` and `test`, so a permission split in two with the same result, or a file that was renamed or moved, isn't an access change. The YAML diff is already in the pull request; `diff` shows what it means.
@@ -23,10 +23,11 @@ Base comes first, like `git diff A B`: sentences read "head compared with base" 
 | Form               | Example                                           | Compares                                                                                                                                           |
 | ------------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Two folders        | `pageslens diff downloads/before downloads/after` | two downloads or solutions. Each is found like `lint`'s path: a `.powerpages-site` inside it, a folder with `website.yml`, or an unpacked solution |
-| Two refs           | `pageslens diff origin/main HEAD site`            | the site folder `[path]` (default `.`, relative to the current folder) at each commit                                                              |
+| Two refs           | `pageslens diff origin/main HEAD --site site`     | the site folder `--site` (default `.`, relative to the current folder) at each commit                                                              |
 | A ref and a folder | `pageslens diff origin/main site`                 | the committed site at `origin/main` with the working tree, so uncommitted edits show                                                               |
 
 - An existing folder is a folder; anything else must name a commit. An argument that is both (a folder called `main` next to a branch called `main`) is an error: write `./main` for the folder or `refs/heads/main` for the ref.
+- `--site` is only for two refs: with a folder, the folder is the site. The site folder as a third argument (`diff origin/main HEAD site`) still works, with a warning, and will be removed in a later release.
 - Commits are read with git, without a checkout or worktree, exactly as committed.
 - `--merge-base` compares head with the merge base of the two refs, the way a pull request's diff does, so commits added to the target branch since the branch was made don't show up reversed. It needs two refs. In CI, fetch enough history for the merge base (`fetch-depth: 0`).
 - A side where the site folder doesn't exist (the change adds the site, or removes it) is read as an empty site, with a note. A side that exists but can't be read is an error, as for `lint`.

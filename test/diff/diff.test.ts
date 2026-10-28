@@ -475,14 +475,30 @@ describe('cli diff', () => {
     expect(JSON.parse((await cli('diff', ...pair, '--format', 'json')).out).version).toBe(1);
   });
 
+  it('reads the site folder at two refs from --site, or from the deprecated third argument', async () => {
+    const site = await cli('diff', 'HEAD', 'HEAD', '--site', 'test/fixtures/broken');
+    expect(site).toMatchObject({ code: ExitCode.Ok, err: '' });
+    expect(site.out).toMatch(
+      /^No access changes in test\/fixtures\/broken\/\.powerpages-site, HEAD/,
+    );
+    const old = await cli('diff', 'HEAD', 'HEAD', 'test/fixtures/broken');
+    expect(old.code).toBe(ExitCode.Ok);
+    expect(old.out).toBe(site.out);
+    expect(old.err).toBe(
+      'warning: the site folder as a third argument is deprecated; use --site test/fixtures/broken\n',
+    );
+  });
+
   it('exits 2 for arguments it cannot use', async () => {
     const neither = await cli('diff', 'no-such-folder-or-ref', 'test/fixtures/broken');
     expect(neither).toMatchObject({ code: ExitCode.Usage });
     expect(neither.err).toBe(
       'error: "no-such-folder-or-ref" is neither a folder nor a git commit\n',
     );
-    const path = await cli('diff', 'test/fixtures/broken', 'test/fixtures/broken', 'site');
-    expect(path.err).toBe('error: [path] can only be given with two git refs\n');
+    const path = await cli('diff', 'test/fixtures/broken', 'test/fixtures/broken', '--site', 'x');
+    expect(path.err).toBe('error: --site can only be given with two git refs\n');
+    const twice = await cli('diff', 'HEAD', 'HEAD', 'x', '--site', 'x');
+    expect(twice.err).toBe('error: give the site folder once, with --site\n');
     const mergeBase = await cli(
       'diff',
       '--merge-base',
