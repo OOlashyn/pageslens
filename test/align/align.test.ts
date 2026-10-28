@@ -35,7 +35,8 @@ const summary = (findings: AlignFinding[]) =>
   findings.map((f) => `${f.severity} ${f.check} ${f.kind} ${f.name}`);
 
 describe('align: the real pairs', () => {
-  it('finds nothing between Registration and its solution', async () => {
+  // Reads two copies of a 477-record site: about 1 s alone, over 5 s on a busy machine
+  it('finds nothing between Registration and its solution', { timeout: 15_000 }, async () => {
     const result = await align('test/fixtures/registration', 'test/fixtures/solution-registration');
     expect(result.findings).toEqual([]);
     expect(result.matched).toBe(477);
