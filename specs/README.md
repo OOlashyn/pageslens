@@ -23,7 +23,7 @@ Design notes for pageslens: why it works the way it does. User docs are the [REA
 | [0009: Agent support](0009-agent-skills.md)                             | shipped in 0.10.0; skill closed                        |
 | [0010: Deployment settings, `--settings`](0010-deployment-settings.md)  | shipped in 0.11.0                                      |
 | [0011: Parent chains in policies](0011-policy-parent-chains.md)         | shipped in 0.12.0                                      |
-| [0012: Documentation site](0012-docs-site.md)                           | built, not yet released                                |
+| [0012: Documentation site](0012-docs-site.md)                           | deployed; output links ship in 0.13.0                  |
 
 ## Writing a spec
 
