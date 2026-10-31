@@ -1,6 +1,6 @@
 # 0010: Deployment settings (`--settings`)
 
-**Status:** draft 2, open questions for Oleksandr. Draft 2 adds a real file from `pac solution create-settings`.
+**Status:** draft 3, ready to build. Draft 2 added a real file from `pac solution create-settings`; draft 3 records the decisions and the Learn checks. Still owed: what the import does with an empty or missing `Value` ("Verification owed").
 
 A site setting can take its value from an environment variable (`source: 1`). The value differs per stage: the solution carries the variable's definition, and the import gets the stage's value from a **deployment settings file**, one per target, kept in the repository (`deployment-settings/<target>.json`). The ALM white paper does exactly this ([alm-white-paper.md](research/alm-white-paper.md), "What to change" 1), and so does the process in [alm-story.md](research/alm-story.md).
 
@@ -43,7 +43,7 @@ So the settings that matter most per stage (`Webapi/<table>/enabled`, `Webapi/<t
 
 What it shows:
 
-- **`Value` starts empty**, even though the solution has a current value (`environmentvariablevalues.json` says 20). `create-settings` doesn't copy current values: a team fills in each stage's values by hand. A file nobody has edited is all empty values, so how pageslens reads an empty `Value` matters (question 2).
+- **`Value` starts empty**, even though the solution has a current value (`environmentvariablevalues.json` says 20). `create-settings` doesn't copy current values: a team fills in each stage's values by hand. A file nobody has edited is all empty values, so how pageslens reads an empty `Value` matters (decision 2).
 - **The other fields come from the definition**, for the reader: `DefaultValue` is its `defaultvalue` (18), `Name` its display name, `TypeId` its `type` (100000001, Number), `IsRequired` its `isrequired`. They describe the solution; the stage's value is only `Value`.
 - **`TypeId` tells a secret apart**: 100000005, the Secret type the solution adapter already uses. Its `Value` is a Key Vault reference, `/subscriptions/<id>/resourceGroups/<group>/providers/Microsoft.KeyVault/vaults/<vault>/secrets/<name>`: Learn gives this format for a Secret variable's value ([Configure automation kit environment variables](https://learn.microsoft.com/power-automate/guidance/automation-kit/setup/environment-variables#get-the-url-path-for-your-azure-key-vault-secrets)), and the import's error for an unreadable secret names the same path ([User is not authorized to read secrets](https://learn.microsoft.com/troubleshoot/power-platform/dataverse/working-with-solutions/environment-variable-key-vault-auth-error)). Not yet seen in a `create-settings` file; pageslens doesn't need the format, since it goes by `TypeId`.
 - **The top-level keys grow**: `CopilotAgents` is newer than the format as remembered. pageslens reads `EnvironmentVariables` and ignores every other key, at the top and in each entry, so the next one doesn't break it.
@@ -80,7 +80,7 @@ pageslens align . solutions/Portal --settings deployment-settings/prod.json
 
 - The path is relative to the current folder, as `--config` and `--policy` are.
 - A file that can't be read, isn't JSON, or has no `EnvironmentVariables` array of entries with a string `SchemaName` is exit 2, like a bad config. `Value` must be a string when it's there. Other keys are ignored, at the top and in each entry.
-- `docs` doesn't take it (question 4).
+- `docs` doesn't take it (decision 4).
 
 ### Applying the file
 
@@ -90,7 +90,7 @@ After the adapter has read the site, and before anything else, each setting with
 | ------------------------------------ | ---------------------------------------------------------------------------- |
 | A non-empty `Value`                  | That value. No longer `unknown`.                                             |
 | `TypeId` 100000005 (a secret)        | Unchanged: unknown in a download, "no value to read" in a solution, as today |
-| An empty `Value`, or not in the file | Unchanged (question 2)                                                       |
+| An empty `Value`, or not in the file | Unchanged (decision 2)                                                       |
 
 The setting records where the value came from, so messages can name it: `"true" from environment variable dwcrm_ContactApi in deployment-settings/prod.json`. `settingValue` and `unknownValue` in `src/graph/describe.ts` gain the case; nothing else in `lint` or `test` changes, since they read the model.
 
@@ -110,11 +110,11 @@ The file is read on each side: from the folder, or from the commit at the same p
 
 - Not reported when the file has a non-empty value, or the variable is a secret.
 - Reported, naming the file, when the file has an empty value or doesn't have the variable.
-- A new check, `variable-not-in-settings` (warning): a variable the solution's settings use that the file doesn't list, or lists with an empty `Value`, when the solution has a value of its own. What the import does then isn't known (question 2), and the likely answers give the stage dev's value or the default. Since `create-settings` writes every variable with an empty `Value`, an unedited file warns on each one, which is the point. Question 3.
+- A new check, `variable-not-in-settings` (warning): a variable the solution's settings use that the file doesn't list, or lists with an empty `Value`, when the solution has a value of its own. What the import does then isn't known (decision 2), and the likely answers give the stage dev's value or the default. Since `create-settings` writes every variable with an empty `Value`, an unedited file warns on each one, which is the point (decision 3).
 
 ### The Action
 
-A `settings` input, passed to every command it runs (question 5).
+A `settings` input, passed to every command it runs (decision 5).
 
 ## Tests and fixtures
 
@@ -123,15 +123,17 @@ A `settings` input, passed to every command it runs (question 5).
 - A `test/fixtures/diff/settings/` pair where only the settings file changes.
 - Policy cases for the same site under each stage, and `align` cases for the two checks.
 
-## Open questions for Oleksandr
+## Decisions
 
-1. **The name.** `--settings`, as `pac solution import --settings-file` and the roadmap call it, or `--deployment-settings`, which can't be mistaken for site settings or `pageslens.config.yaml`? Recommended: `--settings`. It's shorter, matches `pac`, and the help text says "deployment settings file".
-2. **An empty `Value`, or a variable missing from the file.** Keep today's behaviour (unknown in a download; the solution's current or default value in a solution), or treat the setting as not set? Recommended: keep today's behaviour until the import's behaviour is checked in an environment, and let `align` warn about it (question 3). Guessing "not set" could pass a check that prod fails.
-3. **`variable-not-in-settings` in `align`**: a warning, as above, or nothing? Recommended: a warning. It's the case where a missing line in a stage's file gives prod dev's value, and it's cheap to fix or ignore. A new check changes `pageslens.config.schema.json`.
-4. **`docs`.** Take `--settings`, or not? Recommended: not. Docs are committed and meant to give quiet diffs; per-stage docs would mean one folder per stage. Today's "from environment variable X" says where to look.
-5. **The Action with several stages.** One `settings` input (a matrix runs the Action once per stage), or a list of files in one run? Recommended: one input. Several runs would each post the pull request comment, so the comment only shows with `settings` empty or on one chosen stage; say so in the docs. A list in one run would mean every report gains a stage column.
-6. **Values that aren't in any setting.** Variables in the file that no setting uses (a flow's variables, or a typo): ignore, or warn in `align`? Recommended: ignore. Solutions often hold variables for flows and apps, and the file lists them all.
-7. **`DefaultValue` in the file.** Use it when `Value` is empty, or ignore it? Recommended: ignore it. It's a copy of the definition's default, written for the reader; the solution already has it, and nothing says the import reads it.
+Oleksandr took the recommendation on each question (2026-10-30).
+
+1. **The name: `--settings`.** It's shorter, matches `pac solution import --settings-file` and the roadmap, and the help text says "deployment settings file". `--deployment-settings` was the alternative, as it can't be mistaken for site settings or `pageslens.config.yaml`.
+2. **An empty `Value`, or a variable missing from the file: today's behaviour.** Unknown in a download; the solution's current or default value in a solution. This holds until the import's behaviour is checked in an environment, and `align` warns about it (decision 3). Treating the setting as not set would be a guess that could pass a check prod fails.
+3. **`variable-not-in-settings` in `align`: a warning.** It's the case where a missing line in a stage's file gives prod dev's value, and it's cheap to fix or ignore. The new check changes `pageslens.config.schema.json`.
+4. **`docs` doesn't take `--settings`.** Docs are committed and meant to give quiet diffs; per-stage docs would mean one folder per stage. Today's "from environment variable X" says where to look.
+5. **The Action: one `settings` input.** A matrix runs the Action once per stage. Each run would post the pull request comment, so the docs say to leave `settings` empty or set it on one chosen stage for the comment. A list in one run would mean every report gains a stage column.
+6. **Variables in the file that no setting uses are ignored.** Solutions often hold variables for flows and apps, and the file lists them all, so a warning would mostly be noise.
+7. **`DefaultValue` in the file is ignored.** It's a copy of the definition's default, written for the reader; the solution already has it, and nothing says the import reads it.
 
 ## Verification owed
 
