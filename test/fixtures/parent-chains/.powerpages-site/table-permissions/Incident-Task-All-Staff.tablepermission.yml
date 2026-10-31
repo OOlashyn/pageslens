@@ -1,0 +1,15 @@
+# every incident's tasks, under a global parent
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000003
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: task
+entityname: Incident Task - All Staff
+id: 00000000-0000-0000-0002-000000000005
+parententitypermission: 00000000-0000-0000-0002-000000000004
+parentrelationship: Incident_Tasks
+read: true
+scope: 756150003
+write: true

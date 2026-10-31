@@ -9,13 +9,13 @@ Wider
       table-permissions/Order-Customers.tablepermission.yml
   + Customers: read on contact (contact scope) may reach other rows, as the contact relationship changed from "contact_customer_contacts" to "contact_parent_contacts" in "Contact - Customers" (Web API enabled)
       table-permissions/Contact-Customers.tablepermission.yml
-  + Customers gained read on annotation (parent scope) from "Case Note - Customers", under "Case - Customers" (the chain under "Case - Customers" is now complete)
+  + Customers gained read on annotation (parent scope) from "Case Note - Customers", under "Case - Customers" (dwcrm_case, contact scope) (the chain under "Case - Customers" is now complete)
       table-permissions/Case-Note-Customers.tablepermission.yml
   + New Role gained read on dwcrm_survey (global scope) from "Survey - New Role"
       table-permissions/Survey-New-Role.tablepermission.yml
   + Partner gained read on dwcrm_case (contact scope) from "Case - Customers" (the role was added to the permission)
       table-permissions/Case-Customers.tablepermission.yml
-  + Partner gained read on task (parent scope) from "Case Task - Inherited", under "Case - Customers" (inherits roles from "Case - Customers") (the parent permission now has the role)
+  + Partner gained read on task (parent scope) from "Case Task - Inherited", under "Case - Customers" (dwcrm_case, contact scope) (inherits roles from "Case - Customers") (the parent permission now has the role)
       table-permissions/Case-Task-Inherited.tablepermission.yml
 Narrower
   - Anonymous Users lost read on knowledgearticle (global scope) from "Articles - Anonymous Read" (removed)

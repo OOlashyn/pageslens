@@ -162,7 +162,7 @@ test: Authenticated Users has write on contact (global scope) from "Contact - Au
 diff: Authenticated Users gained write on contact (global scope) from "Contact - Authenticated Users Global Write"
 ```
 
-Privileges with the same role, table, scope and permission are joined (`gained read, write`). A parent-scope grant adds `, under "<top parent>"`, and `(inherits roles from "<parent>")` when its roles come from a parent. A gained or lost grant names the cause when there is one: `(removed)`, `(deactivated)`, `(activated)`, `(the privilege was turned off)`, `(the role was added to the permission)`, `(the chain under "Case" is now complete)`. A wider line whose records also trip a lint rule ends with `(also reported by lint: <rule>)`; the rules run at their default severities, without your `pageslens.config.yaml`.
+Privileges with the same role, table, scope and permission are joined (`gained read, write`). A parent-scope grant adds `, under "<top parent>" (<table>, <scope> scope)`, naming the top of its chain and the rows it starts from, and `(inherits roles from "<parent>")` when its roles come from a parent. A gained or lost grant names the cause when there is one: `(removed)`, `(deactivated)`, `(activated)`, `(the privilege was turned off)`, `(the role was added to the permission)`, `(the chain under "Case" is now complete)`. A wider line whose records also trip a lint rule ends with `(also reported by lint: <rule>)`; the rules run at their default severities, without your `pageslens.config.yaml`.
 
 ## Output
 

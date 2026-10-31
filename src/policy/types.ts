@@ -24,10 +24,23 @@ export interface PageRef {
 /** `read` is who can open the page; `publish` is Grant Change, which also gives read. */
 export type PageAction = 'read' | 'publish';
 
+/**
+ * `under <table> [at <scope> scope]`: a parent chain with a permission on that table. The nearest
+ * one counts, and the scope is that permission's.
+ */
+export interface ChainRef {
+  table: string;
+  scope?: AccessScope;
+}
+
 interface AccessBase {
   privileges: Privilege[];
   table: TableRef;
   scope?: AccessScope;
+  /** Only grants through such a chain count. */
+  under?: ChainRef;
+  /** `except under …`: grants through such a chain don't count. Not in `can`. */
+  except?: ChainRef;
 }
 
 export type Check =

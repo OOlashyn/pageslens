@@ -11,7 +11,8 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Next
 
-1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
+1. **Parent chains in policies** (spec [0011](0011-policy-parent-chains.md)): `under` and `except under` in access statements, so a policy can say a child table is reached only through a given parent. Built, not yet released.
+2. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
 
 ## Verification still owed
 

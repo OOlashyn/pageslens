@@ -1,0 +1,13 @@
+# two levels down: notes of the tasks of my incidents
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: annotation
+entityname: Task Note - My Incidents
+id: 00000000-0000-0000-0002-000000000003
+parententitypermission: 00000000-0000-0000-0002-000000000002
+parentrelationship: Task_Annotation
+read: true
+scope: 756150003
+write: false

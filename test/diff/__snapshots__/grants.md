@@ -8,10 +8,10 @@
 - **Customers**: **write** on `incident` changed from contact scope to global scope in "Incident - Customers"
 - **Customers**: **read** on `dwcrm_order` changed from contact scope to account scope in "Order - Customers"
 - **Customers**: **read** on `contact` (contact scope) may reach other rows, as the contact relationship changed from "contact\_customer\_contacts" to "contact\_parent\_contacts" in "Contact - Customers" (Web API enabled)
-- **Customers** gained **read** on `annotation` (parent scope) from "Case Note - Customers", under "Case - Customers" (the chain under "Case - Customers" is now complete)
+- **Customers** gained **read** on `annotation` (parent scope) from "Case Note - Customers", under "Case - Customers" (dwcrm\_case, contact scope) (the chain under "Case - Customers" is now complete)
 - **New Role** gained **read** on `dwcrm_survey` (global scope) from "Survey - New Role"
 - **Partner** gained **read** on `dwcrm_case` (contact scope) from "Case - Customers" (the role was added to the permission)
-- **Partner** gained **read** on `task` (parent scope) from "Case Task - Inherited", under "Case - Customers" (inherits roles from "Case - Customers") (the parent permission now has the role)
+- **Partner** gained **read** on `task` (parent scope) from "Case Task - Inherited", under "Case - Customers" (dwcrm\_case, contact scope) (inherits roles from "Case - Customers") (the parent permission now has the role)
 
 #### Narrower
 - **Anonymous Users** lost **read** on `knowledgearticle` (global scope) from "Articles - Anonymous Read" (removed)

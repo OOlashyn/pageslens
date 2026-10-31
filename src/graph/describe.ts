@@ -16,7 +16,7 @@ export function plain(parts: Part[]): string {
     .join('');
 }
 
-/** `<role> <verb> <privileges> on <table> (<scope> scope) from "<permission>", under "<top parent>"` */
+/** `<role> <verb> <privileges> on <table> (<scope> scope) from "<permission>", under "<top parent>" (…)` */
 export function grantSentence(
   verb: string,
   grant: Pick<Grant, 'table' | 'scope' | 'ancestors'> & {
@@ -35,9 +35,13 @@ export function grantSentence(
   ];
 }
 
-/** `, under "<top parent>"` for a parent-scope grant, so the chain it hangs from is named. */
+/**
+ * `, under "<top parent>" (<table>, <scope> scope)` for a parent-scope grant, so the chain it
+ * hangs from, and the rows it starts from, are named.
+ */
 export function underParent(ancestors: Grant['ancestors']): string {
-  return ancestors.length > 0 ? `, under "${ancestors.at(-1)!.name}"` : '';
+  const top = ancestors.at(-1);
+  return top ? `, under "${top.name}" (${top.table}, ${top.scope} scope)` : '';
 }
 
 /**

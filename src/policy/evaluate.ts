@@ -6,7 +6,7 @@ import type { Site, SiteSetting, WebRole } from '../model/schema.js';
 import { closest } from '../util/closest.js';
 import { PolicyError } from './parse.js';
 import { checkPage, pageError } from './pages.js';
-import type { Check, Policy, Statement, TableRef, Who } from './types.js';
+import type { ChainRef, Check, Policy, Statement, TableRef, Who } from './types.js';
 
 /** Something in the site that makes a statement fail, and where it is. */
 export interface Evidence {
@@ -30,6 +30,15 @@ export interface StatementResult {
 export interface TestResult {
   results: StatementResult[];
   counts: { passed: number; failed: number };
+}
+
+/** The part of an access statement that picks grants. */
+interface GrantFilter {
+  privileges: Privilege[];
+  table: TableRef;
+  scope?: string;
+  under?: ChainRef;
+  except?: ChainRef;
 }
 
 const REGISTRATION = {
@@ -149,16 +158,15 @@ class Context {
     );
   }
 
-  private matching(
-    roles: WebRole[] | undefined,
-    check: { privileges: Privilege[]; table: TableRef; scope?: string },
-  ): Grant[] {
+  private matching(roles: WebRole[] | undefined, check: GrantFilter): Grant[] {
     const ids = roles && new Set(roles.map((r) => r.id));
     return this.grants.filter(
       (g) =>
         (!ids || ids.has(g.role.id)) &&
         (check.table.kind === 'any' || g.table === check.table.name) &&
         (!check.scope || g.scope === check.scope) &&
+        (!check.under || throughChain(g, check.under)) &&
+        (!check.except || !throughChain(g, check.except)) &&
         check.privileges.some((p) => g.privileges[p]),
     );
   }
@@ -212,10 +220,7 @@ class Context {
     }
   }
 
-  private can(
-    who: Who,
-    check: { privileges: Privilege[]; table: TableRef; scope?: string },
-  ): Evidence[] {
+  private can(who: Who, check: GrantFilter): Evidence[] {
     const label = whoLabel(who);
     const roles = this.rolesOf(who, false);
     const held = new Map<string, Set<Privilege>>();
@@ -224,7 +229,9 @@ class Context {
       for (const p of check.privileges) if (grant.privileges[p]) privileges.add(p);
       held.set(grant.table, privileges);
     }
-    const scope = check.scope ? ` at ${check.scope} scope` : '';
+    const scope =
+      (check.scope ? ` at ${check.scope} scope` : '') +
+      (check.under ? ` under ${chainText(check.under)}` : '');
     if (check.table.kind === 'any') {
       const complete = [...held.values()].some((p) => p.size === check.privileges.length);
       return complete
@@ -339,6 +346,8 @@ class Context {
   warnings(check: Check): string[] {
     const tables: string[] = [];
     if ('table' in check && check.table.kind === 'table') tables.push(check.table.name);
+    if ('under' in check && check.under) tables.push(check.under.table);
+    if ('except' in check && check.except) tables.push(check.except.table);
     if (check.kind === 'only-enabled') tables.push(...check.tables);
     return tables
       .filter((t) => !this.usedTables.has(t))
@@ -350,6 +359,19 @@ function whoLabel(who: Who): string {
   if (who.kind === 'anonymous') return 'anonymous';
   if (who.kind === 'authenticated') return 'authenticated';
   return `"${who.name}"`;
+}
+
+/**
+ * Whether the grant's parent chain has a permission on the chain's table. The nearest one counts,
+ * and it must be at the chain's scope when one is given.
+ */
+function throughChain(grant: Grant, chain: ChainRef): boolean {
+  const parent = grant.ancestors.find((p) => p.table === chain.table);
+  return parent !== undefined && (!chain.scope || parent.scope === chain.scope);
+}
+
+function chainText(chain: ChainRef): string {
+  return chain.scope ? `${chain.table} at ${chain.scope} scope` : chain.table;
 }
 
 function grantEvidence(grant: Grant, privileges: Privilege[]): Evidence {

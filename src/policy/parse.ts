@@ -7,6 +7,7 @@ import { findUp } from '../util/fs.js';
 import {
   SECTIONS,
   type AccessScope,
+  type ChainRef,
   type Check,
   type PageAction,
   type PageRef,
@@ -286,32 +287,67 @@ function parseAccess(reader: Reader): Check {
     const who = [parseWho(reader)];
     while (reader.comma()) who.push(parseWho(reader));
     reader.word('can');
-    return { kind: 'only', who, ...parseGrant(reader) };
+    return { kind: 'only', who, ...parseGrant(reader, true) };
   }
   if (reader.isWord('nobody')) {
     reader.next();
     reader.word('can');
-    return { kind: 'nobody', ...parseGrant(reader) };
+    return { kind: 'nobody', ...parseGrant(reader, true) };
   }
   const who = parseWho(reader);
   const kind = reader.word('can', 'cannot') as 'can' | 'cannot';
-  return { kind, who, ...parseGrant(reader) };
+  return { kind, who, ...parseGrant(reader, kind === 'cannot') };
 }
 
-function parseGrant(reader: Reader): {
+interface GrantClause {
   privileges: Privilege[];
   table: TableRef;
   scope?: AccessScope;
-} {
+  under?: ChainRef;
+  except?: ChainRef;
+}
+
+function parseGrant(reader: Reader, exceptAllowed: boolean): GrantClause {
   const listed = [parsePrivilege(reader)];
   while (reader.comma()) listed.push(parsePrivilege(reader));
   const privileges = [...new Set(listed)];
-  const table = parseTable(reader);
-  if (!reader.isWord('at')) return { privileges, table };
+  const grant: GrantClause = { privileges, table: parseTable(reader) };
+  const scope = parseScope(reader);
+  if (scope) grant.scope = scope;
+  if (reader.isWord('under')) {
+    if (scope) {
+      throw new StatementError(
+        `"under" already means parent scope: leave out "at ${scope} scope" before it`,
+      );
+    }
+    reader.next();
+    grant.under = parseChain(reader);
+  }
+  if (reader.isWord('except')) {
+    if (!exceptAllowed) {
+      throw new StatementError('"except under" only goes in "cannot", "only" and "nobody"');
+    }
+    reader.next();
+    reader.word('under');
+    grant.except = parseChain(reader);
+  }
+  return grant;
+}
+
+/** `<table> [at <scope> scope]` after `under`. */
+function parseChain(reader: Reader): ChainRef {
+  const chain: ChainRef = { table: parseTableName(reader) };
+  const scope = parseScope(reader);
+  if (scope) chain.scope = scope;
+  return chain;
+}
+
+function parseScope(reader: Reader): AccessScope | undefined {
+  if (!reader.isWord('at')) return undefined;
   reader.next();
   const scope = reader.word(...ACCESS_SCOPES) as AccessScope;
   reader.word('scope');
-  return { privileges, table, scope };
+  return scope;
 }
 
 function parsePrivilege(reader: Reader): Privilege {
