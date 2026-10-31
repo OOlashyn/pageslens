@@ -15,6 +15,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Verification still owed
 
+- The Azure Pipelines steps in [docs/azure-devops.md](../docs/azure-devops.md) in a test organization: the merge base after checkout, the pull request comment, and Advanced Security ([research/azure-devops.md](research/azure-devops.md), "To verify").
 - Run `diff` on macOS.
 - The action on GitHub: the `settings` input, a comment near the size cap, a fork pull request (needs a second account), a token without `pull-requests: write`, and a comment with both the alignment and the access changes.
 - Downloads and solutions from `pac` 2.9.x, the version the ALM white paper pins, through the adapter tests; record each real fixture pair's `pac` version.
@@ -32,7 +33,6 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 ## Candidates
 
 - JUnit output for `test`, if CI users ask. It's what Azure DevOps shows in a pipeline's Tests tab.
-- Azure DevOps as a documented script step (`npx pageslens`, the markdown diff in `##vso[task.uploadsummary]`), next to the GitHub recipes in [docs/alm.md](../docs/alm.md). The white paper treats Azure DevOps as a full alternative to GitHub.
 
 ## Later
 
@@ -40,7 +40,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 - A `pageslens` agent skill or plugin, if people ask for one (0009, decision 15; part 3 has the design).
 - Classic site-structure rules and site map docs.
 - Server Logic and cloud flows in docs.
-- Azure DevOps: a template or Marketplace task that does what the GitHub Action does (pull request comment, SARIF with GitHub Advanced Security for Azure DevOps). Not a priority: a pipeline can already run `npx pageslens` in a script step (see Candidates for the docs).
+- Azure DevOps: a Marketplace task that does what the GitHub Action does, postponed (decision 3 in [research/azure-devops.md](research/azure-devops.md)). Script steps are documented in [docs/azure-devops.md](../docs/azure-devops.md). GitHub repositories built by Azure Pipelines, and Azure DevOps Server, come after that.
 - Solution `.zip` files, read without unpacking.
 - The solution YAML source control format (Dataverse Git integration; `pac solution clone` from PAC CLI 2.4.1, as Learn says). Getting it out of `pac` didn't work on 2026-10-25: to investigate (0007, verification 1).
 - Solutions with more than one site (`--site`).

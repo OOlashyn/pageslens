@@ -2,7 +2,7 @@
 
 Where pageslens goes in a Power Pages ALM workflow like the one Microsoft's white paper "Power Pages application lifecycle management (ALM): recommended approach" describes: the site and its solution in one repository, pull requests into protected branches, a nightly drift check against Dev, and releases tagged on `main` and promoted to Test and Prod. The paper's gates cover code, tests, packing and the solution checker; none of them reviews table permissions, web roles, the Web API or site settings. These recipes add that review, at the points where a person decides.
 
-Each recipe stands alone. Change `Portal` to your solution's folder name and the stage names to yours.
+The recipes use GitHub Actions; for Azure Pipelines, see [azure-devops.md](azure-devops.md). Each recipe stands alone. Change `Portal` to your solution's folder name and the stage names to yours.
 
 ## The layout
 
