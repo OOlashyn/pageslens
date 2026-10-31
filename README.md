@@ -61,7 +61,7 @@ The pageslens action runs `lint` and `test`, uploads the results to code scannin
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0 # the merge base needs the history of both branches
-- uses: OOlashyn/pageslens@v0.12.0
+- uses: OOlashyn/pageslens@v0.13.0
   with:
     path: site
 ```
