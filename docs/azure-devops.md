@@ -1,6 +1,6 @@
 # Azure Pipelines
 
-How to run pageslens in Azure Pipelines for a repository in Azure Repos, on Azure DevOps Services. There's no pageslens task to install: the pipeline runs the CLI in script steps, and does what the [GitHub Action](../README.md#github-action) does: `lint`, `test`, `align` and `diff`, the access changes on the run's summary and as one pull request comment, and optionally SARIF for GitHub Advanced Security for Azure DevOps.
+How to run pageslens in Azure Pipelines for a repository in Azure Repos, on Azure DevOps Services. There's no pageslens task to install: the pipeline runs the CLI in script steps, and does what the [GitHub Action](ci.md#github-action) does: `lint`, `test`, `align` and `diff`, the access changes on the run's summary and as one pull request comment, and optionally SARIF for GitHub Advanced Security for Azure DevOps.
 
 The examples use the layout in [alm.md](alm.md): the site at the repository root (`.powerpages-site/`), the solution in `solutions/Portal`, and each stage's deployment settings in `deployment-settings/<stage>.json`. Change the paths to yours, and drop `--settings` if you don't use deployment settings files.
 

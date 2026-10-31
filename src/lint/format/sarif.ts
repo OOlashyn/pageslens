@@ -23,7 +23,7 @@ export function formatSarif(
     id: rule.id,
     shortDescription: rule.description,
     fullDescription: rule.description,
-    helpUri: `${RULE_DOCS_BASE}/${rule.id}.md`,
+    helpUri: `${RULE_DOCS_BASE}/${rule.id}/`,
     level: SARIF_LEVEL[rule.defaultSeverity],
   }));
   const results = result.findings.map((finding): SarifResult => ({

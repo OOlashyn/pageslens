@@ -1,7 +1,8 @@
 // Prepares a release in one command: `npm run release -- <x.y.z>`. From an up-to-date, clean
-// `main`, it creates `release/<x.y.z>`, bumps the version with `npm version`, points the README's
-// action examples at the new tag, commits "Release <x.y.z>" and pushes the branch. The pull request,
-// the GitHub release and the npm approval stay with the maintainer (README, "Releasing").
+// `main`, it creates `release/<x.y.z>`, bumps the version with `npm version`, points the action
+// examples in the README and docs at the new tag, commits "Release <x.y.z>" and pushes the branch.
+// The pull request, the GitHub release and the npm approval stay with the maintainer (README,
+// "Releasing").
 // Node.js runs this file directly (type stripping), so it uses only erasable TypeScript and no
 // dependencies. Commands run with argument arrays, never through a shell.
 
@@ -11,6 +12,8 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REPOSITORY = 'OOlashyn/pageslens';
+// The files with action examples (`OOlashyn/pageslens@v<x.y.z>`) that follow the release
+const ACTION_EXAMPLES = ['README.md', 'docs/ci.md', 'docs/alm.md'];
 const VERSION = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
 
 export class ReleaseError extends Error {
@@ -64,11 +67,11 @@ export function isNewer(next: string, current: string): boolean {
 }
 
 /**
- * The README with its action examples and version note on `next`: `OOlashyn/pageslens@v<old>`
+ * A file with its action examples and version note on `next`: `OOlashyn/pageslens@v<old>`
  * and "`v<old>` runs exactly pageslens <old>".
  */
-export function bumpReadme(readme: string, current: string, next: string): string {
-  return readme
+export function bumpActionExamples(text: string, current: string, next: string): string {
+  return text
     .replaceAll(`${REPOSITORY}@v${current}`, `${REPOSITORY}@v${next}`)
     .replaceAll(
       `\`v${current}\` runs exactly pageslens ${current}`,
@@ -134,13 +137,14 @@ function release(options: Options): void {
       run(process.execPath, [npm, 'version', version, '--no-git-tag-version']),
     );
     const files = ['package.json', 'package-lock.json'];
-    // A pre-release doesn't become the README's version
+    // A pre-release doesn't become the version in the examples
     if (!isPrerelease(version)) {
-      step(dryRun, `README.md: action examples to v${version}`, () => {
-        const readme = readFileSync('README.md', 'utf8');
-        writeFileSync('README.md', bumpReadme(readme, current, version));
-      });
-      files.push('README.md');
+      for (const file of ACTION_EXAMPLES) {
+        step(dryRun, `${file}: action examples to v${version}`, () => {
+          writeFileSync(file, bumpActionExamples(readFileSync(file, 'utf8'), current, version));
+        });
+      }
+      files.push(...ACTION_EXAMPLES);
     }
     step(dryRun, `git commit -m "Release ${version}"`, () => {
       git('add', '--', ...files);

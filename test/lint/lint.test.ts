@@ -208,9 +208,7 @@ describe('rule metadata', () => {
 
   it('links each finding to its rule page', () => {
     const finding = lint(broken).findings[0]!;
-    expect(finding.docs).toBe(
-      `https://github.com/OOlashyn/pageslens/blob/main/rules/${finding.ruleId}.md`,
-    );
+    expect(finding.docs).toBe(`https://pageslens.olashyn.dev/rules/${finding.ruleId}/`);
   });
 });
 
@@ -440,7 +438,7 @@ describe('output formats', () => {
         'Web API on contact exposes every column (fields = *); list the columns the site needs.',
       file: 'site-settings/Webapi-contact-fields.sitesetting.yml',
       recordId: '00000000-0000-0000-0003-000000000002',
-      docs: 'https://github.com/OOlashyn/pageslens/blob/main/rules/webapi-wildcard-fields.md',
+      docs: 'https://pageslens.olashyn.dev/rules/webapi-wildcard-fields/',
     });
   });
 

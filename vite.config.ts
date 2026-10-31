@@ -2,7 +2,7 @@ import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   lint: {
-    ignorePatterns: ['dist/**', 'coverage/**', 'test/fixtures/**'],
+    ignorePatterns: ['dist/**', 'coverage/**', 'test/fixtures/**', 'site/**'],
     options: {
       typeAware: true,
       typeCheck: true,
@@ -16,6 +16,7 @@ export default defineConfig({
       'coverage/**',
       'test/fixtures/**',
       'test/**/__snapshots__/**',
+      'site/**',
       'pageslens.config.schema.json',
       'package-lock.json',
     ],

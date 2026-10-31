@@ -1,6 +1,6 @@
 # AGENTS.md
 
-pageslens is an offline CLI (`lint`, `test`, `diff`, `docs`) for Power Pages site configuration in git. TypeScript, ESM, published to npm as `pageslens`. User docs are in `README.md`; this file covers what isn't obvious from the code.
+pageslens is an offline CLI (`lint`, `test`, `diff`, `docs`) for Power Pages site configuration in git. TypeScript, ESM, published to npm as `pageslens`. User docs are in `README.md`, `docs/` and `rules/`, published as the [docs site](#the-docs-site); this file covers what isn't obvious from the code.
 
 ## Commands
 
@@ -32,7 +32,7 @@ pageslens reads two download layouts and unpacked solutions into the same model 
 A rule touches all of these. The tests check that every rule has a page listed in `rules/README.md` and fires on `broken` (or on `classic-pages`, for the classic-only page rules); keep the rest in step by hand:
 
 - `src/lint/rules/<id>.ts`, registered in `src/lint/rules/index.ts`
-- `rules/<id>.md` (why it matters, how to fix), plus the tables in `rules/README.md` and `README.md`. The pages ship in the npm package: `pageslens explain <id>` prints them, starting with `# <id>`
+- `rules/<id>.md` (why it matters, how to fix), plus the table in `rules/README.md`. The pages ship in the npm package: `pageslens explain <id>` prints them, starting with `# <id>`
 - a case in `test/fixtures/broken/` whose file starts with a `#` comment naming the rule (or `# clean:` for a record that must not fire); page access rules go in `test/fixtures/classic-pages/`
 - the expected findings in `test/fixtures/README.md` and `test/lint/lint.test.ts`
 - docs snapshots in `test/docs/__snapshots__/` if the output changes
@@ -73,6 +73,15 @@ Grant sentences are shared with `test` in `src/graph/describe.ts`, so both say t
 - It installs exactly the `package.json` version from npm, so the tag `v<x.y.z>` runs `pageslens@<x.y.z>`. Don't add a version input.
 - CI runs it with `uses: ./` and `PAGESLENS_ACTION_CLI=dist/bin.mjs`, so it tests this commit's build. The helpers are unit-tested in `test/action/`; posting a comment and fork pull requests can only be checked on GitHub.
 - Inputs reach the script through `env`, never `${{ }}` inside `run:`.
+
+## The docs site
+
+`site/` is an Astro Starlight project, deployed to `pageslens.olashyn.dev` by `.github/workflows/site.yml` when a release is published (spec [0012](specs/0012-docs-site.md)). Its pages come from `docs/` and `rules/`: `scripts/sync-docs.ts` copies them into `site/src/content/docs/` (git-ignored) before each build, so edit the sources, never the copies. Only the home page, `site/src/content/docs/index.mdx`, is written by hand.
+
+- A new file in `docs/` needs a place in `DOCS` in `scripts/sync-docs.ts` and in the sidebar in `site/astro.config.mjs`. A new rule's page appears by itself.
+- Links between pages stay relative (`diff.md#base-and-head`, `../rules/README.md`), so they work on GitHub too. `test/scripts/sync-docs.test.ts` fails on a link to a missing file or heading.
+- The output links to the site (`DOCS_SITE` in `src/docs-site.ts`): each rule's page, the policy page and each align check's heading. Moving a page breaks those links in results already uploaded.
+- `site/` has its own `package.json` and lockfile, outside `vp check` and the npm package. To preview it, run `npm install` and `npm run dev` in `site/`.
 
 ## Conventions
 

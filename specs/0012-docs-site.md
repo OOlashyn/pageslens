@@ -1,6 +1,6 @@
 # 0012: Documentation site
 
-**Status:** draft 2, every open question decided (see "Decisions"). Not built yet.
+**Status:** built, not yet released (see "As built"). Draft 2, every open question decided (see "Decisions").
 
 pageslens's user docs are Markdown files read on GitHub: the README (about 480 lines), five references in `docs/` and twenty rule pages in `rules/`. They work, but they're hard to find and search, and the README carries most of it. This spec designs a documentation site at `pageslens.olashyn.dev`, built with Astro from the same files, so that nothing is written twice.
 
@@ -126,6 +126,19 @@ The maintainer took the recommendation on each question (2026-10-31).
 6. **The config schema's URL.** The README's `$schema` comment points to `raw.githubusercontent.com/.../main/pageslens.config.schema.json`. (a) Also publish it at `pageslens.olashyn.dev/pageslens.config.schema.json` and point to it; (b) leave it. Decided: (b) for now. The raw URL works, and changing it changes every user's config file for no gain. Revisit with versions.
 7. **Generated pages in git.** (a) In `.gitignore`, made by the sync on each build; (b) committed, and a test checks they're up to date. Decided: (a). Committed copies invite edits in the wrong place, and the sync is fast.
 8. **Look and feel.** (a) Starlight's default theme with the pageslens name and a favicon; (b) styled like `olashyn.dev`. Decided: (a) to start. Styling can come later without changing the structure.
+
+## As built
+
+Built to draft 2 with every decision as recorded, the README split (decision 2) included. Where the build needed an interpretation the spec doesn't give:
+
+1. **The sync script is `scripts/sync-docs.ts`**, not `site/scripts/sync.ts`. It has no dependencies, like `scripts/release.ts`, so `test/scripts/sync-docs.test.ts` runs it in memory: a link to a missing file or heading fails `vp test`, not only the site's build. `site/package.json` runs it before `astro dev` and `astro build`.
+2. **Pages and URLs.** With the commands in `docs/`, there's no `/reference/` group: `/getting-started/`, `/commands/<lint|test|diff|align|docs>/`, `/guides/<ci|alm|azure-devops|agents>/`, `/rules/` and `/rules/<id>/`. A file in `docs/` that `DOCS` doesn't place fails the sync. The README isn't a page: the home page (`index.mdx`) is written by hand.
+3. **The README split.** New pages: `docs/getting-started.md` (install, the site folder, solutions, deployment settings), `docs/lint.md` (with configuration), `docs/docs.md`, `docs/ci.md` and `docs/agents.md`. The README keeps the intro, the status note, the quick start, a table of the commands, a short action example and the development notes. Its rules table is gone: `rules/README.md` is the one list, and the lint page links to it. The heading "Using pageslens with an agent" stays, with a link to the page, so links to its anchor still land. The `test`, `diff` and `align` references gained `--settings` in their synopses, which only the README had.
+4. **Links.** A relative link to a page becomes the page's URL, anchors kept. A link to any other file in the repository, the README included, goes to GitHub at `main`. Anchors are checked against the target's headings with GitHub's slug rules, which Starlight also uses.
+5. **Frontmatter.** The title is the `#` line without code marks (`Policies: pageslens test`). The description is the first paragraph of prose, skipping a line in bold only (a rule's `**Default: info**`). Each page's "Edit page" link opens its source file. Command pages have the command as their sidebar label.
+6. **Links in the output** (decision 5) go through `DOCS_SITE` in `src/docs-site.ts`. Lint JSON's `docs` field moves with SARIF's `helpUri`, as both come from `RULE_DOCS_BASE`; the JSON `version` stays 1, as the field means the same. A test checks that each rule, the policy page and each align check's heading exist on the site.
+7. **The release script** points the action examples in `docs/ci.md` and `docs/alm.md` at the new tag as well as the README's. `docs/alm.md` had stayed at `v0.11.0`.
+8. **`homepage`** (decision 4) is set now. npmjs.com shows it from the next release, which is also when the site first deploys.
 
 ## Verification owed
 

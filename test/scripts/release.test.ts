@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test';
 import {
-  bumpReadme,
+  bumpActionExamples,
   isNewer,
   isPrerelease,
   parseArgs,
@@ -35,13 +35,13 @@ describe('release script', () => {
     expect(isPrerelease('0.11.0')).toBe(false);
   });
 
-  it("points the README's action examples and version note at the new tag", () => {
+  it('points the action examples and version note at the new tag', () => {
     const readme = [
       '- uses: OOlashyn/pageslens@v0.10.0',
       '- **Version:** `v0.10.0` runs exactly pageslens 0.10.0. Dependabot keeps the tag up to date.',
       'npm install pageslens@0.10.0 stays as it is',
     ].join('\n');
-    expect(bumpReadme(readme, '0.10.0', '0.11.0')).toBe(
+    expect(bumpActionExamples(readme, '0.10.0', '0.11.0')).toBe(
       [
         '- uses: OOlashyn/pageslens@v0.11.0',
         '- **Version:** `v0.11.0` runs exactly pageslens 0.11.0. Dependabot keeps the tag up to date.',

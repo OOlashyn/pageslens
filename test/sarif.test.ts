@@ -42,7 +42,9 @@ describe('lint SARIF', () => {
       id: 'webapi-wildcard-fields',
       shortDescription: { text: expect.any(String) },
       fullDescription: { text: expect.any(String) },
-      help: { text: expect.stringContaining('rules/webapi-wildcard-fields.md') },
+      help: {
+        text: expect.stringContaining('pageslens.olashyn.dev/rules/webapi-wildcard-fields/'),
+      },
       defaultConfiguration: { level: 'error' },
       properties: { tags: ['security', 'power-pages'], 'security-severity': '7.5' },
     });

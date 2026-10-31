@@ -3,7 +3,7 @@
 `pageslens lint` catches known mistakes. A policy checks **your own requirements**, such as "anonymous visitors can't read contacts" or "only Billing can write invoices", against the site in git, on every pull request.
 
 ```
-pageslens test [path] [--policy <file>] [--format text|json|sarif]
+pageslens test [path] [--policy <file>] [--format text|json|sarif] [--settings <file>]
 ```
 
 `path` is the same site folder `lint` and `docs` take. The policy is `pageslens.policy.yaml` in the site folder or any folder above it, or the file given with `--policy`.
@@ -16,7 +16,9 @@ pageslens test [path] [--policy <file>] [--format text|json|sarif]
 
 A missing policy is an error, not a pass, so a CI step that checks nothing can't go green.
 
-`--format sarif` writes the results for GitHub code scanning: each failed statement shows as an alert on the table permission or setting that breaks it. See [In CI](../README.md#in-ci) in the README.
+`--format sarif` writes the results for GitHub code scanning: each failed statement shows as an alert on the table permission or setting that breaks it. See [In CI](ci.md).
+
+A failure lists the grants or settings that break it, with their files. `--format json` gives a versioned object (`version`, `site`, `policy`, `summary`, `results`) for scripts and agents.
 
 ## The policy file
 

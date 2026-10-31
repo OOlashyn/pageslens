@@ -3,7 +3,7 @@
 `pageslens lint` catches known mistakes and `pageslens test` checks your requirements. `pageslens diff` answers a third question for a pull request: **what does this change do to who can see and change what?**
 
 ```
-pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
+pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any] [--settings <file>]
 ```
 
 It compares effective access, not files. Both sides go through the same reading and access logic as `docs` and `test`, so a permission split in two with the same result, or a file that was renamed or moved, isn't an access change. The YAML diff is already in the pull request; `diff` shows what it means.
@@ -244,4 +244,4 @@ Neutral
 
 A side is a folder when it has no `ref`, and has no site when it has no `site` (and no `layout` or `format`). `layout` is `code` or `classic`, and `format` what was read: `code-download`, `classic-download` or `solution`; `mergeBase: true` marks a base read at the merge base. A change has the fields that apply to it: `role` (with `audience`: `anonymous`, `authenticated` or `role`), `table`, `scope`, `fromScope` (the base scope, for a scope change on one permission), `privileges`, `webApiEnabled` (grants), `fields` (Web API field changes), `setting`, `lint`, and `sources`, each with the `side` it's read from.
 
-There's no SARIF output: a diff isn't a list of findings on lines. For new lint findings and failed policy statements in a pull request, upload `lint` and `test` SARIF to code scanning (see [In CI](../README.md#in-ci)).
+There's no SARIF output: a diff isn't a list of findings on lines. For new lint findings and failed policy statements in a pull request, upload `lint` and `test` SARIF to code scanning (see [In CI](ci.md)).
