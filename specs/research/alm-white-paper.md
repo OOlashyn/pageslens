@@ -44,7 +44,7 @@ In order of value.
 
 1. **`--settings <deployment-settings file>`.** pageslens marks a setting backed by an environment variable `unknown`, so `test` fails on it and rules skip it. With the target's settings file, `lint`, `test` and `diff` would check what that stage gets, and `align`'s `variable-no-value` could name the file that lacks a value. [0007](../0007-solution-adapter.md) already leaves room for it. Needs a spec, with open questions: the file's shape for secrets (Key Vault references), one file or several per run, and how the Action passes it.
 2. **`align --fix` is partly unblocked.** [0008](../0008-align.md) decision 1 waited on the component type numbers per environment. The printed commands can use `--componentType powerpagecomponent` instead. Still open: whether `pac pages upload` keeps GUIDs for classic sites (the paper answers no for a code site's changed web files).
-3. **Docs recipes, no code.**
+3. **Docs recipes, no code.** Done: [docs/alm.md](../../docs/alm.md).
    - A pageslens step in a `pr-validation.yml` shaped like the paper's, with its layout (`.` and `solutions/<Name>`). Today's examples use `site/` and `solution/`.
    - In the nightly environment drift job: `pageslens diff HEAD solutions/<Name> --format markdown` into the job summary, so the raw patch comes with the access changes in sentences.
    - At release: `pageslens diff v1.3.0 v1.4.0` as an "access changes in this release" section of the release notes, for the approver.

@@ -12,7 +12,6 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 ## Next
 
 1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
-2. **Docs recipes for the white paper's workflow**: its repository layout (`.powerpages-site/` and `solutions/<Name>/src/`) in the CI examples, `diff` in the nightly environment drift job and in release notes, and one snapshot run for `align` (same note, item 3).
 
 ## Verification still owed
 
@@ -33,7 +32,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 ## Candidates
 
 - JUnit output for `test`, if CI users ask. It's what Azure DevOps shows in a pipeline's Tests tab.
-- Azure DevOps as a documented script step (`npx pageslens`, the markdown diff in `##vso[task.uploadsummary]`). The white paper treats Azure DevOps as a full alternative to GitHub.
+- Azure DevOps as a documented script step (`npx pageslens`, the markdown diff in `##vso[task.uploadsummary]`), next to the GitHub recipes in [docs/alm.md](../docs/alm.md). The white paper treats Azure DevOps as a full alternative to GitHub.
 
 ## Later
 

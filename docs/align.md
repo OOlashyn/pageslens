@@ -181,6 +181,7 @@ One rule per check, for GitHub code scanning (category `pageslens/align/`). A re
 ## How it fits
 
 - **`diff`** compares access between any two snapshots, a download and a solution included. `align` compares every component and its content and fails on what's missing; `diff site solution` says what a missing web role does to who can see what.
+- **Take both snapshots in one run**, against one environment: download the site and sync the solution one after the other, and commit both together. Taken apart, they disagree on whatever changed in between, and a code site's upload gives changed web files new GUIDs. Recipes: [alm.md](alm.md).
 - **`lint` and `test`** run on either snapshot. With both committed, run them on the solution: it's what deploys, and it has the environment variables' values.
 - **The GitHub Action** runs `align` when its `solution` input is set: the results go to code scanning, the comment and the job summary, and errors fail the job. It's off by default. Where `site/` is edited in pull requests and the solution is synced after the deploy, `site/` is ahead of the solution on every pull request, so leave it off there.
 - Tables aren't checked: they usually live in a solution of their own, so a site solution without them is expected.

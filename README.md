@@ -288,6 +288,8 @@ The Power Pages site is in `site/`. Check it with pageslens (`npx pageslens`): s
 
 ## In CI
 
+For a full ALM workflow (the site and its solution in one repository, a check per stage, nightly drift against Dev, access changes in release notes), see [docs/alm.md](docs/alm.md).
+
 ### GitHub Action
 
 The pageslens action does it all in one step: it runs `lint` and `test`, uploads the results to code scanning, and posts what a pull request does to access as one comment, which it edits on each run.
