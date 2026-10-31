@@ -1,6 +1,6 @@
 # 0010: Deployment settings (`--settings`)
 
-**Status:** built, not yet released (see "As built"). Draft 3, every open question decided (see "Decisions"). Still owed: what the import does with an empty or missing `Value` ("Verification owed").
+**Status:** shipped in 0.11.0 (see "As built"). Draft 3, every open question decided (see "Decisions"). Still owed: what the import does with an empty or missing `Value` ("Verification owed").
 
 A site setting can take its value from an environment variable (`source: 1`). The value differs per stage: the solution carries the variable's definition, and the import gets the stage's value from a **deployment settings file**, one per target, kept in the repository (`deployment-settings/<target>.json`). The ALM white paper does exactly this ([alm-white-paper.md](research/alm-white-paper.md), "What to change" 1), and so does the process in [alm-story.md](research/alm-story.md).
 

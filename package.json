@@ -35,7 +35,8 @@
     "check": "vp check",
     "fix": "vp check --fix",
     "test": "vp test",
-    "prepublishOnly": "vp check && vp test && vp pack"
+    "prepublishOnly": "vp check && vp test && vp pack",
+    "release": "node scripts/release.ts"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12",

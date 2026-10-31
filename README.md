@@ -454,21 +454,15 @@ Without Vite+ installed globally, `npx vp …` runs the project's own copy. The 
 
 ### Releasing
 
-1. Bump the version on a branch and merge it into `main` through a pull request. `npm version` with `--no-git-tag-version` only updates `package.json` and `package-lock.json`: it doesn't create the branch, commit or tag.
+1. Write the release notes in `specs/releases/<x.y.z>.md` and merge them into `main`. Then, on an up-to-date, clean `main`, prepare the release in one command:
 
    ```bash
-   git switch -c release/<x.y.z>
+   npm run release -- <x.y.z>
    ```
 
-   ```bash
-   npm version <x.y.z> --no-git-tag-version
-   ```
+   It creates `release/<x.y.z>`, runs `npm version <x.y.z> --no-git-tag-version` (`package.json` and `package-lock.json`), points the README's action examples at `v<x.y.z>` (not for a pre-release), commits "Release <x.y.z>" and pushes the branch. It checks everything first and changes nothing when a check fails: the version comes after the current one, the tree is clean, `main` matches `origin/main`, the branch doesn't exist, and the release notes are there. `--dry-run` prints the steps without running them, and `--pr` also opens the pull request with `gh`, with the release notes as its description. Merge the pull request into `main`.
 
-   ```bash
-   git commit -am "Release <x.y.z>"
-   ```
-
-2. Create a GitHub release with the tag `v<x.y.z>` on `main`. The [release workflow](.github/workflows/release.yml) checks that the tag matches `package.json`, runs the checks and tests, and stages the package on npm through trusted publishing (no npm token in the repo).
+2. Create a GitHub release with the tag `v<x.y.z>` on `main`, with the release notes (the script prints the `gh release create` command). The [release workflow](.github/workflows/release.yml) checks that the tag matches `package.json`, runs the checks and tests, and stages the package on npm through trusted publishing (no npm token in the repo).
 3. Approve the staged version with 2FA, on npmjs.com or with `npm stage list pageslens` and `npm stage approve <stage-id>`. It's installable only after approval.
 
 The same tag is the GitHub Action's version: `OOlashyn/pageslens@v<x.y.z>` installs `pageslens@<x.y.z>` from npm, so the action at that tag works once the version is approved.
