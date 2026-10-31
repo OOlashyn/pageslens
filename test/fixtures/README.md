@@ -115,6 +115,10 @@ The PagesLensEDM2 solution, the same site as `registration/`, synced with `pac s
 
 It reads into the same records, model, side files and lint findings as `registration/` (`test/adapters/solution.test.ts`), apart from `ASP/Pagination/CardsPerPage`. That setting takes its value from the environment variable `dwcrm_CardsPerPage` (current value 20, default 18): the solution has the variable, and the download has only the setting's leftover `adx_value: 18`, so its value is unknown there.
 
+## `deployment-settings/`
+
+Deployment settings files (spec 0010). `solution-registration.json` is what `pac solution create-settings --solution-folder` (pac 2.14.1) wrote for `solution-registration/` on 2026-10-30, unchanged: CRLF line endings, no final newline. Read-only. Its `dwcrm_CardsPerPage` has an empty `Value` and the definition's `DefaultValue` 18; `create-settings` doesn't copy the solution's current value (20).
+
 ## `solution-ecoflux/`
 
 The EcoFlux solution, a `pac solution clone` project (`EcoFluxPortal.cdsproj`, `src/`) from the same environment as `ecoflux/`, without `primarydomainname` and the publisher's e-mail address. Read-only. It reads into the same model, side files, lint findings and docs as `ecoflux/` (the docs index adds the solution's name), with the same records. The export also had a web file named `.gitkeep`, left over from testing in the environment and not in the download; it was removed from the copy (2026-10-26).

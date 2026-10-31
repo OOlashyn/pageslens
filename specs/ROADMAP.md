@@ -12,7 +12,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 ## Next
 
 1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
-2. **A spec for `--settings`**: read a deployment settings file so `lint`, `test`, `diff` and `align` see the values a stage gets, instead of `unknown` for settings backed by environment variables. The ALM white paper keeps these files in the repository ([research](research/alm-white-paper.md), "What to change" 1).
+2. **Deployment settings, `--settings`** ([0010](0010-deployment-settings.md), draft 3): read a deployment settings file so `lint`, `test`, `diff` and `align` see the values a stage gets, instead of `unknown` for settings backed by environment variables. Decided and ready to build; the file format was checked with `pac solution create-settings`, and what the import does with an empty value still needs an environment.
 3. **Docs recipes for the white paper's workflow**: its repository layout (`.powerpages-site/` and `solutions/<Name>/src/`) in the CI examples, `diff` in the nightly environment drift job and in release notes, and one snapshot run for `align` (same note, item 3).
 
 ## Verification still owed
