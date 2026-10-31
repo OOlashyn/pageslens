@@ -36,6 +36,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 
 ## Later
 
+- A documentation site, built from `README.md`, `docs/` and `rules/`, perhaps set up like lookup-to-select's: an Astro docs site served under the maintainer's main website. Needs investigation first: where it's hosted, how it's built and deployed from this repository, whether `rules/` pages and `pageslens explain` share one source, and how docs for each released version are kept.
 - A `pageslens` agent skill or plugin, if people ask for one (0009, decision 15; part 3 has the design).
 - Classic site-structure rules and site map docs.
 - Server Logic and cloud flows in docs.
