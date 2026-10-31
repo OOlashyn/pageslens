@@ -1,8 +1,9 @@
+import { DOCS_SITE } from '../../docs-site.js';
 import { fingerprint, sarifLog, siteUri, type SarifResult, type SarifRule } from '../../sarif.js';
 import type { TestResult } from '../evaluate.js';
 import type { Statement } from '../types.js';
 
-export const POLICY_DOCS = 'https://github.com/OOlashyn/pageslens/blob/main/docs/policy.md';
+export const POLICY_DOCS = `${DOCS_SITE}/commands/test/`;
 
 /**
  * SARIF 2.1.0 for GitHub code scanning: one rule per statement, and for a failed statement

@@ -1,7 +1,7 @@
 # Download and solution: `pageslens align`
 
 ```
-pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config <file>]
+pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config <file>] [--settings <file>]
 ```
 
 `align` answers one question: **do a site download and the unpacked solution describe the same site?** It's for teams that commit both: a `pac pages download` (or `download-code-site`) that reviewers can read, and the solution that gets packed and deployed.

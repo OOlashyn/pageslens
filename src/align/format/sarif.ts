@@ -1,3 +1,4 @@
+import { DOCS_SITE } from '../../docs-site.js';
 import {
   fingerprint,
   SARIF_LEVEL,
@@ -8,7 +9,7 @@ import {
 } from '../../sarif.js';
 import { CHECK_INFO, CHECKS, kindLabel, type AlignResult } from '../types.js';
 
-export const ALIGN_DOCS = 'https://github.com/OOlashyn/pageslens/blob/main/docs/align.md';
+export const ALIGN_DOCS = `${DOCS_SITE}/commands/align/`;
 
 type LineOf = (file: string, recordId?: string) => number;
 

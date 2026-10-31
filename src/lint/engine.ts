@@ -5,10 +5,11 @@ import { compareText as compare } from '../model/normalize.js';
 import type { Site } from '../model/schema.js';
 import { globToRegExp } from '../util/glob.js';
 import type { IgnoreEntry, LintConfig } from './config.js';
+import { DOCS_SITE } from '../docs-site.js';
 import { RULES } from './rules/index.js';
 import { SEVERITIES, type Finding, type Rule, type RuleFinding, type Severity } from './types.js';
 
-export const RULE_DOCS_BASE = 'https://github.com/OOlashyn/pageslens/blob/main/rules';
+export const RULE_DOCS_BASE = `${DOCS_SITE}/rules`;
 
 export interface LintResult {
   findings: Finding[];
@@ -59,7 +60,7 @@ export function lint(
         ...finding,
         ruleId: rule.id,
         severity: setting ?? severity ?? rule.defaultSeverity,
-        docs: `${RULE_DOCS_BASE}/${rule.id}.md`,
+        docs: `${RULE_DOCS_BASE}/${rule.id}/`,
       });
     }
   }

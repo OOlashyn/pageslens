@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # the merge base needs the history of both branches
-      - uses: OOlashyn/pageslens@v0.11.0
+      - uses: OOlashyn/pageslens@v0.12.0
         with:
           path: .
           solution: solutions/Portal

@@ -1,0 +1,56 @@
+---
+title: pageslens
+description: Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.
+template: splash
+hero:
+  tagline: Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.
+  actions:
+    - text: Get started
+      link: /getting-started/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/OOlashyn/pageslens
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+pageslens reads a Power Pages site from the files in git: a download from `pac pages download-code-site` or `pac pages download`, or an unpacked solution that holds the site. It needs no Dataverse connection and no agent: the same folder gives the same output every run.
+
+```bash
+npx pageslens lint path/to/site
+```
+
+<CardGrid>
+  <Card title="Lint" icon="warning">
+    Known mistakes in table permissions, web roles, Web API settings and site settings, with stable
+    rule ids, severities and exit codes for CI.
+  </Card>
+  <Card title="Test" icon="approve-check">
+    Your own requirements, written as short sentences in a policy file: "anonymous cannot read
+    contact".
+  </Card>
+  <Card title="Diff" icon="random">
+    What a change does to who can see and change what: wider, narrower or neutral, for a pull
+    request comment.
+  </Card>
+  <Card title="Align" icon="list-format">
+    Components left out of the solution, or different in it, before the import.
+  </Card>
+  <Card title="Docs" icon="document">
+    An access matrix, the Web API surface and a Mermaid diagram, as plain Markdown to commit next to
+    the site.
+  </Card>
+  <Card title="CI" icon="github">
+    A GitHub Action that runs the checks, uploads them to code scanning and comments a pull
+    request's access changes.
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <LinkCard title="Getting started" href="/getting-started/" description="Install, the site folder, solutions and deployment settings." />
+  <LinkCard title="Rules" href="/rules/" description="What lint checks, why it matters and how to fix it." />
+  <LinkCard title="In CI" href="/guides/ci/" description="The GitHub Action, SARIF and running without the action." />
+  <LinkCard title="With an agent" href="/guides/agents/" description="Working rules and steps for a coding agent." />
+</CardGrid>

@@ -1,0 +1,4 @@
+# Pages written by scripts/sync-docs.ts from README.md, docs/ and rules/. Edit those instead.
+/*
+!/.gitignore
+!/index.mdx
