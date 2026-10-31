@@ -142,9 +142,23 @@ The EcoFlux solution, a `pac solution clone` project (`EcoFluxPortal.cdsproj`, `
 
 Hand-written, small, and loadable: each component file starts with an XML comment saying what it tests. Expected lint findings: `global-write-anonymous` (Feedback - Anonymous Create), `webapi-no-permission` (`Webapi/contact/enabled`, from a variable's default), `webapi-inner-errors` (`Webapi/error/innererror`, from a variable's current value over its default). Variable-backed settings whose variable is missing, a secret, or has no value are read as not set. `Search/Enabled` is inactive, `Hello` (type 35, Server Logic) stays untyped, and `Layout`'s inline Liquid becomes text with its CRLF line endings normalised. The errors (two sites, a component of another site, an id that isn't its folder name, invalid `content` JSON, no `Assets/powerpagesites.xml`, the YAML format) are tested on copies in a temporary folder.
 
+## `parent-chains/`
+
+A hand-written code site for `under` and `except under` in policies (spec 0011). Each table permission starts with a `#` comment saying what it is.
+
+| Permission | What |
+|---|---|
+| Incident - My Incidents | `incident` at contact scope, Authenticated Users |
+| Incident Task - My Incidents | `task` under it, no role of its own (inherits Authenticated Users) |
+| Task Note - My Incidents | `annotation` under the task permission: a chain two levels deep |
+| Incident - All Staff | `incident` at global scope, Staff |
+| Incident Task - All Staff | `task` under it, Staff: tasks under a global parent |
+| Account - All Staff | `account` at global scope, Staff |
+| Account Task - All Staff | `task` under it, inherits Staff: tasks under a parent on another table |
+
 ## `policies/`
 
-Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, `registration.policy.yaml` for page statements against `registration/`, and `settings.policy.yaml` for `settings/` with each stage's file.
+Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, `registration.policy.yaml` for page statements against `registration/`, `settings.policy.yaml` for `settings/` with each stage's file, and `parent-chains.policy.yaml` for `under` and `except under` against `parent-chains/`.
 
 ## `diff/`
 

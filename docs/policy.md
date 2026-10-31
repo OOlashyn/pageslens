@@ -66,10 +66,10 @@ YAML can't read a list item that starts with a quote and continues after it, so 
 ## Access statements
 
 ```
-<who> can <privileges> <table> [at <scope> scope]
-<who> cannot <privileges> <table> [at <scope> scope]
-only <who>, <who>, … can <privileges> <table> [at <scope> scope]
-nobody can <privileges> <table> [at <scope> scope]
+<who> can <privileges> <table> [at <scope> scope | under <chain>]
+<who> cannot <privileges> <table> [at <scope> scope | under <chain>] [except under <chain>]
+only <who>, <who>, … can <privileges> <table> [at <scope> scope | under <chain>] [except under <chain>]
+nobody can <privileges> <table> [at <scope> scope | under <chain>] [except under <chain>]
 ```
 
 - **Privileges**: `read`, `write`, `create`, `delete`, `append`, `appendto`, separated by commas.
@@ -90,6 +90,31 @@ For `authenticated`:
 - `authenticated cannot P T` fails if the Authenticated Users role **or any other role except Anonymous Users** has a privilege in P on T, since some signed-in user could do it.
 - `authenticated can P T` needs the Authenticated Users role itself to have P on T, since a custom role isn't held by every signed-in user.
 - In an `only` list, `authenticated` allows every role except Anonymous Users.
+
+### Parent chains
+
+A child permission (Parent scope) gives access to the rows related to the rows its parent gives. `under` and `except under` say which parent a grant has to come through:
+
+```yaml
+access:
+  - authenticated can read incident at contact scope
+  - authenticated can read task under incident at contact scope
+  - authenticated cannot read task except under incident at contact scope
+```
+
+- **Chain**: `<table> [at <scope> scope]`. A grant is under it when a permission on that table is in its parent chain, at any level; the nearest one counts, and with a scope it must be at that scope. `annotation under incident` covers notes on tasks of incidents too.
+- **`under`** counts only grants through such a chain. Those are parent-scope grants, so `at … scope` can't come before it.
+- **`except under`** leaves out grants through such a chain, so the statement is about every other way to reach the table. It goes in `cannot`, `only` and `nobody`, not in `can`.
+
+| Statement                          | Passes when                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `X can P T under C`                | X has every privilege in P on T through a chain C                                  |
+| `X cannot P T under C`             | X has none of the privileges in P on T through a chain C                           |
+| `X cannot P T except under C`      | X has no privilege in P on T, other than through a chain C                         |
+| `only X, Y can P T except under C` | no role other than X and Y has a privilege in P on T, other than through a chain C |
+| `nobody can P T except under C`    | no role has a privilege in P on T, other than through a chain C                    |
+
+The second and third lines above together say "signed-in users read tasks, and only those of their own incidents": the third fails for any signed-in role that reaches tasks another way, such as under an incident permission at global scope, or under a permission on another table. A failure names the top of each chain and its scope: `from "Task - Staff", under "Incident - All" (incident, global scope)`.
 
 The grants are the ones `pageslens docs` shows in the access matrix: permissions that take effect, including child permissions that take their parent's roles. A failure lists each grant that breaks the statement, with its permission and file.
 

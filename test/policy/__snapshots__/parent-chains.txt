@@ -1,0 +1,26 @@
+Parent Chains (site), policy parent-chains.policy.yaml
+
+access
+  pass  authenticated can read incident at contact scope
+  pass  authenticated can read task under incident at contact scope
+  FAIL  authenticated can read task under incident at global scope  (line 6)
+        authenticated doesn't have read on task under incident at global scope
+  pass  authenticated can read annotation under incident at contact scope
+  pass  authenticated can read annotation under task at parent scope
+  pass  role "Staff" can read, write task under incident
+  FAIL  authenticated cannot read task under account  (line 10)
+        Staff has read on task (parent scope) from "Account Task - All Staff", under "Account - All Staff" (account, global scope)  table-permissions/Account-Task-All-Staff.tablepermission.yml
+  FAIL  authenticated cannot read task except under incident at contact scope  (line 11)
+        Staff has read on task (parent scope) from "Account Task - All Staff", under "Account - All Staff" (account, global scope)  table-permissions/Account-Task-All-Staff.tablepermission.yml
+        Staff has read on task (parent scope) from "Incident Task - All Staff", under "Incident - All Staff" (incident, global scope)  table-permissions/Incident-Task-All-Staff.tablepermission.yml
+  pass  authenticated cannot write task except under incident at global scope
+  pass  only "Staff" can read task except under incident at contact scope
+  pass  only "Staff" can read annotation except under incident
+  FAIL  nobody can read any table under account  (line 15)
+        Staff has read on task (parent scope) from "Account Task - All Staff", under "Account - All Staff" (account, global scope)  table-permissions/Account-Task-All-Staff.tablepermission.yml
+  FAIL  nobody can read task at parent scope except under incident  (line 16)
+        Staff has read on task (parent scope) from "Account Task - All Staff", under "Account - All Staff" (account, global scope)  table-permissions/Account-Task-All-Staff.tablepermission.yml
+  pass  anonymous cannot read any table except under contact
+        warning: contact isn't used by any table permission or Web API setting in the site
+
+9 passed, 5 failed

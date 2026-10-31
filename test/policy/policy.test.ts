@@ -12,6 +12,8 @@ const brokenPolicy = await loadPolicy('.', 'test/fixtures/policies/broken.policy
 const ecofluxPolicy = await loadPolicy('.', 'test/fixtures/policies/ecoflux.policy.yaml');
 const registration = await loadSiteFolder('test/fixtures/registration');
 const registrationPolicy = await loadPolicy('.', 'test/fixtures/policies/registration.policy.yaml');
+const chains = await loadSiteFolder('test/fixtures/parent-chains');
+const chainsPolicy = await loadPolicy('.', 'test/fixtures/policies/parent-chains.policy.yaml');
 
 const checkOf = (section: 'access' | 'webapi' | 'settings' | 'pages', text: string) =>
   parsePolicy(`${section}:\n  - ${text}\n`, 'p.yaml').statements[0]!.check;
@@ -49,6 +51,36 @@ describe('parsePolicy', () => {
       table: { kind: 'table', name: 'account' },
     });
     expect(checkOf('access', 'nobody can appendto contact')).toMatchObject({ kind: 'nobody' });
+  });
+
+  it('reads under and except under', () => {
+    expect(
+      checkOf('access', 'authenticated can read task under Incident at contact scope'),
+    ).toEqual({
+      kind: 'can',
+      who: { kind: 'authenticated' },
+      privileges: ['read'],
+      table: { kind: 'table', name: 'task' },
+      under: { table: 'incident', scope: 'contact' },
+    });
+    expect(checkOf('access', 'nobody can read task at parent scope except under incident')).toEqual(
+      {
+        kind: 'nobody',
+        privileges: ['read'],
+        table: { kind: 'table', name: 'task' },
+        scope: 'parent',
+        except: { table: 'incident' },
+      },
+    );
+    expect(problems('access:\n  - authenticated can read task except under incident\n')).toEqual([
+      'p.yaml:2: "except under" only goes in "cannot", "only" and "nobody": authenticated can read task except under incident',
+    ]);
+    expect(
+      problems('access:\n  - authenticated can read task at parent scope under incident\n')[0],
+    ).toMatch(/"under" already means parent scope: leave out "at parent scope" before it/);
+    expect(problems('access:\n  - nobody can read task except incident\n')[0]).toMatch(
+      /expected "under", found "incident"/,
+    );
   });
 
   it('reads Web API and settings statements', () => {
@@ -162,6 +194,37 @@ describe('evaluatePolicy', () => {
       [31, 'pass'],
     ]);
     expect(result.counts).toEqual({ passed: 12, failed: 12 });
+  });
+
+  it('follows parent chains in under and except under, as the comments say', () => {
+    const result = evaluatePolicy(chainsPolicy, chains);
+    expect(result.results.map((r) => [r.statement.line, r.passed ? 'pass' : 'fail'])).toEqual([
+      [4, 'pass'],
+      [5, 'pass'],
+      [6, 'fail'],
+      [7, 'pass'],
+      [8, 'pass'],
+      [9, 'pass'],
+      [10, 'fail'],
+      [11, 'fail'],
+      [12, 'pass'],
+      [13, 'pass'],
+      [14, 'pass'],
+      [15, 'fail'],
+      [16, 'fail'],
+      [17, 'pass'],
+    ]);
+    const excepted = result.results.find((r) => r.statement.line === 11)!;
+    expect(excepted.evidence.map((e) => e.message)).toEqual([
+      'Staff has read on task (parent scope) from "Account Task - All Staff", under "Account - All Staff" (account, global scope)',
+      'Staff has read on task (parent scope) from "Incident Task - All Staff", under "Incident - All Staff" (incident, global scope)',
+    ]);
+    expect(result.results.find((r) => r.statement.line === 6)!.evidence[0]!.message).toBe(
+      "authenticated doesn't have read on task under incident at global scope",
+    );
+    expect(result.results.find((r) => r.statement.line === 17)!.warnings).toEqual([
+      "contact isn't used by any table permission or Web API setting in the site",
+    ]);
   });
 
   it('passes every ecoflux statement', () => {
@@ -353,6 +416,16 @@ describe('policy output', () => {
       'broken.policy.yaml',
     );
     await expect(text).toMatchFileSnapshot('__snapshots__/broken.txt');
+  });
+
+  it('matches the parent-chains text output snapshot', async () => {
+    const text = formatText(
+      evaluatePolicy(chainsPolicy, chains),
+      chains,
+      'site',
+      'parent-chains.policy.yaml',
+    );
+    await expect(text).toMatchFileSnapshot('__snapshots__/parent-chains.txt');
   });
 
   it('writes versioned JSON with one entry per statement', () => {

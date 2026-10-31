@@ -1,0 +1,17 @@
+# Policy for test/fixtures/parent-chains: "under" and "except under", passing and failing.
+# Each statement's expected result is in the comment after it.
+access:
+  - authenticated can read incident at contact scope # pass
+  - authenticated can read task under incident at contact scope # pass: inherits the parent's role
+  - authenticated can read task under incident at global scope # fail: only Staff's tasks hang from a global incident permission
+  - authenticated can read annotation under incident at contact scope # pass: two levels, through the task permission
+  - authenticated can read annotation under task at parent scope # pass: the direct parent
+  - role "Staff" can read, write task under incident # pass
+  - authenticated cannot read task under account # fail: Account Task - All Staff
+  - authenticated cannot read task except under incident at contact scope # fail: Staff, under a global incident and under an account
+  - authenticated cannot write task except under incident at global scope # pass
+  - only "Staff" can read task except under incident at contact scope # pass
+  - only "Staff" can read annotation except under incident # pass
+  - nobody can read any table under account # fail: Account Task - All Staff
+  - nobody can read task at parent scope except under incident # fail: Account Task - All Staff
+  - anonymous cannot read any table except under contact # pass, with a warning: contact isn't in the site
