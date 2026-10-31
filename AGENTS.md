@@ -83,4 +83,4 @@ Grant sentences are shared with `test` in `src/graph/describe.ts`, so both say t
 ## Git
 
 - Work on a feature branch and open a PR into `main`, which is protected. CI runs on every PR and on pushes to `main`.
-- Don't bump the version, tag, create releases or publish to npm; the maintainer does releases (see `README.md`).
+- Don't bump the version, tag, create releases or publish to npm; the maintainer does releases (see `README.md`). `npm run release` (`scripts/release.ts`) is the maintainer's: don't run it. Release notes go in `specs/releases/<x.y.z>.md` before it.
