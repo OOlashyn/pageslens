@@ -8,11 +8,11 @@ pageslens test [path] [--policy <file>] [--format text|json|sarif]
 
 `path` is the same site folder `lint` and `docs` take. The policy is `pageslens.policy.yaml` in the site folder or any folder above it, or the file given with `--policy`.
 
-| Exit code | Meaning                                                                                                                                       |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0         | Every statement passes                                                                                                                        |
-| 1         | At least one statement fails                                                                                                                  |
-| 2         | No policy file, a policy with no statements, invalid YAML, a statement pageslens can't read, an unknown role or page, or a site it can't read |
+| Exit code | Meaning                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0         | Every statement passes                                                                                                                                                    |
+| 1         | At least one statement fails                                                                                                                                              |
+| 2         | No policy file, a policy with no statements, invalid YAML, a statement pageslens can't read, an unknown role or page, or a site or deployment settings file it can't read |
 
 A missing policy is an error, not a pass, so a CI step that checks nothing can't go green.
 
@@ -114,7 +114,7 @@ The grants are the ones `pageslens docs` shows in the access matrix: permissions
 
 Setting names don't depend on case. Values are compared as written, except `true` and `false`, which don't depend on case.
 
-A setting can take its value from an environment variable. In an unpacked solution, pageslens reads the variable's value (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: a statement that depends on it fails and says so, and the same goes for a Web API statement on a table whose `enabled` or `fields` setting comes from a variable. `is set` and `is not set` still pass or fail as usual. Run the policy against the solution to check those values.
+A setting can take its value from an environment variable. In an unpacked solution, pageslens reads the variable's value (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: a statement that depends on it fails and says so, and the same goes for a Web API statement on a table whose `enabled` or `fields` setting comes from a variable. `is set` and `is not set` still pass or fail as usual. Run the policy against the solution to check those values, or give a stage's deployment settings file with `--settings <file>` to check what that stage gets: a value from the file is the setting's value, and a variable the file has no value for (or has as a secret) stays unknown.
 
 ## Page statements
 

@@ -336,7 +336,16 @@
                 "warning",
                 "error"
               ],
-              "description": "An environment variable a setting uses with no current or default value in the solution: the import needs one from the deployment settings. Default: warning."
+              "description": "An environment variable a setting uses with no current or default value in the solution, and none in the deployment settings file when one is given: the import needs one from the deployment settings. Default: warning."
+            },
+            "variable-not-in-settings": {
+              "enum": [
+                "off",
+                "info",
+                "warning",
+                "error"
+              ],
+              "description": "With --settings: an environment variable a setting uses that has a value in the solution and none in the deployment settings file, so the stage may get the solution's value. Default: warning."
             }
           }
         },
@@ -362,7 +371,8 @@
                     "variable-missing",
                     "missing-from-download",
                     "field-one-side",
-                    "variable-no-value"
+                    "variable-no-value",
+                    "variable-not-in-settings"
                   ]
                 },
                 "minItems": 1

@@ -1,0 +1,16 @@
+{
+  "EnvironmentVariables": [
+    { "SchemaName": "dwcrm_ContactApi", "Value": "true" },
+    { "SchemaName": "dwcrm_contactfields", "Value": "*" },
+    { "SchemaName": "dwcrm_IncidentApi", "Value": "true" },
+    { "SchemaName": "dwcrm_Registration", "Value": "true" },
+    {
+      "SchemaName": "dwcrm_ContosoSecret",
+      "Value": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/portal/providers/Microsoft.KeyVault/vaults/portal-prod/secrets/contoso",
+      "TypeId": 100000005
+    },
+    { "SchemaName": "dwcrm_FlowOnly", "Value": "used by a flow" }
+  ],
+  "ConnectionReferences": [],
+  "SomethingNew": {}
+}

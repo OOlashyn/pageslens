@@ -15,6 +15,9 @@ inputs:
   solution:
     description: The unpacked solution to compare `path` with, as for `pageslens align`. Empty (the default) skips align.
     default: ''
+  settings:
+    description: One stage's deployment settings file, given to every command as `--settings`. To check several stages, run the Action once per stage (a matrix) with `comment` on for one of them.
+    default: ''
   lint:
     description: Run `pageslens lint`.
     default: 'true'
@@ -81,6 +84,7 @@ runs:
         INPUT_PATH: ${{ inputs.path }}
         INPUT_POLICY: ${{ inputs.policy }}
         INPUT_SOLUTION: ${{ inputs.solution }}
+        INPUT_SETTINGS: ${{ inputs.settings }}
         INPUT_LINT: ${{ inputs.lint }}
         INPUT_TEST: ${{ inputs.test }}
         INPUT_DIFF: ${{ inputs.diff }}

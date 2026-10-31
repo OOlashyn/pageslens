@@ -9,6 +9,7 @@ import { normalizeValue } from '../../src/align/normalize.js';
 import { CHECKS, type AlignFinding, type AlignResult } from '../../src/align/types.js';
 import { ExitCode } from '../../src/cli.js';
 import type { AlignConfig } from '../../src/lint/config.js';
+import { readSettingsFile } from '../../src/model/deployment-settings.js';
 import type { Site } from '../../src/model/schema.js';
 import { cli, tempDir } from '../helpers.js';
 
@@ -107,6 +108,54 @@ describe('align: hand-written pairs', () => {
       'value',
     ]);
   });
+
+  it('checks the variables against a deployment settings file', async () => {
+    const download = await loadSiteFolder('test/fixtures/align/variables/site');
+    const unpacked = await loadSiteFolder('test/fixtures/align/variables/solution');
+    const sides = { site: side(download), solution: side(unpacked) };
+    const withFile = async (name: string) =>
+      alignSites(
+        download,
+        unpacked,
+        sides,
+        undefined,
+        await readSettingsFile(`test/fixtures/align/variables/${name}.json`, process.cwd()),
+      );
+    expect(summary((await withFile('filled')).findings)).toEqual([
+      'error content-differs sitesetting Search/PageSize',
+      'error variable-missing sitesetting Search/Gone',
+    ]);
+    const unedited = await withFile('unedited');
+    expect(summary(unedited.findings)).toEqual([
+      'error content-differs sitesetting Search/PageSize',
+      'error variable-missing sitesetting Search/Gone',
+      'warning variable-no-value sitesetting Search/Empty',
+      'warning variable-not-in-settings sitesetting Search/PageSize',
+    ]);
+    expect(unedited.findings.slice(2).map((f) => f.message)).toEqual([
+      'uses the environment variable "dwcrm_Empty", which has no current or default value in the solution, and test/fixtures/align/variables/unedited.json gives it none: the import needs one from the deployment settings',
+      `uses the environment variable "dwcrm_PageSize", which has "20" in the solution, and test/fixtures/align/variables/unedited.json doesn't have it: the stage may get the solution's value`,
+    ]);
+  });
+
+  it("warns on the real pair's create-settings file, which has no values", async () => {
+    const download = await loadSiteFolder('test/fixtures/registration');
+    const unpacked = await loadSiteFolder('test/fixtures/solution-registration');
+    const settings = await readSettingsFile(
+      'test/fixtures/deployment-settings/solution-registration.json',
+      process.cwd(),
+    );
+    const result = await alignSites(
+      download,
+      unpacked,
+      { site: side(download), solution: side(unpacked) },
+      undefined,
+      settings,
+    );
+    expect(summary(result.findings)).toEqual([
+      'warning variable-not-in-settings sitesetting ASP/Pagination/CardsPerPage',
+    ]);
+  }, 15_000);
 
   it('stops at different sites', async () => {
     const result = await pair('mismatch');

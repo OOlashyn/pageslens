@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { NO_VALUE } from '../adapters/solution.js';
 import type { AlignConfig } from '../lint/config.js';
+import { settingsValue, type DeploymentSettings } from '../model/deployment-settings.js';
 import { SEVERITIES, type Severity } from '../lint/types.js';
 import { compareText as compare } from '../model/normalize.js';
 import type { Site, SiteSetting } from '../model/schema.js';
@@ -40,6 +41,7 @@ export async function alignSites(
   solution: Site,
   sides: { site: AlignSide; solution: AlignSide },
   config: AlignConfig = { checks: {}, ignore: [] },
+  settings?: DeploymentSettings,
   readBytes: ReadBytes = readFromDisk,
 ): Promise<AlignResult> {
   const raw: Raw[] = [];
@@ -75,7 +77,7 @@ export async function alignSites(
     for (const [id, record] of right) {
       if (!left.has(id)) raw.push(missing(record, 'missing-from-download'));
     }
-    raw.push(...variableFindings(solution, left));
+    raw.push(...variableFindings(solution, left, settings));
   }
 
   const ignore = ignoreMatcher(config.ignore);
@@ -281,19 +283,41 @@ function describeFields(fields: FieldDifference[]): string {
 
 /**
  * Settings in the solution backed by an environment variable it doesn't have, or one without a
- * value. A secret has its value in Azure Key Vault and isn't reported.
+ * value. A secret has its value in Azure Key Vault and isn't reported. With a deployment settings
+ * file, a value from the file is a value, and a variable the file gives none is reported even when
+ * the solution has one: the stage may get dev's (specs/0010).
  */
-function variableFindings(solution: Site, download: Map<string, AlignRecord>): Raw[] {
-  const settings: SiteSetting[] = [...solution.siteSettings, ...solution.inactive.siteSettings];
-  return settings.flatMap((setting): Raw[] => {
-    if (!('variable' in setting)) return [];
-    const check: Check | undefined =
-      setting.noValue === NO_VALUE.missing
-        ? 'variable-missing'
-        : setting.noValue === NO_VALUE.empty
-          ? 'variable-no-value'
-          : undefined;
-    if (!check) return [];
+function variableFindings(
+  solution: Site,
+  download: Map<string, AlignRecord>,
+  settings: DeploymentSettings | undefined,
+): Raw[] {
+  const records: SiteSetting[] = [...solution.siteSettings, ...solution.inactive.siteSettings];
+  return records.flatMap((setting): Raw[] => {
+    if (setting.variable === undefined) return [];
+    if (setting.noValue === NO_VALUE.secret) return [];
+    const fromFile = settings && settingsValue(setting, settings);
+    const entry = settings?.variables.get(setting.variable.toLowerCase());
+    if (entry?.secret) return [];
+    const inFile = !settings
+      ? ''
+      : entry
+        ? `, and ${settings.path} gives it none`
+        : `, and ${settings.path} doesn't have it`;
+    let check: Check;
+    let message: string;
+    if (setting.noValue === NO_VALUE.missing) {
+      check = 'variable-missing';
+      message = `uses the environment variable "${setting.variable}", which isn't in the solution: the import needs it`;
+    } else if (setting.noValue === NO_VALUE.empty) {
+      if (fromFile !== undefined) return [];
+      check = 'variable-no-value';
+      message = `uses the environment variable "${setting.variable}", which has no current or default value in the solution${inFile}: the import needs one from the deployment settings`;
+    } else {
+      if (!settings || fromFile !== undefined) return [];
+      check = 'variable-not-in-settings';
+      message = `uses the environment variable "${setting.variable}", which has "${setting.value ?? ''}" in the solution${inFile}: the stage may get the solution's value`;
+    }
     const siteFile = download.get(setting.id)?.file;
     return [
       {
@@ -301,10 +325,7 @@ function variableFindings(solution: Site, download: Map<string, AlignRecord>): R
         kind: 'sitesetting',
         recordId: setting.id,
         name: setting.name,
-        message:
-          check === 'variable-missing'
-            ? `uses the environment variable "${setting.variable}", which isn't in the solution: the import needs it`
-            : `uses the environment variable "${setting.variable}", which has no current or default value in the solution: the import needs one from the deployment settings`,
+        message,
         ...(siteFile && { siteFile }),
         solutionFile: setting.source.file,
       },

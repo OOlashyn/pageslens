@@ -9,7 +9,8 @@ import { plain } from '../../src/graph/describe.js';
 import { diffResult } from '../helpers.js';
 
 // A throwaway repository with the grants pair committed under portal/, the classic pair under
-// classic/ and the solution pair under solution/src/:
+// classic/, the solution pair under solution/src/ and the deployment settings pair under stage/
+// (with stage/new.json in head only):
 //   empty  (main)     README only
 //   base   (main)     the base sites
 //   main   (main)     + a permission only main has
@@ -32,6 +33,9 @@ async function placeSites(side: 'base' | 'head') {
   // A pac solution init project, as pac solution clone writes it: the solution is in src/
   await rm(join(repo, 'solution'), { recursive: true, force: true });
   await cp(join(FIXTURES, 'solution', side), join(repo, 'solution', 'src'), { recursive: true });
+  await rm(join(repo, 'stage'), { recursive: true, force: true });
+  await cp(join(FIXTURES, 'deployment-settings', side), join(repo, 'stage'), { recursive: true });
+  if (side === 'head') await cp(join(repo, 'stage/prod.json'), join(repo, 'stage/new.json'));
 }
 
 function commit(name: string) {
@@ -163,6 +167,47 @@ describe('diff at git refs', () => {
     } finally {
       await writeFile(file, committed);
     }
+  });
+
+  it('reads the deployment settings file at each ref', async () => {
+    const result = await diff({
+      base: commits.base!,
+      head: 'feature',
+      path: 'stage',
+      settings: 'stage/prod.json',
+    });
+    expect(result.changes.map((c) => `${c.class} ${c.kind}`)).toEqual([
+      'wider webapi-enabled',
+      'narrower setting-narrower',
+    ]);
+    expect(plain(result.changes[1]!.message)).toBe(
+      'Authentication/Registration/Enabled turned off: was "true" from environment variable dwcrm_Registration in stage/prod.json at ' +
+        commits.base +
+        ', now "false" from environment variable dwcrm_Registration in stage/prod.json at feature',
+    );
+    // Without the file, both sides are unknown and the same variable: no change
+    expect((await diff({ base: commits.base!, head: 'feature', path: 'stage' })).changes).toEqual(
+      [],
+    );
+  });
+
+  it('reads a settings file missing on one side as empty, and refuses one on neither', async () => {
+    const result = await diff({
+      base: commits.base!,
+      head: 'feature',
+      path: 'stage',
+      settings: 'stage/new.json',
+    });
+    expect(result.changes.map((c) => `${c.class} ${c.kind}`)).toEqual([
+      'wider webapi-enabled',
+      'narrower setting-narrower',
+    ]);
+    expect(plain(result.changes[1]!.message)).toContain(
+      "it came from environment variable dwcrm_Registration, which a download doesn't include, and stage/new.json gives it no value",
+    );
+    await expect(
+      diff({ base: commits.base!, head: 'feature', path: 'stage', settings: 'stage/none.json' }),
+    ).rejects.toThrow("the deployment settings file stage/none.json isn't on either side");
   });
 
   it('refuses an argument that is both a folder and a ref', async () => {

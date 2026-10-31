@@ -1,0 +1,6 @@
+# wider webapi-enabled: dwcrm_ContactApi is false in base/prod.json, true in head/prod.json
+envvar_schema: dwcrm_ContactApi
+id: 00000000-0000-0000-0003-000000000001
+name: Webapi/contact/enabled
+source: 1
+value: false

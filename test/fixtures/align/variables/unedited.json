@@ -1,0 +1,7 @@
+{
+  "EnvironmentVariables": [
+    { "SchemaName": "dwcrm_Empty", "Value": "" },
+    { "SchemaName": "dwcrm_Secret", "Value": "", "TypeId": 100000005 }
+  ],
+  "ConnectionReferences": []
+}

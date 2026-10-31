@@ -1,0 +1,6 @@
+# missing: dwcrm_InnerErrors is in neither file, so it stays unknown
+envvar_schema: dwcrm_InnerErrors
+id: 00000000-0000-0000-0003-000000000006
+name: Webapi/error/innererror
+source: 1
+value: false

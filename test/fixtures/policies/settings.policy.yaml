@@ -1,0 +1,8 @@
+# Policy for test/fixtures/settings, with each stage's deployment settings file.
+# Each statement's expected result is in the comment after it: with prod.json, with test.json.
+webapi:
+  - fields are explicit # prod: fail, contact is * from dwcrm_ContactFields; test: pass
+  - incident is not enabled # prod: fail; test: pass
+  - anonymous cannot call any table # prod: pass; test: pass
+settings:
+  - registration is invite only # prod: fail, dwcrm_Registration is true; test: fail, its Value is empty, so it's unknown

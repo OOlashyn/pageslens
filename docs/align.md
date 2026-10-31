@@ -16,16 +16,17 @@ Records match by GUID, never by file or name. Inactive records take part, so a s
 
 ## Checks
 
-| Check                   | Severity                              | Reports                                                                                                                                                       |
-| ----------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `site-mismatch`         | error                                 | The two sides are different sites. Nothing else is checked.                                                                                                   |
-| `missing-from-solution` | error; warning for an inactive record | A record in the download that the solution doesn't have: it won't be in test or prod. An inactive one does nothing there, but is missing once it's activated. |
-| `state-differs`         | error                                 | Active on one side, inactive on the other.                                                                                                                    |
-| `content-differs`       | error                                 | A field, a side file's text or a web file's content that differs. One finding per record, naming the fields.                                                  |
-| `variable-missing`      | error                                 | A setting backed by an environment variable that isn't in the solution. The import needs it.                                                                  |
-| `missing-from-download` | warning                               | A component in the solution that the download doesn't have: deleted in dev and still shipped, or a snapshot from another time.                                |
-| `field-one-side`        | warning                               | A field with a value on one side only, where the other side's format doesn't write that field at all.                                                         |
-| `variable-no-value`     | warning                               | A variable a setting uses with no current or default value in the solution, and not a secret. The import needs a value from the deployment settings file.     |
+| Check                      | Severity                              | Reports                                                                                                                                                         |
+| -------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `site-mismatch`            | error                                 | The two sides are different sites. Nothing else is checked.                                                                                                     |
+| `missing-from-solution`    | error; warning for an inactive record | A record in the download that the solution doesn't have: it won't be in test or prod. An inactive one does nothing there, but is missing once it's activated.   |
+| `state-differs`            | error                                 | Active on one side, inactive on the other.                                                                                                                      |
+| `content-differs`          | error                                 | A field, a side file's text or a web file's content that differs. One finding per record, naming the fields.                                                    |
+| `variable-missing`         | error                                 | A setting backed by an environment variable that isn't in the solution. The import needs it.                                                                    |
+| `missing-from-download`    | warning                               | A component in the solution that the download doesn't have: deleted in dev and still shipped, or a snapshot from another time.                                  |
+| `field-one-side`           | warning                               | A field with a value on one side only, where the other side's format doesn't write that field at all.                                                           |
+| `variable-no-value`        | warning                               | A variable a setting uses with no current or default value in the solution, and not a secret. The import needs a value from the deployment settings file.       |
+| `variable-not-in-settings` | warning                               | With `--settings`: a variable a setting uses that has a value in the solution and none in the deployment settings file. The stage may get the solution's value. |
 
 ### `site-mismatch`
 
@@ -57,7 +58,11 @@ A field has a value on one side, and no record of that kind on the other side ha
 
 ### `variable-no-value`
 
-The variable has neither a current value nor a default in the solution. The import asks for one: put it in the deployment settings file. A secret (Azure Key Vault) isn't reported.
+The variable has neither a current value nor a default in the solution. The import asks for one: put it in the deployment settings file. A secret (Azure Key Vault) isn't reported. With `--settings`, a variable the file gives a value isn't reported either, and the finding says when the file has none.
+
+### `variable-not-in-settings`
+
+Only with `--settings <file>`. The solution has a value for the variable (the current value, or else the default), and the deployment settings file doesn't list the variable, or lists it with an empty `Value`. A value in the solution goes with it, so the stage may get dev's value, or the default: what the import does then isn't documented. Put the stage's value in the file, or ignore the finding when the solution's value is right for every stage. `pac solution create-settings` writes every variable with an empty `Value`, so a file nobody has filled in warns on each one. A secret isn't reported, and variables in the file that no setting uses are ignored.
 
 ## What isn't a difference
 
@@ -94,11 +99,11 @@ align:
 
 ## Exit codes
 
-| Code | Meaning                                                                                                |
-| ---- | ------------------------------------------------------------------------------------------------------ |
-| `0`  | No error-level findings (warnings and notes may be there)                                              |
-| `1`  | At least one error-level finding                                                                       |
-| `2`  | A side that isn't the right kind or can't be read, a solution with several sites, or a config in error |
+| Code | Meaning                                                                                                                                          |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `0`  | No error-level findings (warnings and notes may be there)                                                                                        |
+| `1`  | At least one error-level finding                                                                                                                 |
+| `2`  | A side that isn't the right kind or can't be read, a solution with several sites, a config in error, or a deployment settings file it can't read |
 
 ## Output
 

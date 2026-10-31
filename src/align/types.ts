@@ -11,6 +11,7 @@ export const CHECKS = [
   'missing-from-download',
   'field-one-side',
   'variable-no-value',
+  'variable-not-in-settings',
 ] as const;
 export type Check = (typeof CHECKS)[number];
 
@@ -56,7 +57,12 @@ export const CHECK_INFO: Record<Check, CheckInfo> = {
   'variable-no-value': {
     defaultSeverity: 'warning',
     description:
-      'An environment variable a setting uses with no current or default value in the solution: the import needs one from the deployment settings.',
+      'An environment variable a setting uses with no current or default value in the solution, and none in the deployment settings file when one is given: the import needs one from the deployment settings.',
+  },
+  'variable-not-in-settings': {
+    defaultSeverity: 'warning',
+    description:
+      "With --settings: an environment variable a setting uses that has a value in the solution and none in the deployment settings file, so the stage may get the solution's value.",
   },
 };
 

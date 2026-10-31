@@ -1,0 +1,6 @@
+# webapi-no-permission: true from dwcrm_IncidentApi in prod.json, false in test.json
+envvar_schema: dwcrm_IncidentApi
+id: 00000000-0000-0000-0003-000000000003
+name: Webapi/incident/enabled
+source: 1
+value: false

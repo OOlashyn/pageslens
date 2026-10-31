@@ -1,0 +1,7 @@
+{
+  "EnvironmentVariables": [
+    { "SchemaName": "dwcrm_ContactApi", "Value": "false" },
+    { "SchemaName": "dwcrm_Registration", "Value": "true" }
+  ],
+  "ConnectionReferences": []
+}
