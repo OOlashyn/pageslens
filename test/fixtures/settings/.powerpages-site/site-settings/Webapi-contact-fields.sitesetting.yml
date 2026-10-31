@@ -1,0 +1,6 @@
+# webapi-wildcard-fields: * from dwcrm_ContactFields in prod.json, named columns in test.json
+envvar_schema: dwcrm_ContactFields
+id: 00000000-0000-0000-0003-000000000002
+name: Webapi/contact/fields
+source: 1
+value: firstname

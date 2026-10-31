@@ -45,7 +45,19 @@ export function underParent(ancestors: Grant['ancestors']): string {
  * variable dwcrm_CardsPerPage, which a download doesn't include`.
  */
 export function unknownValue(setting: SiteSetting): string {
-  return `${setting.name} comes from environment variable ${setting.variable ?? ''}, which a download doesn't include`;
+  return `${setting.name} comes from environment variable ${setting.variable ?? ''}, ${unknownReason(setting)}`;
+}
+
+/**
+ * Why an environment variable's value is unknown: `which a download doesn't include`, and what
+ * the deployment settings file has instead, when one was given.
+ */
+export function unknownReason(setting: SiteSetting): string {
+  const reason = "which a download doesn't include";
+  if (!setting.settingsFile) return reason;
+  return setting.settingsSecret
+    ? `${reason}, and it's a secret in ${setting.settingsFile}`
+    : `${reason}, and ${setting.settingsFile} gives it no value`;
 }
 
 /**
@@ -54,9 +66,13 @@ export function unknownValue(setting: SiteSetting): string {
  */
 export function settingValue(setting: SiteSetting): string {
   if (setting.variable === undefined) return `"${setting.value ?? ''}"`;
-  if (setting.unknown) return `from environment variable ${setting.variable} (not in the download)`;
+  if (setting.unknown) {
+    const where = setting.settingsFile ? `the download or ${setting.settingsFile}` : 'the download';
+    return `from environment variable ${setting.variable} (not in ${where})`;
+  }
   if (setting.value === undefined) {
     return `not set: environment variable ${setting.variable} has no value to read (${setting.noValue ?? ''})`;
   }
-  return `"${setting.value}" from environment variable ${setting.variable}`;
+  const file = setting.settingsFile ? ` in ${setting.settingsFile}` : '';
+  return `"${setting.value}" from environment variable ${setting.variable}${file}`;
 }

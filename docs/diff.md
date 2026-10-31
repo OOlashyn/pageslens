@@ -8,11 +8,11 @@ pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markd
 
 It compares effective access, not files. Both sides go through the same reading and access logic as `docs` and `test`, so a permission split in two with the same result, or a file that was renamed or moved, isn't an access change. The YAML diff is already in the pull request; `diff` shows what it means.
 
-| Exit code | Meaning                                                                                             |
-| --------- | --------------------------------------------------------------------------------------------------- |
-| 0         | The comparison ran, whatever it found                                                               |
-| 1         | Only with `--fail-on`: something is wider (`--fail-on wider`), or anything changed (`any`)          |
-| 2         | An argument that's neither a folder nor a git commit, or both; an unknown ref; a site it can't read |
+| Exit code | Meaning                                                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 0         | The comparison ran, whatever it found                                                                                           |
+| 1         | Only with `--fail-on`: something is wider (`--fail-on wider`), or anything changed (`any`)                                      |
+| 2         | An argument that's neither a folder nor a git commit, or both; an unknown ref; a site or deployment settings file it can't read |
 
 A diff is information for a reviewer, so it doesn't fail by default. Requirements a build should fail on belong in the [policy](policy.md). `--fail-on wider` is for teams that want every widening to need an explicit override, such as a label the workflow checks.
 
@@ -108,6 +108,8 @@ A site setting can take its value from an environment variable. A solution has t
 | It moves back, to a value at the closed end (off, disabled, no origins)   | narrower                                             |
 | It moves back, to any other value                                         | wider                                                |
 | Both sides are downloads that take it from the same variable              | no change                                            |
+
+With `--settings <file>`, a stage's deployment settings file gives the variables' values, and a value from it is a setting's value like any other. The file is read on each side: from disk for a folder, at the same path in the commit for a ref. So a pull request that only changes `deployment-settings/prod.json` (say `dwcrm_ContactApi` from `false` to `true`) shows as the Web API now enabled on `contact`, wider. A side without the file reads it as empty, and a file on neither side is exit code `2`. A variable the file doesn't give a value (a secret, an empty `Value`, or not in the file) stays unknown in a download, as above.
 
 ### Pages
 

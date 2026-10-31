@@ -1,0 +1,13 @@
+# clean: lets signed-in users read contacts through the Web API
+adx_entitypermission_webrole:
+- 00000000-0000-0000-0001-000000000002
+append: false
+appendto: false
+create: false
+delete: false
+entitylogicalname: contact
+entityname: Contacts - Authenticated Read
+id: 00000000-0000-0000-0002-000000000001
+read: true
+scope: 756150000
+write: false

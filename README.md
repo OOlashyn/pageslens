@@ -49,12 +49,30 @@ An unpacked solution is the folder with `Other/Solution.xml` that `pac solution 
 - A solution with more than one site isn't read yet, nor is the YAML source control format that Dataverse Git integration writes, nor a solution `.zip` (unpack it first).
 - A component that isn't in the solution isn't checked: pageslens reads what deploys.
 - To check that a download and a solution describe the same site, use [`align`](#pageslens-align).
-- A site setting can take its value from an environment variable. pageslens reads the variable's value from the solution (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: rules that need it skip the setting, `test` statements that need it fail and say why, and `diff` counts a move to a variable as wider.
+- A site setting can take its value from an environment variable. pageslens reads the variable's value from the solution (the current value, or else the default). A download doesn't include the variable, so there the value is unknown: rules that need it skip the setting, `test` statements that need it fail and say why, and `diff` counts a move to a variable as wider. To check the values a stage gets, give its [deployment settings file](#deployment-settings).
+
+### Deployment settings
+
+The values of environment variables differ per stage, and the import takes each stage's values from a deployment settings file: the JSON `pac solution create-settings` writes and `pac solution import --settings-file` reads, usually kept in the repository as `deployment-settings/<stage>.json`. Give one to `lint`, `test`, `diff` or `align` with `--settings <file>` to check what that stage gets:
+
+```
+pageslens lint site --settings deployment-settings/prod.json
+pageslens test site --settings deployment-settings/prod.json
+```
+
+- A setting backed by a variable takes the file's `Value` for it, matched by schema name, ignoring case, and messages name the file: `"true" from environment variable dwcrm_ContactApi in deployment-settings/prod.json`. This works on a download and on a solution alike.
+- A variable the file doesn't have, or has with an empty `Value` (as `create-settings` writes every variable), keeps what it had: unknown in a download, the solution's value in a solution. So does a secret (`TypeId` 100000005): its value is in Azure Key Vault. pageslens doesn't guess what the import does then.
+- Only `EnvironmentVariables` is read; `ConnectionReferences` and other keys are ignored, and so are variables no setting uses and `DefaultValue`.
+- One stage per run: check several stages with several runs. `docs` doesn't take the file, so committed docs stay the same for every stage.
+- In `diff`, the file is read on each side: from the folder, or at the same path in each commit, so a pull request that only changes a stage's file shows what it does to access. A side without the file reads it as empty.
+- In `align`, a variable the file gives a value isn't reported as having none, and a variable the file gives no value is a warning (`variable-not-in-settings`) when the solution has a value: the stage may get dev's.
+
+A file that can't be read, isn't JSON, or has no `EnvironmentVariables` list of entries with a `SchemaName` is exit code `2`.
 
 ## `pageslens lint`
 
 ```
-pageslens lint [path] [--format text|json|sarif] [--config <file>]
+pageslens lint [path] [--format text|json|sarif] [--config <file>] [--settings <file>]
 ```
 
 Example output:
@@ -133,7 +151,7 @@ The `$schema` comment gives completion and validation in editors with the YAML l
 ## `pageslens test`
 
 ```
-pageslens test [path] [--policy <file>] [--format text|json|sarif]
+pageslens test [path] [--policy <file>] [--format text|json|sarif] [--settings <file>]
 ```
 
 Checks the site against the requirements in `pageslens.policy.yaml` (in the site folder or any folder above it, or `--policy <file>`). Each requirement is one sentence in a fixed form:
@@ -159,7 +177,7 @@ The full grammar, what each statement means and how to write a good policy: [doc
 ## `pageslens diff`
 
 ```
-pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any]
+pageslens diff <base> <head> [--site <path>] [--merge-base] [--format text|markdown|json] [--fail-on wider|any] [--settings <file>]
 ```
 
 Shows what a change does to access: grants gained and lost (including child permissions that take their parent's roles), the Web API (tables, fields, who can call them), web roles, a few settings such as open registration, and on classic sites who can read and publish each page. It compares effective access, not files, and matches records by GUID (so a download and a solution can be compared too), so a renamed file or a permission split in two with the same result isn't an access change.
@@ -184,7 +202,7 @@ What each change means and how it's classified: [docs/diff.md](docs/diff.md).
 ## `pageslens align`
 
 ```
-pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config <file>]
+pageslens align <site> <solution> [--format text|json|markdown|sarif] [--config <file>] [--settings <file>]
 ```
 
 Checks that a download and an unpacked solution describe the same site, for teams that commit both: the readable download, and the solution that deploys. New site components aren't added to a solution automatically, so a web role, a table permission or a page made in dev can work there, be in the download, and be missing in test and prod. `align` shows it in the pull request, before the import.
@@ -242,7 +260,7 @@ The Power Pages site is in `site/`. Check it with pageslens (`npx pageslens`): s
 - pageslens decides. Whether something is a finding, whether a change is wider, whether a statement passes: that's in its output, so don't reclassify it. Say why a change may be intended and what a reviewer should check.
 - Work offline, from the files in git. Don't connect to Dataverse, run `pac`, upload, post, commit or push.
 - Find records by GUID (`recordId`), not by file name. Don't change a record's own id. Pointing a record at another one (a permission's parent, its web roles) is a fix like any other: say what it does to access.
-- A value marked `unknown` comes from an environment variable, which a download doesn't have. Say it can't be known offline; don't guess.
+- A value marked `unknown` comes from an environment variable, which a download doesn't have. Say it can't be known offline; don't guess. If the repository has deployment settings files, run again with `--settings` for the stage in question.
 - Check every fix: run `lint` (and `test`, with a policy file) again, and `diff HEAD <site>` to see what the edits do to access. Undo a fix that adds an error or a warning. A fix can leave an info finding behind as its expected result (a role nothing uses any more): say so.
 
 ### Review a site
@@ -300,6 +318,7 @@ jobs:
 - **On a pull request** it runs `lint`, `test` (when it finds a `pageslens.policy.yaml`) and `diff --merge-base`, which compares the pull request's head commit with where it branched from the base branch, as GitHub's own diff does. The access changes go to the run's summary page and to the comment. With no access changes it doesn't add a comment; it edits an earlier one to say so.
 - **On a push** to `main` it runs `lint` and `test` only. Code scanning compares a pull request's alerts with the last analysis of `main`, so run the action on both.
 - **With `solution`** it also runs `align <path> <solution>`: its results go to code scanning, its findings to the comment above the access changes, and errors fail the job. It's off by default: set it when you commit both a download and the solution taken from dev together.
+- **With `settings`** every command gets `--settings <file>`, so the checks are for that stage. To check several stages, run the action once per stage (a matrix); each run edits the same comment, so turn `comment` off on all but one.
 - **The job fails** when lint finds errors, a policy statement fails, align finds errors, or `fail-on` matches, after all the steps have run, so the results are uploaded and the comment is posted either way.
 - **Pull requests from forks** get a read-only token, so there the results go to the run's summary page only, with a notice.
 - **Permissions:** without `security-events: write`, or with code scanning not available for the repository, the upload is skipped with a notice. Without `pull-requests: write`, the comment is.
@@ -310,6 +329,7 @@ jobs:
 | `path`         | `.`                     | The site folder. For several sites, use the action once per site; each gets its own comment.            |
 | `policy`       | nearest one             | The policy file. With none, `test` is skipped with a notice.                                            |
 | `solution`     |                         | The unpacked solution to compare `path` with (`align`). Empty skips `align`.                            |
+| `settings`     |                         | One stage's deployment settings file, given to every command as `--settings`.                           |
 | `lint`         | `true`                  | Run `lint`.                                                                                             |
 | `test`         | `true`                  | Run `test`.                                                                                             |
 | `diff`         | `true`                  | Run `diff` on pull requests.                                                                            |

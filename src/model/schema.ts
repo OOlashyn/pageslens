@@ -121,6 +121,13 @@ export const siteSettingSchema = z
       unknown: !fromSolution,
       /** Why a solution has no value for the variable. */
       noValue: s.envvar_none,
+      /**
+       * The deployment settings file applied (specs/0010), set by `applySettings`: where the value
+       * came from, or, while it's unknown, the file that gives none.
+       */
+      settingsFile: undefined as string | undefined,
+      /** The file has the variable as a secret, so its value stays unknown. */
+      settingsSecret: false,
     };
   });
 

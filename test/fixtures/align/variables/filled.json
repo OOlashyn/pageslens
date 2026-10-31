@@ -1,0 +1,8 @@
+{
+  "EnvironmentVariables": [
+    { "SchemaName": "dwcrm_Empty", "Value": "10" },
+    { "SchemaName": "dwcrm_PageSize", "Value": "25", "DefaultValue": "20" },
+    { "SchemaName": "dwcrm_Secret", "Value": "", "TypeId": 100000005 }
+  ],
+  "ConnectionReferences": []
+}

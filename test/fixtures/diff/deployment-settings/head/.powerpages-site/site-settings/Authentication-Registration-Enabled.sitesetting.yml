@@ -1,0 +1,6 @@
+# narrower setting-narrower: dwcrm_Registration is true in base/prod.json, false in head/prod.json
+envvar_schema: dwcrm_Registration
+id: 00000000-0000-0000-0003-000000000003
+name: Authentication/Registration/Enabled
+source: 1
+value: true

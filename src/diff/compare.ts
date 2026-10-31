@@ -1,5 +1,12 @@
 import { PRIVILEGES, type PermissionNode, type Privilege } from '../graph/access.js';
-import { grantSentence, plain, settingValue, unknownValue, type Part } from '../graph/describe.js';
+import {
+  grantSentence,
+  plain,
+  settingValue,
+  unknownReason,
+  unknownValue,
+  type Part,
+} from '../graph/describe.js';
 import {
   buildPageGraph,
   describeAudience,
@@ -915,7 +922,7 @@ function describeSetting(rule: SettingRule, setting: SiteSetting | undefined): s
 
 /** What base had: `it came from environment variable V, which a download doesn't include`. */
 function wasUnknown(setting: SiteSetting): string {
-  return `it came from environment variable ${setting.variable ?? ''}, which a download doesn't include`;
+  return `it came from environment variable ${setting.variable ?? ''}, ${unknownReason(setting)}`;
 }
 
 /** Both settings take their value from the same environment variable. */

@@ -22,6 +22,7 @@ import { formatJson } from './lint/format/json.js';
 import { formatSarif } from './lint/format/sarif.js';
 import { formatText } from './lint/format/text.js';
 import { RULES } from './lint/rules/index.js';
+import { applySettings, readSettingsFile, SettingsFileError } from './model/deployment-settings.js';
 import { toPosixPath } from './model/normalize.js';
 import type { Site } from './model/schema.js';
 import { evaluatePolicy } from './policy/evaluate.js';
@@ -53,11 +54,13 @@ type Format = 'text' | 'json' | 'sarif';
 const FORMATS: Format[] = ['text', 'json', 'sarif'];
 
 interface LintOptions {
+  settings?: string;
   format: Format;
   config?: string;
 }
 
 interface TestOptions {
+  settings?: string;
   format: Format;
   policy?: string;
 }
@@ -65,6 +68,7 @@ interface TestOptions {
 type DiffFormat = 'text' | 'markdown' | 'json';
 
 interface DiffOptions {
+  settings?: string;
   format: DiffFormat;
   site?: string;
   mergeBase?: boolean;
@@ -82,6 +86,7 @@ type AlignFormat = 'text' | 'json' | 'markdown' | 'sarif';
 const ALIGN_FORMATS: AlignFormat[] = ['text', 'json', 'markdown', 'sarif'];
 
 interface AlignOptions {
+  settings?: string;
   format: AlignFormat;
   config?: string;
 }
@@ -99,6 +104,15 @@ const FORMAT_NAMES: Record<Site['format'], string> = {
   'classic-download': 'a classic site download',
   solution: 'an unpacked solution',
 };
+
+const SETTINGS_HELP =
+  "deployment settings file for one stage: its environment variables' values become the settings' values";
+
+/** The site with a deployment settings file's values (specs/0010), when one is given. */
+async function withSettings(site: Site, file: string | undefined): Promise<Site> {
+  if (file === undefined) return site;
+  return applySettings(site, await readSettingsFile(file, process.cwd()));
+}
 
 function alignSide(site: Site): AlignSide {
   return {
@@ -128,13 +142,14 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     )
     .addOption(new Option('--format <format>', 'output format').choices(FORMATS).default('text'))
     .option('--config <file>', `path to pageslens.config.yaml (default: nearest one found)`)
+    .option('--settings <file>', SETTINGS_HELP)
     .action(async (path: string, options: LintOptions) => {
       const config = await loadConfig(
         path,
         RULES.map((rule) => rule.id),
         options.config,
       );
-      const site = await loadSiteFolder(path);
+      const site = await withSettings(await loadSiteFolder(path), options.settings);
       const result = lint(site, config);
       const sitePath = toPosixPath(relative(process.cwd(), site.root)) || '.';
       if (options.format === 'sarif') {
@@ -164,9 +179,10 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
     )
     .addOption(new Option('--format <format>', 'output format').choices(FORMATS).default('text'))
     .option('--policy <file>', `path to ${POLICY_FILE} (default: nearest one found)`)
+    .option('--settings <file>', SETTINGS_HELP)
     .action(async (path: string, options: TestOptions) => {
       const policy = await loadPolicy(path, options.policy);
-      const site = await loadSiteFolder(path);
+      const site = await withSettings(await loadSiteFolder(path), options.settings);
       const result = evaluatePolicy(policy, site);
       const sitePath = toPosixPath(relative(process.cwd(), site.root)) || '.';
       const policyPath = toPosixPath(relative(process.cwd(), policy.path));
@@ -199,6 +215,7 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       '--merge-base',
       'compare head with the merge base of base and head, as a pull request does',
     )
+    .option('--settings <file>', SETTINGS_HELP)
     .addOption(
       new Option('--format <format>', 'output format')
         .choices(Object.keys(DIFF_FORMATS))
@@ -223,6 +240,7 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
         head,
         ...(site !== undefined && { path: site }),
         mergeBase: options.mergeBase ?? false,
+        ...(options.settings !== undefined && { settings: options.settings }),
         cwd: process.cwd(),
       });
       const changes = diffSites(sides.base.site, sides.head.site);
@@ -251,6 +269,7 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
       new Option('--format <format>', 'output format').choices(ALIGN_FORMATS).default('text'),
     )
     .option('--config <file>', `path to pageslens.config.yaml (default: nearest one found)`)
+    .option('--settings <file>', SETTINGS_HELP)
     .action(async (sitePath: string, solutionPath: string, options: AlignOptions) => {
       const config = await loadConfig(
         sitePath,
@@ -269,7 +288,11 @@ export function buildProgram(io: Io, setExitCode: (code: number) => void): Comma
         );
       }
       const sides = { site: alignSide(site), solution: alignSide(solution) };
-      const result = await alignSites(site, solution, sides, config.align);
+      const settings =
+        options.settings === undefined
+          ? undefined
+          : await readSettingsFile(options.settings, process.cwd());
+      const result = await alignSites(site, solution, sides, config.align, settings);
       if (options.format === 'sarif') {
         const files = (key: 'siteFile' | 'solutionFile') =>
           result.findings.flatMap((f) => (f[key] ? [f[key]] : []));
@@ -345,7 +368,7 @@ export async function run(argv: string[], io: Io = processIo): Promise<number> {
 `);
       return ExitCode.Usage;
     }
-    if (error instanceof ConfigError) {
+    if (error instanceof ConfigError || error instanceof SettingsFileError) {
       io.err(`error: ${error.message}\n`);
       return ExitCode.Usage;
     }

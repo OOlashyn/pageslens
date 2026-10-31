@@ -12,7 +12,7 @@ Hand-written pairs for `pageslens align` (spec 0008), each `<case>/site` (a down
 | `classic`   | classic | Clean: `adx_` keys, list keys (`adx_adplacement_ad`), an inactive role, a variable-backed setting, publishing states on a rule, a permission's `name`, site language ids, localized labels written differently |
 | `missing`   | code    | A web role and a table permission in the download only (errors), an inactive page in the download only and a page in the solution only (warnings)                                                       |
 | `content`   | classic | A setting value, a template's text, a web file's bytes and a form's settings JSON that differ, a role active on one side only, a field only the solution writes (warning); a form and a role list that don't differ |
-| `variables` | classic | A setting moved to a variable in the solution only, a variable missing from the solution, one with no value (warning), and a secret (not reported)                                                       |
+| `variables` | classic | A setting moved to a variable in the solution only, a variable missing from the solution, one with no value (warning), and a secret (not reported). With `--settings`: `filled.json` gives `dwcrm_Empty` a value (no warning); `unedited.json` gives it none and doesn't have `dwcrm_PageSize`, which has a default in the solution (`variable-not-in-settings`) |
 | `mismatch`  | code    | Two different sites                                                                                                                                                                                      |
 
 ## `ecoflux/`
@@ -117,7 +117,22 @@ It reads into the same records, model, side files and lint findings as `registra
 
 ## `deployment-settings/`
 
-Deployment settings files (spec 0010). `solution-registration.json` is what `pac solution create-settings --solution-folder` (pac 2.14.1) wrote for `solution-registration/` on 2026-10-30, unchanged: CRLF line endings, no final newline. Read-only. Its `dwcrm_CardsPerPage` has an empty `Value` and the definition's `DefaultValue` 18; `create-settings` doesn't copy the solution's current value (20).
+Deployment settings files (spec 0010). `solution-registration.json` is what `pac solution create-settings --solution-folder` (pac 2.14.1) wrote for `solution-registration/` on 2026-10-30, unchanged: CRLF line endings, no final newline. Read-only. Its `dwcrm_CardsPerPage` has an empty `Value` and the definition's `DefaultValue` 18; `create-settings` doesn't copy the solution's current value (20), so `align` with it warns `variable-not-in-settings` on `ASP/Pagination/CardsPerPage`.
+
+## `settings/`
+
+A small code site whose Web API and registration settings come from environment variables, with a deployment settings file for two stages (spec 0010, `test/settings.test.ts`). JSON can't hold a comment, so the cases are here and in each setting's `#` comment.
+
+| Variable              | Setting                                              | `prod.json`                              | `test.json`                          |
+| --------------------- | ---------------------------------------------------- | ---------------------------------------- | ------------------------------------ |
+| `dwcrm_ContactApi`    | `Webapi/contact/enabled`                             | `true`                                   | `true`                               |
+| `dwcrm_ContactFields` | `Webapi/contact/fields`                              | `*` (schema name in lower case): `webapi-wildcard-fields` | `firstname,lastname`                 |
+| `dwcrm_IncidentApi`   | `Webapi/incident/enabled`                            | `true`, no permission: `webapi-no-permission` | `false`                              |
+| `dwcrm_Registration`  | `Authentication/Registration/Enabled`                | `true`                                   | empty `Value`: stays unknown         |
+| `dwcrm_ContosoSecret` | `Authentication/OpenIdConnect/Contoso/ClientSecret`  | a secret: stays unknown                  | a secret: stays unknown              |
+| `dwcrm_InnerErrors`   | `Webapi/error/innererror`                            | not in the file: stays unknown           | not in the file: stays unknown       |
+
+`prod.json` also has a variable no setting uses and keys pageslens doesn't read. Without a file, nothing fires. `policies/settings.policy.yaml` gives each statement's result per stage.
 
 ## `solution-ecoflux/`
 
@@ -129,7 +144,7 @@ Hand-written, small, and loadable: each component file starts with an XML commen
 
 ## `policies/`
 
-Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, and `registration.policy.yaml` for page statements against `registration/`.
+Policies for `pageslens test`, each with every statement's expected result in a comment: `broken.policy.yaml` and `ecoflux.policy.yaml` for tables, the Web API and settings, `registration.policy.yaml` for page statements against `registration/`, and `settings.policy.yaml` for `settings/` with each stage's file.
 
 ## `diff/`
 
@@ -147,6 +162,7 @@ Pairs of small hand-written sites for `pageslens diff`, each `<case>/base` and `
 | `inactive` | code | 1 wider, 1 narrower, 1 neutral: a permission activated (wider, `(activated)`), one deactivated (narrower, `(deactivated)`), a role deactivated (neutral) |
 | `solution` | solution (XML) | 1 wider, 1 narrower, only environment variable values change: `dwcrm_InnerErrors` turns `Webapi/error/innererror` on, `dwcrm_ContactApi` turns the Web API off on `contact`. The comments are in the head's `environmentvariabledefinition.xml` files |
 | `variables` | code | 2 wider: head moves `Webapi/contact/enabled` and `Webapi/error/innererror` to environment variables, whose values a download doesn't include. The other way round, both are narrower |
+| `deployment-settings` | code | Only the deployment settings file `prod.json` changes, next to the same site: with `--settings`, 1 wider (`dwcrm_ContactApi` enables the Web API on `contact`), 1 narrower (`dwcrm_Registration` turns registration off); without it, nothing. Head's file also has a variable no setting uses, which keeps the two files different sizes for git |
 | `pages` | classic | 8 wider, 2 narrower, 3 neutral, page access only. Base is `classic-pages/` without its comments, plus an Archive page under `/internal/`. Head removes Employees Only (anyone can now read `/internal/` and the Archive page below it, one line; Partners can now read `/internal/reports/`; `/internal/team/` has the same readers from other rules), adds Partners to Docs Readers, takes Authenticated Users off Members and Admins, adds a Grant Change for Managers on `/members/`, adds a public News page, removes Locked, moves Account to `/my-account/`, renames Signed-in Only, sets Shared A's scope to exclude web files, and fixes Lost's parent (readers known again for Lost and Lost Child) |
 
-`test/diff/git.test.ts` commits the `grants`, `classic` and `solution` pairs (the last as a `pac solution clone` project's `src/`) to a temporary repository to test reading at refs, the working tree, `--merge-base` and a side with no site.
+`test/diff/git.test.ts` commits the `grants`, `classic`, `solution` (as a `pac solution clone` project's `src/`) and `deployment-settings` pairs to a temporary repository to test reading at refs, the working tree, `--merge-base`, a side with no site, and a settings file read at each ref.

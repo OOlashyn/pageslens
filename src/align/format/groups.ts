@@ -22,6 +22,7 @@ export const HEADINGS: Record<Check, string> = {
   'missing-from-download': 'in the solution, not in the download',
   'field-one-side': 'fields on one side only',
   'variable-no-value': 'environment variable with no value',
+  'variable-not-in-settings': 'environment variable with no value in the deployment settings',
 };
 
 export interface Group {

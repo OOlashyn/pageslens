@@ -222,6 +222,9 @@ function run(): void {
   const cli = installCli(dir);
   const failures: string[] = [];
   const lines: string[] = [];
+  // One stage's deployment settings file, given to every command (specs/0010)
+  const settings = input('settings');
+  const withSettings = (args: string[]) => (settings ? [...args, '--settings', settings] : args);
 
   // The text run shows in the log and gives the exit code; the SARIF run gives the counts.
   const check = (args: string[], file: string) => {
@@ -233,7 +236,7 @@ function run(): void {
   };
 
   if (flag('lint')) {
-    const { code, counts } = check(['lint', path], 'lint.sarif');
+    const { code, counts } = check(withSettings(['lint', path]), 'lint.sarif');
     if (counts) {
       const errors = count(counts.errors, 'error');
       setOutput('lint-errors', counts.errors);
@@ -251,7 +254,10 @@ function run(): void {
       notice(`No ${POLICY_FILE} found for ${path}, so policy tests were skipped.`);
       lines.push('- Policy: no policy file, skipped');
     } else {
-      const { code, counts } = check(['test', path, '--policy', policy], 'test.sarif');
+      const { code, counts } = check(
+        withSettings(['test', path, '--policy', policy]),
+        'test.sarif',
+      );
       if (counts) {
         const failed = `${count(counts.rules, 'statement')} failed`;
         setOutput('policy-failures', counts.rules);
@@ -269,7 +275,7 @@ function run(): void {
   let alignMarkdown: string | undefined;
   let alignFindings = 0;
   if (solution) {
-    const { code, counts } = check(['align', path, solution], 'align.sarif');
+    const { code, counts } = check(withSettings(['align', path, solution]), 'align.sarif');
     if (counts) {
       const errors = count(counts.errors, 'error');
       setOutput('align-errors', counts.errors);
@@ -277,7 +283,11 @@ function run(): void {
       if (code === 1) failures.push(`align found ${errors}`);
       alignFindings = counts.errors + counts.warnings;
       const markdown = join(dir, 'align.md');
-      pageslens(cli, ['align', path, solution, '--format', 'markdown'], markdown);
+      pageslens(
+        cli,
+        [...withSettings(['align', path, solution]), '--format', 'markdown'],
+        markdown,
+      );
       alignMarkdown = readFileSync(markdown, 'utf8');
     } else {
       lines.push(`- Align: couldn't run`);
@@ -309,7 +319,7 @@ function run(): void {
           .status === 0,
     );
     const head = headRef(pr, (sha) => git('cat-file', '-e', `${sha}^{commit}`).status === 0);
-    const args = ['diff', '--merge-base', base, head, '--site', path];
+    const args = withSettings(['diff', '--merge-base', base, head, '--site', path]);
     const failOn = input('fail-on');
     const markdown = join(dir, 'diff.md');
     const failArgs = failOn ? ['--fail-on', failOn] : [];

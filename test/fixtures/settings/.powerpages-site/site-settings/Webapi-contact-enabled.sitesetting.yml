@@ -1,0 +1,6 @@
+# webapi-*: enabled from dwcrm_ContactApi, true in prod.json and test.json
+envvar_schema: dwcrm_ContactApi
+id: 00000000-0000-0000-0003-000000000001
+name: Webapi/contact/enabled
+source: 1
+value: false

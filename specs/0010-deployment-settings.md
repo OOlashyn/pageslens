@@ -1,6 +1,6 @@
 # 0010: Deployment settings (`--settings`)
 
-**Status:** draft 3, ready to build. Draft 2 added a real file from `pac solution create-settings`; draft 3 records the decisions and the Learn checks. Still owed: what the import does with an empty or missing `Value` ("Verification owed").
+**Status:** built, not yet released (see "As built"). Draft 3, every open question decided (see "Decisions"). Still owed: what the import does with an empty or missing `Value` ("Verification owed").
 
 A site setting can take its value from an environment variable (`source: 1`). The value differs per stage: the solution carries the variable's definition, and the import gets the stage's value from a **deployment settings file**, one per target, kept in the repository (`deployment-settings/<target>.json`). The ALM white paper does exactly this ([alm-white-paper.md](research/alm-white-paper.md), "What to change" 1), and so does the process in [alm-story.md](research/alm-story.md).
 
@@ -134,6 +134,19 @@ Oleksandr took the recommendation on each question (2026-10-30).
 5. **The Action: one `settings` input.** A matrix runs the Action once per stage. Each run would post the pull request comment, so the docs say to leave `settings` empty or set it on one chosen stage for the comment. A list in one run would mean every report gains a stage column.
 6. **Variables in the file that no setting uses are ignored.** Solutions often hold variables for flows and apps, and the file lists them all, so a warning would mostly be noise.
 7. **`DefaultValue` in the file is ignored.** It's a copy of the definition's default, written for the reader; the solution already has it, and nothing says the import reads it.
+
+## As built
+
+Built to draft 3 with every decision as recorded. The user reference is the README's "Deployment settings" section, with [docs/align.md](../docs/align.md), [docs/diff.md](../docs/diff.md) and [docs/policy.md](../docs/policy.md). Where the code needed an interpretation the spec doesn't give:
+
+1. **Where it lives.** `src/model/deployment-settings.ts` reads the file (`readSettingsFile`, `parseSettings`) and `applySettings(site, settings)` returns the site with the values in its active and inactive settings. A setting with a value from the file gets `settingsFile` (the path as messages name it); one that stays unknown in a download gets it too, with `settingsSecret`, so messages can say what the file has.
+2. **What stays as it is.** A setting keeps its value when the file doesn't have the variable, has it with an empty `Value`, or has it as a secret (`TypeId` 100000005, by number), and also when the solution says the variable is a secret or isn't in the solution: the import can't create a variable from the file. `Value` is used as written, not trimmed.
+3. **Validation.** Exit code 2 for a missing file ("there's no deployment settings file …"), a file that isn't JSON, no `EnvironmentVariables` array, an entry without a non-empty string `SchemaName`, or a `Value` that isn't a string. The message names the first problem's path (`EnvironmentVariables.0.Value`). A leading BOM is allowed.
+4. **Messages.** `settingValue` gives `"true" from environment variable dwcrm_ContactApi in deployment-settings/prod.json`; an unknown value says `…, which a download doesn't include, and deployment-settings/prod.json gives it no value` (or `it's a secret in …`). Lint messages are unchanged: they don't quote a setting's source, and the finding points at the setting's file.
+5. **`diff`.** With two folders the file is one file on disk, used for both sides. With a ref, it's read at the same path relative to the current folder in that commit, and messages name it `<path> at <ref>`. A side without the file reads it as empty; a file on neither side is exit code 2. Two downloads that take a setting from the same variable, both unknown, still give no change.
+6. **`align`.** The file only changes the variable checks; the record comparison is unchanged. `variable-not-in-settings` (warning, after `variable-no-value` in `CHECKS`) reports a setting whose variable has a value in the solution (current or default) and none in the file, quoting the solution's value. A variable that's a secret in the file isn't reported by either check.
+7. **The Action.** The `settings` input adds `--settings` to every command it runs. Several stages in a matrix each edit the same comment, so the README says to turn `comment` off on all but one.
+8. **Fixtures.** `test/fixtures/settings/` (a download and `prod.json`, `test.json`), `test/fixtures/diff/deployment-settings/` (the planned `diff/settings/` was taken), `filled.json` and `unedited.json` in `test/fixtures/align/variables/`, and `policies/settings.policy.yaml`. The filled-in copy of the `create-settings` file is a string in `test/settings.test.ts`, as the real fixture is read-only.
 
 ## Verification owed
 
