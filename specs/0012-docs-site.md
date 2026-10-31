@@ -1,6 +1,6 @@
 # 0012: Documentation site
 
-**Status:** built, not yet released (see "As built"). Draft 2, every open question decided (see "Decisions").
+**Status:** built and deployed; the output's links to the site ship in 0.13.0 (see "As built"). Draft 2, every open question decided (see "Decisions").
 
 pageslens's user docs are Markdown files read on GitHub: the README (about 480 lines), five references in `docs/` and twenty rule pages in `rules/`. They work, but they're hard to find and search, and the README carries most of it. This spec designs a documentation site at `pageslens.olashyn.dev`, built with Astro from the same files, so that nothing is written twice.
 
@@ -140,8 +140,10 @@ Built to draft 2 with every decision as recorded, the README split (decision 2) 
 7. **The release script** points the action examples in `docs/ci.md` and `docs/alm.md` at the new tag as well as the README's. `docs/alm.md` had stayed at `v0.11.0`.
 8. **`homepage`** (decision 4) is set now. npmjs.com shows it from the next release, which is also when the site first deploys.
 
-## Verification owed
+## Verification
 
-- The certificate for `pageslens.olashyn.dev` is issued and "Enforce HTTPS" can be turned on.
-- `olashyn.dev/pageslens/` redirects to the subdomain, and `olashyn.dev` and lookup-to-select keep working.
-- Pagefind finds rule ids and policy keywords.
+Checked on 2026-10-31, after the first deploy (a manual run of the workflow from `main`):
+
+- `pageslens.olashyn.dev` is served over HTTPS, and plain HTTP redirects to it.
+- `olashyn.dev/pageslens/` redirects (301) to the subdomain. `olashyn.dev` and lookup-to-select still work.
+- Search finds rule ids (`role-unused`, `wildcard`) and policy keywords (`except under`), with the rule's or the command's page first.

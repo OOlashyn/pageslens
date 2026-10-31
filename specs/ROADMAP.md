@@ -12,7 +12,7 @@ Where pageslens stands and what comes next. Keep this file short and current: up
 ## Next
 
 1. **Verification in a Dataverse environment**, whenever one is at hand: the open questions below. Question 1 decides an error-level rule, and question 3 the README's status note.
-2. **Documentation site** (spec [0012](0012-docs-site.md)): an Astro Starlight site at `pageslens.olashyn.dev`, built from `docs/` and `rules/` and deployed to GitHub Pages on each release. Built, not yet released: it first deploys with the next release.
+2. **Documentation site** (spec [0012](0012-docs-site.md)): an Astro Starlight site at `pageslens.olashyn.dev`, built from `docs/` and `rules/` and deployed to GitHub Pages on each release. Built and deployed (2026-10-31, by a manual run). The links to it in the output ship in 0.13.0, with the release notes in [releases/0.13.0.md](releases/0.13.0.md).
 
 ## Verification still owed
 
