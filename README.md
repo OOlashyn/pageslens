@@ -288,7 +288,7 @@ The Power Pages site is in `site/`. Check it with pageslens (`npx pageslens`): s
 
 ## In CI
 
-For a full ALM workflow (the site and its solution in one repository, a check per stage, nightly drift against Dev, access changes in release notes), see [docs/alm.md](docs/alm.md).
+For a full ALM workflow (the site and its solution in one repository, a check per stage, nightly drift against Dev, access changes in release notes), see [docs/alm.md](docs/alm.md). For Azure Pipelines with Azure Repos, see [docs/azure-devops.md](docs/azure-devops.md).
 
 ### GitHub Action
 
