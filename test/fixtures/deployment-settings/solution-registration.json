@@ -1,0 +1,19 @@
+{
+  "EnvironmentVariables": [
+    {
+      "SchemaName": "dwcrm_CardsPerPage",
+      "Value": "",
+      "DefaultValue": "18",
+      "Name": {
+        "Default": "CardsPerPage",
+        "ByLcid": {
+          "1033": "CardsPerPage"
+        }
+      },
+      "TypeId": 100000001,
+      "IsRequired": false
+    }
+  ],
+  "ConnectionReferences": [],
+  "CopilotAgents": []
+}

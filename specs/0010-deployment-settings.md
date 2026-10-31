@@ -17,7 +17,7 @@ So the settings that matter most per stage (`Webapi/<table>/enabled`, `Webapi/<t
 
 `pac solution create-settings` writes it from a solution (`--solution-zip` or `--solution-folder`), and `pac solution import --settings-file` and the Build Tools and GitHub Actions import steps read it ([Pre-populate connection references and environment variables](https://learn.microsoft.com/power-platform/alm/conn-ref-env-variables-build-tools)).
 
-`create-settings` on `test/fixtures/solution-registration/` (2026-10-31) wrote:
+`create-settings --solution-folder` on `test/fixtures/solution-registration/` (pac 2.14.1, 2026-10-30) wrote this, kept as pac wrote it (CRLF line endings, no final newline) in `test/fixtures/deployment-settings/solution-registration.json`:
 
 ```json
 {
@@ -45,10 +45,10 @@ What it shows:
 
 - **`Value` starts empty**, even though the solution has a current value (`environmentvariablevalues.json` says 20). `create-settings` doesn't copy current values: a team fills in each stage's values by hand. A file nobody has edited is all empty values, so how pageslens reads an empty `Value` matters (question 2).
 - **The other fields come from the definition**, for the reader: `DefaultValue` is its `defaultvalue` (18), `Name` its display name, `TypeId` its `type` (100000001, Number), `IsRequired` its `isrequired`. They describe the solution; the stage's value is only `Value`.
-- **`TypeId` tells a secret apart**: 100000005, the Secret type the solution adapter already uses. Its `Value` is a Key Vault reference (`/subscriptions/<id>/resourceGroups/<group>/providers/Microsoft.KeyVault/vaults/<vault>/secrets/<name>`, from memory, to verify).
+- **`TypeId` tells a secret apart**: 100000005, the Secret type the solution adapter already uses. Its `Value` is a Key Vault reference, `/subscriptions/<id>/resourceGroups/<group>/providers/Microsoft.KeyVault/vaults/<vault>/secrets/<name>`: Learn gives this format for a Secret variable's value ([Configure automation kit environment variables](https://learn.microsoft.com/power-automate/guidance/automation-kit/setup/environment-variables#get-the-url-path-for-your-azure-key-vault-secrets)), and the import's error for an unreadable secret names the same path ([User is not authorized to read secrets](https://learn.microsoft.com/troubleshoot/power-platform/dataverse/working-with-solutions/environment-variable-key-vault-auth-error)). Not yet seen in a `create-settings` file; pageslens doesn't need the format, since it goes by `TypeId`.
 - **The top-level keys grow**: `CopilotAgents` is newer than the format as remembered. pageslens reads `EnvironmentVariables` and ignores every other key, at the top and in each entry, so the next one doesn't break it.
 - Values are strings, as site settings are.
-- Not known yet: what the import does with an empty `Value`, or with a variable that isn't in the file (keep the target's current value, fall back to the default, or fail). The white paper's promotion step imports "solution defaults" when there's no file at all.
+- Not known yet: what the import does with an empty `Value`, or with a variable that isn't in the file (keep the target's current value, fall back to the default, or fail). Learn doesn't say: its example file has empty values that "will need to be populated", and nothing more. The white paper's promotion step imports "solution defaults" when there's no file at all.
 
 ### What a site uses it for
 
@@ -56,7 +56,7 @@ Only `EnvironmentVariables`. A connection reference is for cloud flows, not site
 
 ### Where the value comes from at runtime
 
-In the target, a variable-backed setting's value is, as far as is known: the value the import set from the settings file; else a current value already in the target; else the definition's default. pageslens can't know the target's current values offline, so it takes the file's value, and otherwise what it has today.
+In the target, a variable-backed setting's value is, as far as is known: the value the import set from the settings file; else a current value already in the target; else the definition's default. Learn confirms the last two steps: a current value is used even when there's a default, and the default only when there's no current value ([Environment variables overview](https://learn.microsoft.com/power-apps/maker/data-platform/environmentvariables#how-do-environment-variables-work); the Power Pages FAQ says the same for site settings). It also says a value in the solution goes with it: "Remove the value from your solution if you don't want to use it in the next environment", and the import doesn't prompt for a variable that has a default or a value in the solution or the target. So a solution exported with dev's current value (as `solution-registration/` is, with 20) gives the target that value unless the import sets another. pageslens can't know the target's current values offline, so it takes the file's value, and otherwise what it has today.
 
 ## Design rules
 
@@ -118,7 +118,7 @@ A `settings` input, passed to every command it runs (question 5).
 
 ## Tests and fixtures
 
-- The `create-settings` output for `solution-registration/` above, kept byte-exact as pac wrote it (owed: the file itself, and the `pac` version), then a filled-in copy.
+- The `create-settings` output for `solution-registration/` above, `test/fixtures/deployment-settings/solution-registration.json` (pac 2.14.1), then a filled-in copy.
 - `test/fixtures/settings/`: a small download with variable-backed `Webapi/*` and registration settings, and files for two stages: one where the rules fire, one where they don't, one with a secret, one missing a variable. JSON can't hold a `#` comment, so the cases are listed in `test/fixtures/README.md`.
 - A `test/fixtures/diff/settings/` pair where only the settings file changes.
 - Policy cases for the same site under each stage, and `align` cases for the two checks.
@@ -135,12 +135,13 @@ A `settings` input, passed to every command it runs (question 5).
 
 ## Verification owed
 
-- A secret's `Value` format (the Key Vault reference) against Learn or a `create-settings` file from a solution with a Secret variable. The file's shape was checked on 2026-10-31 ("The file").
-- What the import does with an empty `Value` and with a variable missing from the file (needs an environment).
+- What the import does with an empty `Value` and with a variable missing from the file. Learn doesn't say (checked 2026-10-30); it needs an import into an environment, with the solution's value removed and again with it kept.
+
+Checked on 2026-10-30: the file's shape, against `pac` 2.14.1 ("The file"), and a secret's `Value` format, against Learn. A `create-settings` file from a solution with a Secret variable would confirm `TypeId` 100000005 there; it isn't needed for the design.
 
 ## Sources
 
 - [alm-white-paper.md](research/alm-white-paper.md), [alm-story.md](research/alm-story.md)
 - [0007](0007-solution-adapter.md), "Environment variables" and "Variable-backed settings in a download"
 - [0008](0008-align.md), the `variable-*` checks
-- Learn: [Pre-populate connection references and environment variables](https://learn.microsoft.com/power-platform/alm/conn-ref-env-variables-build-tools), [Environment variables for site settings](https://learn.microsoft.com/power-pages/configure/environment-variables-for-site-settings) (not re-read for this draft)
+- Learn: [Pre-populate connection references and environment variables](https://learn.microsoft.com/power-platform/alm/conn-ref-env-variables-build-tools), [Environment variables for site settings](https://learn.microsoft.com/power-pages/configure/environment-variables-for-site-settings), [Environment variables overview](https://learn.microsoft.com/power-apps/maker/data-platform/environmentvariables), [Use environment variables for Azure Key Vault secrets](https://learn.microsoft.com/power-apps/maker/data-platform/environmentvariables-azure-key-vault-secrets), [pac solution](https://learn.microsoft.com/power-platform/developer/cli/reference/solution) (all read 2026-10-30)
