@@ -1,6 +1,6 @@
 # 0011: Parent chains in policies
 
-**Status:** built, not yet released (see "As built"). Draft 2, every open question decided (see "Decisions").
+**Status:** shipped in 0.12.0 (see "As built"). Draft 2, every open question decided (see "Decisions").
 
 A common requirement is about a child table: "signed-in users can read the tasks of **their own** incidents, and no other tasks". A site does this with two table permissions: one on `incident` at contact scope, and a child permission on `task` at parent scope under it. `pageslens test` can't check that today. It can say that a grant on `task` is at parent scope, but not what the parent is. This spec adds a way to name the chain a grant hangs from.
 
