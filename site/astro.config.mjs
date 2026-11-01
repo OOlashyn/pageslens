@@ -11,6 +11,7 @@ export default defineConfig({
       title: 'pageslens',
       description:
         'Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.',
+      logo: { light: './src/assets/mark-light.svg', dark: './src/assets/mark-dark.svg' },
       favicon: '/favicon.svg',
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/OOlashyn/pageslens' }],
       editLink: { baseUrl: 'https://github.com/OOlashyn/pageslens/edit/main/site/' },

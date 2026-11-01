@@ -1,4 +1,9 @@
-# pageslens
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/lockup-dark.svg">
+    <img alt="pageslens" src="assets/logo/lockup-light.svg" height="64">
+  </picture>
+</h1>
 
 Offline lint, policy tests, access diffs and docs for Power Pages site configuration in source control.
 
