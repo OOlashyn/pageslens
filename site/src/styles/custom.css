@@ -11,6 +11,13 @@
   --sl-color-accent-high: #08402f;
 }
 
+/* Headings in the wordmark's font. Body text stays in the system font. */
+h1#_top,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: 'Manrope', var(--sl-font-system);
+  font-weight: 700;
+}
+
 /* "lens" in the home page title, as in the wordmark. */
 .wordmark-lens {
   color: var(--sl-color-accent);

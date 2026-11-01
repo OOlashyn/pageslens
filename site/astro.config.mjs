@@ -16,7 +16,7 @@ export default defineConfig({
         dark: './src/assets/lockup-dark.svg',
         replacesTitle: true,
       },
-      customCss: ['./src/styles/custom.css'],
+      customCss: ['@fontsource/manrope/latin-700.css', './src/styles/custom.css'],
       favicon: '/favicon.svg',
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/OOlashyn/pageslens' }],
       editLink: { baseUrl: 'https://github.com/OOlashyn/pageslens/edit/main/site/' },
