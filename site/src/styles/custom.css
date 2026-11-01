@@ -1,0 +1,24 @@
+/* The logo's teal as Starlight's accent (assets/logo/README.md). Dark theme first, as in Starlight. */
+:root {
+  --sl-color-accent-low: #0d3b2e;
+  --sl-color-accent: #1d9e75;
+  --sl-color-accent-high: #a6e6cf;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #c9eee0;
+  --sl-color-accent: #0f6e56;
+  --sl-color-accent-high: #08402f;
+}
+
+/* Headings in the wordmark's font. Body text stays in the system font. */
+h1#_top,
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  font-family: 'Manrope', var(--sl-font-system);
+  font-weight: 700;
+}
+
+/* "lens" in the home page title, as in the wordmark. */
+.wordmark-lens {
+  color: var(--sl-color-accent);
+}
