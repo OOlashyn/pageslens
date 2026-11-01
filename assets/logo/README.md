@@ -9,7 +9,7 @@ A magnifier over three lines of config. In the main mark, the middle line is out
 | `lockup-light.svg`, `lockup-dark.svg`       | The mark with the wordmark, as in the README header                               |
 | `icon.svg`, `icon-pass.svg`                 | 32 px and smaller: two thicker lines. They follow the system's light or dark mode |
 
-The docs site uses copies: `site/src/assets/mark-*.svg` for the header and home page, and `site/public/favicon.svg` (`icon.svg`). Change them together.
+The docs site uses copies: `site/src/assets/lockup-*.svg` for the header, `site/src/assets/mark-*.svg` for the home page, and `site/public/favicon.svg` (`icon.svg`). Change them together.
 
 Colours: teal `#1D9E75`, amber `#EF9F27`, ink `#1F2937` on light and `#F9FAFB` on dark.
 
