@@ -13,4 +13,6 @@ The docs site uses copies: `site/src/assets/lockup-*.svg` for the header, `site/
 
 Colours: teal `#1D9E75`, amber `#EF9F27`, ink `#1F2937` on light and `#F9FAFB` on dark.
 
-The wordmark is live text in the system's sans-serif font, so it looks a little different on each system. Don't use the pass and main marks to tell results apart by colour alone: put words next to them.
+The wordmark is [Manrope](https://fonts.google.com/specimen/Manrope) Bold (SIL Open Font License), turned into outlines at 62 px from x 116 on baseline 70, so it needs no font installed. To change it, outline the text again with a font tool such as opentype.js.
+
+Don't use the pass and main marks to tell results apart by colour alone: put words next to them.
