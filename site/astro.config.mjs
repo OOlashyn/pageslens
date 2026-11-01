@@ -17,6 +17,8 @@ export default defineConfig({
         replacesTitle: true,
       },
       customCss: ['@fontsource/manrope/latin-700.css', './src/styles/custom.css'],
+      // src/pages/404.astro instead: Starlight's own route looks for a docs entry "404" and warns without one.
+      disable404Route: true,
       favicon: '/favicon.svg',
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/OOlashyn/pageslens' }],
       editLink: { baseUrl: 'https://github.com/OOlashyn/pageslens/edit/main/site/' },
